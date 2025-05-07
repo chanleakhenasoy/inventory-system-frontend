@@ -4,6 +4,7 @@ import { useState } from "react";
 import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
 import { Link } from "lucide-react";
+import router from "next/router";
 
 export default function Category() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,9 +35,11 @@ export default function Category() {
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
             Category
           </h1>
-          <button className="px-6 py-1.5 bg-[#2D579A] text-white rounded-lg hover:bg-[#6499EF] transition cursor-pointer">
-            create
-          </button>
+          <Link href="/category/create">
+            <button className="px-6 py-1.5 bg-[#2D579A] text-white rounded-lg hover:bg-[#6499EF] transition cursor-pointer">
+              Create
+            </button>
+          </Link>
         </div>
 
         {/* Table */}
