@@ -1,3 +1,4 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -18,6 +19,8 @@ import Link from "next/link";
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 />
 
+import { ReactNode } from "react";
+import LayoutWrapper from "./components/layoutWrapper"; 
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +40,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -92,6 +95,7 @@ export default function RootLayout({
             {children}
           </main>
         </div>
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );

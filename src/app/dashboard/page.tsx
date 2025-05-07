@@ -23,19 +23,11 @@ export default function Dashboard() {
           <main className="flex-1 overflow-y-auto p-6">
             <div className="flex flex-col gap-6">
               <div className="w-full sm:w-[10%] md:w-[30%] lg:w-[50%]">
-                {/* <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="w-full pl-4 pr-10 py-3 border-none bg-white text-gray-500 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <button className="absolute right-0 top-0 mt-4 mr-3 text-blue-600">
-                    <Search size={20} />
-                  </button>
-                </div> */}
+               
               </div>
               <div>
                 <h1 className="text-[30px] font-bold text-[#2D579A] mb-6  ">
+                <h1 className="text-[30px] font-bold text-[#2D579A] mb-6">
                   Dashboard
                 </h1>
               </div>
@@ -43,7 +35,7 @@ export default function Dashboard() {
 
             {/* Overview Cards */}
             <div className="bg-white h-[290px] rounded-lg shadow-sm p-6 mb-6">
-              <h2 className="text-[20px] font-semibold mb-4 text-[#2B5190]">Over View</h2>
+              <h2 className="text-[20px] font-semibold mb-4 text-[#2D579A]">Over View</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ">
                 <OverviewCard
                   icon={<Package className="text-blue-600" size={45} />}
@@ -80,7 +72,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Upcoming Deliveries */}
               <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-lg mb-4 text-[#2B5190] text-[20px] font-semibold">
+                <h2 className="text-lg mb-4 text-[#2D579A] text-[20px] font-semibold">
                   Upcoming Deliveries
                 </h2>
                 <div className="flex items-center justify-center p-6">
