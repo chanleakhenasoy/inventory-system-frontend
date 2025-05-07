@@ -18,7 +18,7 @@ export default function Pagination({ totalPages, initialPage = 1, onPageChange }
   return (
     <div className="flex justify-center items-center mt-4 space-x-2">
       <button
-        className="p-2 text-[#2D579A] hover:text-[#6499EF] disabled:opacity-50 flex items-center justify-center"
+        className="p-2 text-[#2D579A] hover:text-[#6499EF] disabled:opacity-50 flex items-center justify-center cursor-pointer"
         disabled={currentPage === 1}
         onClick={() => handlePageChange(currentPage - 1)}
         aria-label="Previous page"
@@ -37,7 +37,7 @@ export default function Pagination({ totalPages, initialPage = 1, onPageChange }
         <span className="text-[#2D579A] font-bold">{currentPage}</span> {/* Add font-bold here */}
       </div>
       <button
-        className="p-2 text-[#2D579A] hover:text-[#6499EF] disabled:opacity-50 flex items-center justify-center"
+        className="p-2 text-[#2D579A] hover:text-[#6499EF] disabled:opacity-50 flex items-center justify-center cursor-pointer"
         disabled={currentPage === totalPages}
         onClick={() => handlePageChange(currentPage + 1)}
         aria-label="Next page"
