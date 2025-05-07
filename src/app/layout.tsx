@@ -13,6 +13,11 @@ import {
 } from "lucide-react";
 import Navbar from "./components/navbar";
 import Link from "next/link";
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,7 +45,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Navbar />
-        <div className="flex h-[864px]">
+        <div className="flex h-[760px]">
           {/* Sidebar on the left */}
           <div className="w-96 bg-[#2D579A] text-white text-[20px]">
             <nav className="mt-6">
