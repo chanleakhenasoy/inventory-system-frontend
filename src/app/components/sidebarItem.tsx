@@ -21,7 +21,7 @@ export function SidebarItem({ icon, text, href, active = false }: SidebarItemPro
     <button
       onClick={handleNavigation}
       className={`flex items-center px-6 py-4 text-white ${
-        active ? "font-medium" : "hover:bg-[#6499EF]"
+        active ? "font-medium" : "hover:bg-[#6499EF] w-full"
       }`}
     >
       <span className="mr-3">{icon}</span>
