@@ -48,7 +48,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {/* <Navbar /> */}
-        {/* <div className="flex h-[760px]"> */}
+        {/* <div classSupplierName="flex h-[760px]"> */}
           {/* Sidebar on the left */}
           {/* <div className="w-96 bg-[#2D579A] text-white text-[20px]">
             <nav className="mt-6">

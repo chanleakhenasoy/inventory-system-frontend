@@ -44,38 +44,38 @@ export default function Supplier() {
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
               <tr>
                 <th className="px-6 py-3 font-semibold">ID</th>
-                <th className="px-4 py-3 font-semibold text-[18px]">
+                <th className="px-8 py-3 font-semibold text-[18px]">
                   Supplier Name
                 </th>
                 <th className="px-4 py-3 font-semibold text-[18px]">
                   Phone Number
                 </th>
-                <th className="px-4 py-3 font-semibold text-[18px]">
+                <th className="px-10 py-3 font-semibold text-[18px]">
                     Address
                     </th>
-                <th className="px-6 py-3 font-semibold text-[18px]">
+                <th className="px-4 py-3 font-semibold text-[18px]">
                   Company Name
                 </th>
-                <th className="px-4 py-3 font-semibold text-[18px]">
+                <th className="px-10 py-3 font-semibold text-[18px]">
                   Create At
                 </th>
-                <th className="px-4 py-3 font-semibold text-[18px]">
+                <th className="px-2 py-3 font-semibold text-[18px]">
                   Update At
                 </th>
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
               {suppliers.map((supplier, index) => (
-                <tr key={index} className="hover:bg-[#F3F3F3] h-[55px]">
+                <tr key={index} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer">
                   <td className="px-5 py-3 text-[16px]">{supplier.id}</td>
-                  <td className="px-4 py-3 text-[16px]">{supplier.name}</td>
+                  <td className="px-8 py-3 text-[16px]">{supplier.name}</td>
                   <td className="px-4 py-3 text-[16px]">{supplier.phone}</td>
-                  <td className="px-4 py-3 text-[16px]">{supplier.address}</td>
-                  <td className="px-6 py-3 text-[16px]">{supplier.company}</td>
-                  <td className="px-4 py-3 cursor-pointer text-[16px]">
+                  <td className="px-10 py-3 text-[16px]">{supplier.address}</td>
+                  <td className="px-4 py-3 text-[16px]">{supplier.company}</td>
+                  <td className="px-10 py-3 cursor-pointer text-[16px]">
                     {supplier.createdAt}
                   </td>
-                  <td className="px-4 py-3 text-[16px]">
+                  <td className="px-3 py-3 text-[16px]">
                     {supplier.updatedAt}
                   </td>
                 </tr>
