@@ -43,32 +43,32 @@ export default function StockIn() {
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
               <tr>
                 <th className="px-6 py-3 font-semibold">ID</th>
-                <th className="px-4 py-3 font-semibold text-[18px]">
+                <th className="px-14 py-3 font-semibold text-[18px]">
                   Product Name
                 </th>
-                <th className="px-4 py-3 font-semibold text-[18px]">
+                <th className="px-8 py-3 font-semibold text-[18px]">
                   Supplier Name
                 </th>
-                <th className="px-4 py-3 font-semibold text-[18px]">
+                <th className="px-8 py-3 font-semibold text-[18px]">
                     Quantity
                     </th>
-                <th className="px-4 py-3 font-semibold text-[18px]">
+                <th className="px-18 py-3 font-semibold text-[18px]">
                   Create At
                 </th>
-                <th className="px-4 py-3 font-semibold text-[18px]">
+                <th className="px-2 py-3 font-semibold text-[18px]">
                   Update At
                 </th>
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
               {stockIn.map((stockin, index) => (
-                <tr key={index} className="hover:bg-[#F3F3F3] h-[55px]">
+                <tr key={index} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer">
                   <td className="px-5 py-3 text-[16px]">{stockin.id}</td>
-                  <td className="px-4 py-3 text-[16px]">{stockin.product_name}</td>
-                  <td className="px-4 py-3 text-[16px]">{stockin.supplier_name}</td>
-                  <td className="px-4 py-3 text-[16px]">{stockin.quantity}</td>
-                  <td className="px-4 py-3 text-[16px]">{stockin.createdAt}</td>
-                  <td className="px-4 py-3 text-[16px]">{stockin.updatedAt}</td>
+                  <td className="px-14 py-3 text-[16px]">{stockin.product_name}</td>
+                  <td className="px-8 py-3 text-[16px]">{stockin.supplier_name}</td>
+                  <td className="px-8 py-3 text-[16px]">{stockin.quantity}</td>
+                  <td className="px-18 py-3 text-[16px]">{stockin.createdAt}</td>
+                  <td className="px-2 py-3 text-[16px]">{stockin.updatedAt}</td>
                 </tr>
               ))}
             </tbody>
