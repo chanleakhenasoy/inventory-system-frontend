@@ -25,7 +25,7 @@ export default function StockInDetail() {
                     <input
                       type="text"
                       defaultValue="Mararika"
-                      className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
 
@@ -34,7 +34,7 @@ export default function StockInDetail() {
                     <input
                       type="text"
                       defaultValue="Mararika"
-                      className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
 
@@ -43,7 +43,7 @@ export default function StockInDetail() {
                     <input
                       type="text"
                       defaultValue="Mararika"
-                      className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
 
@@ -52,7 +52,7 @@ export default function StockInDetail() {
                     <input
                       type="text"
                       defaultValue="Mararika"
-                      className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
                 </div>
@@ -64,7 +64,7 @@ export default function StockInDetail() {
                     <input
                       type="text"
                       defaultValue="Mararika"
-                      className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
 
@@ -74,7 +74,7 @@ export default function StockInDetail() {
                       <input
                         type="text"
                         defaultValue="Mararika"
-                        className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                       <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
                     </div>
@@ -85,7 +85,7 @@ export default function StockInDetail() {
                     <input
                       type="text"
                       defaultValue="Mararika"
-                      className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
 
@@ -95,7 +95,7 @@ export default function StockInDetail() {
                       <input
                         type="text"
                         defaultValue="Mararika"
-                        className="w-full p-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                       <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
                     </div>
@@ -117,12 +117,12 @@ export default function StockInDetail() {
                 >
                   Update
                 </button>
-                <button
+                {/* <button
                   type="submit"
                   className="px-6 py-1.5 text-[15px] bg-[#2D579A] text-white rounded-lg hover:bg-[#6499EF] transition-colors"
                 >
                   Save
-                </button>
+                </button> */}
               </div>
             </form>
           </div>
