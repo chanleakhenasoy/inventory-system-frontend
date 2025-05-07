@@ -1,18 +1,9 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SidebarItem } from "./components/sidebarItem";
-import {
-  Search,
-  Bell,
-  Package,
-  Store,
-  PackageX,
-  Layers,
-  Truck,
-} from "lucide-react";
-import Navbar from "./components/navbar";
-import Link from "next/link";
+import { ReactNode } from "react";
+import LayoutWrapper from "./components/layoutWrapper"; 
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,61 +23,14 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        <div className="flex h-[864px]">
-          {/* Sidebar on the left */}
-          <div className="w-96 bg-[#2D579A] text-white text-[20px]">
-            <nav className="mt-6">
-              <SidebarItem
-                icon={<Package size={25} />}
-                text="Dashboard"
-                href="/dashboard"
-              />
-              <SidebarItem
-                icon={<Store size={25} />}
-                text="Suppliers"
-                href="/suppliers"
-              />
-              <SidebarItem
-                icon={<Layers size={25} />}
-                text="Category"
-                href="/category"
-              />
-              <SidebarItem
-                icon={<Package size={25} />}
-                text="Product"
-                href="/product"
-              />
-              <SidebarItem
-                icon={<Package size={25} />}
-                text="Stock In"
-                href="/stock-in"
-              />
-              <SidebarItem
-                icon={<PackageX size={25} />}
-                text="Stock Out"
-                href="/stock-out"
-              />
-              <SidebarItem
-                icon={<Package size={25} />}
-                text="Create User"
-                href="/create-user"
-              />
-            </nav>
-          </div>
-
-          {/* Main content on the right */}
-          <main className="flex-1 bg-gray-50 p-6 overflow-auto">
-            {children}
-          </main>
-        </div>
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );
