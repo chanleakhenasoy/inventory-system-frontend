@@ -1,5 +1,7 @@
+"use client";
+
 import { ReactNode } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface SidebarItemProps {
   icon: ReactNode;
@@ -9,15 +11,22 @@ interface SidebarItemProps {
 }
 
 export function SidebarItem({ icon, text, href, active = false }: SidebarItemProps) {
+  const router = useRouter();
+
+  const handleNavigation = () => {
+    router.push(href);
+  };
+
   return (
-    <Link
-      href={href}
+    <button
+      onClick={handleNavigation}
       className={`flex items-center px-6 py-4 text-white ${
         active ? "font-medium" : "hover:bg-[#6499EF]"
       }`}
     >
       <span className="mr-3">{icon}</span>
       <span>{text}</span>
-    </Link>
+    </button>
   );
 }
+
