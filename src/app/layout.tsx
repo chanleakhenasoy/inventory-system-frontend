@@ -47,10 +47,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        <div className="flex h-[760px]">
+        {/* <Navbar /> */}
+        {/* <div className="flex h-[760px]"> */}
           {/* Sidebar on the left */}
-          <div className="w-96 bg-[#2D579A] text-white text-[20px]">
+          {/* <div className="w-96 bg-[#2D579A] text-white text-[20px]">
             <nav className="mt-6">
               <SidebarItem
                 icon={<Package size={25} />}
@@ -88,13 +88,13 @@ export default function RootLayout({
                 href="/create-user"
               />
             </nav>
-          </div>
+          </div> */}
 
           {/* Main content on the right */}
-          <main className="flex-1 bg-gray-50 p-6 overflow-auto">
+          {/* <main className="flex-1 bg-gray-50 p-6 overflow-auto">
             {children}
-          </main>
-        </div>
+          </main> */}
+        {/* </div> */}
         <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
