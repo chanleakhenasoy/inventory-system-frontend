@@ -26,6 +26,7 @@ export default function Dashboard() {
                
               </div>
               <div>
+                <h1 className="text-[30px] font-bold text-[#2D579A] mb-6  ">
                 <h1 className="text-[30px] font-bold text-[#2D579A] mb-6">
                   Dashboard
                 </h1>
