@@ -30,6 +30,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
             <SidebarItem icon={<Layers size={25} />} text="Category" href="/category" />
             <SidebarItem icon={<Package size={25} />} text="Product" href="/product" />
             <SidebarItem icon={<Package size={25} />} text="Stock In" href="/stock-in" />
+            <SidebarItem icon={<Package size={25} />} text="Create Stock In" href="/stockin/[id]" />
             <SidebarItem icon={<PackageX size={25} />} text="Stock Out" href="/stock-out" />
             <SidebarItem icon={<Package size={25} />} text="Create User" href="/register" />
           </nav>
