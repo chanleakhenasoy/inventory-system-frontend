@@ -5,17 +5,6 @@ import Navbar from "./navbar";
 import { SidebarItem } from "./sidebarItem";
 
 import { Package, Store, PackageX, Layers, LayoutDashboard, BoxIcon, Boxes, User } from "lucide-react";
-import {
-  Package,
-  Store,
-  PackageX,
-  LayoutDashboard,
-  BoxIcon,
-  Boxes,
-  User,
-  Layers,
-} from "lucide-react";
-
 
 export default function LayoutWrapper({
   children,
