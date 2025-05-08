@@ -45,7 +45,7 @@ export default function SignIn() {
         </div>
 
         {/* Sign In Button */}
-        <button className="w-full sm:w-[95%] md:w-[100%] lg:w-[150%] bg-[#2B5190] text-white p-3 rounded flex items-center justify-center">
+        <button className="w-full sm:w-[95%] md:w-[100%] lg:w-[150%] bg-[#2B5190] text-white p-3 rounded flex items-center justify-center cursor-pointer">
           <span className="mr-2 font-bold">SIGN IN</span>
         </button>
       </div>
