@@ -83,7 +83,7 @@ export default function SupplierDetail() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end space-x-3 mt-6">
+            <div className="flex justify-end space-x-3 mt-6 ">
             <Button onClick={handleDelete} label="Delete" variant="delete" />
             <Button onClick={handleUpdate} label="Update" variant="update" />
             </div>
