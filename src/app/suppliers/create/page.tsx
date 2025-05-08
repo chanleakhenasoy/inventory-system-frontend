@@ -87,7 +87,7 @@ export default function CategoryDetail() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end space-x-3 mt-6">
+            <div className="flex justify-end space-x-3 mt-6 cursor-pointer">
             <Button onClick={handleSave} label="Save" variant="save" />
              
             </div>

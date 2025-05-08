@@ -75,7 +75,7 @@ export default function CreateUser() {
         {/* Register Button */}
         <button
           type="submit"
-          className="w-full bg-[#2D579A] hover:bg-[#6499EF] text-white p-3 rounded-lg flex items-center justify-center font-medium transition-colors duration-300"
+          className="w-full bg-[#2D579A] hover:bg-[#6499EF] text-white p-3 rounded-lg flex items-center justify-center font-medium transition-colors duration-300 cursor-pointer"
         >
           <LogIn size={18} strokeWidth={3} />
           <span className="ml-2 font-bold">REGISTER</span>
