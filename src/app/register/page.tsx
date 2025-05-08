@@ -1,17 +1,32 @@
-import { User, Mail, Users, Key, LogIn } from "lucide-react";
+"use client";
+
+import { User, Mail, Users, Key, LogIn, Link, Bold, Space } from "lucide-react";
+import { useRouter } from 'next/navigation';
 
 
 export default function CreateUser() {
+  const router = useRouter();
+
+  const handleClickToUser = () => {
+    router.push('/user'); // Replace with your route
+  };
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-8">
+      <h1 className="text-[30px] font-bold text-[#2D579A] mb-6">
+        Create New User
+      </h1>
+        <button className="px-6 py-1.5 bg-[#2D579A] text-white rounded-lg hover:bg-[#6499EF] transition cursor-pointer"
+        onClick={handleClickToUser}>
+        See all
         <h1 className="text-[30px] font-bold text-[#2D579A] mb-6">
           Create New User
         </h1>
         <button className="bg-[#2D579A] text-white px-6 py-1.5 rounded-lg text-sm">
           See All
         </button>
-      </div>
+    </div>
 
       <form className="flex flex-col gap-8">
         {/* Username Field */}
@@ -67,8 +82,8 @@ export default function CreateUser() {
               type="submit"
               className="w-full bg-[#2D579A] hover:bg-[#6499EF] text-white p-3 rounded-lg flex items-center justify-center font-medium transition-colors duration-300"
             >
-              <span>REGISTER</span>
-              <LogIn size={18} className="ml-2" />
+              <LogIn size={18} strokeWidth={3} />
+              <span className="ml-2 font-bold">REGISTER</span>
             </button>
       </form>
     </div>
