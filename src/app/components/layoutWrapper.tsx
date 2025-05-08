@@ -5,16 +5,6 @@ import Navbar from "./navbar";
 import { SidebarItem } from "./sidebarItem";
 
 import { Package, Store, PackageX, Layers, LayoutDashboard, BoxIcon, Boxes, User } from "lucide-react";
-import {
-  Package,
-  Store,
-  PackageX,
-  LayoutDashboard,
-  BoxIcon,
-  Boxes,
-  User,
-  Layers,
-} from "lucide-react";
 
 
 export default function LayoutWrapper({
@@ -32,7 +22,7 @@ export default function LayoutWrapper({
   return (
     <>
       <Navbar />
-      <div className="flex h-[750px]">
+      <div className="flex h-[850px]">
         {/* Sidebar */}
         <div className="w-90 bg-[#2D579A] text-white text-[20px]">
           <nav className="mt-6">
