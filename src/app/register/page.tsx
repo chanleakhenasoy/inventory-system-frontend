@@ -5,10 +5,10 @@ export default function CreateUser() {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-[30px] font-bold text-[#2D579A] mb-10">
+        <h1 className="text-[30px] font-bold text-[#2D579A] mb-6">
           Create New User
         </h1>
-        <button className="bg-[#2D579A] text-white px-4 py-2 rounded-md text-sm">
+        <button className="bg-[#2D579A] text-white px-6 py-1.5 rounded-lg text-sm">
           See All
         </button>
       </div>
@@ -19,7 +19,7 @@ export default function CreateUser() {
           <input
             type="text"
             placeholder="Username"
-            className="w-full border text-gray-500 border-gray-300 p-3 pr-12 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border text-black border-gray-300 p-3 pr-12 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
             <User size={20} />
@@ -31,7 +31,7 @@ export default function CreateUser() {
           <input
             type="email"
             placeholder="Email"
-            className="w-full border text-gray-500 border-gray-300 p-3 pr-12 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border text-black border-gray-300 p-3 pr-12 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
             <Mail size={20} />
@@ -43,7 +43,7 @@ export default function CreateUser() {
           <input
             type="text"
             placeholder="Role"
-            className="w-full border text-gray-500 border-gray-300 p-3 pr-12 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border text-black border-gray-300 p-3 pr-12 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
             <Users size={20} />
@@ -55,7 +55,7 @@ export default function CreateUser() {
           <input
             type="password"
             placeholder="Password"
-            className="w-full border text-gray-500 border-gray-300 p-3 pr-12 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border text-black border-gray-300 p-3 pr-12 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
             <Key size={20} />
@@ -65,7 +65,7 @@ export default function CreateUser() {
         {/* Register Button */}
         <button
               type="submit"
-              className="w-full bg-[#2D579A] hover:bg-[#6499EF] text-white p-3 rounded flex items-center justify-center font-medium transition-colors duration-300"
+              className="w-full bg-[#2D579A] hover:bg-[#6499EF] text-white p-3 rounded-lg flex items-center justify-center font-medium transition-colors duration-300"
             >
               <span>REGISTER</span>
               <LogIn size={18} className="ml-2" />

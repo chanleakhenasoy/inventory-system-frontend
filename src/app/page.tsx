@@ -25,7 +25,7 @@ export default function SignIn() {
           <input
             type="email"
             placeholder="Email"
-            className="w-full border border-gray-400 p-3 pr-12 rounded text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border border-gray-300 p-3 pr-12 rounded-lg text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
             <Mail size={20} />
@@ -37,7 +37,7 @@ export default function SignIn() {
           <input
             type="password"
             placeholder="Password"
-            className="w-full border border-gray-400 p-3 pr-12 rounded text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full border border-gray-300 p-3 pr-12 rounded-lg text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
             <Key size={20} />

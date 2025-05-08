@@ -18,7 +18,7 @@ export default function AddNewStock() {
 
   const [formData, setFormData] = useState({
     purchaseDate: "",
-    supplier: "Mararika",
+    supplier: "",
     selectedItems: "",
     quantity: "",
     unitPrice: "",

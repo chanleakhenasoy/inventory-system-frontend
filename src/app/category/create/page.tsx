@@ -7,8 +7,8 @@ import { useState } from "react"
 
 export default function CategoryDetail() {
   const [formData, setFormData] = useState({
-    categoryName: "Mararika",
-    description: "Mararika",
+    categoryName: "",
+    description: "",
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
