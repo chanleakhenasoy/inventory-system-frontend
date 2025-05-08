@@ -1,5 +1,6 @@
 "use client"
 
+import Button from "@/app/components/button"
 import type React from "react"
 
 import { useState } from "react"
@@ -26,6 +27,10 @@ export default function CategoryDetail() {
       console.log("Deleting category:", formData)
       // Here you would typically send a delete request to your backend
     }
+  }
+
+  function handleSave(): void {
+    throw new Error("Function not implemented.")
   }
 
   return (
@@ -61,12 +66,7 @@ export default function CategoryDetail() {
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 mt-6">
-            <button
-              type="button"
-              className="px-6 py-1.5 text-[15px] bg-[#2D579A] text-white rounded-lg hover:bg-[#6499EF] transition-colors"
-            >
-              Save
-            </button>
+            <Button onClick={handleSave} label="Save" variant="save" />
              
             </div>
           </div>

@@ -1,27 +1,37 @@
-import Image from "next/image"
-import { Calendar, Bell, Package, Store, Layers, PackageX, Users } from "lucide-react"
+"use client";
+
+import Image from "next/image";
+import { Calendar } from "lucide-react";
+import Button from "@/app/components/button";
 
 export default function StockInDetail() {
+  const handleDelete = () => {
+    console.log("Delete button clicked");
+  };
+
+  const handleUpdate = () => {
+    console.log("Update button clicked");
+  };
+
   return (
     <div className="flex h-screen">
-      {/* Sidebar */}
-     
       {/* Main Content */}
       <div className="flex-1 flex flex-col ">
-        {/* Header */}
-    
-
         {/* Content */}
         <main className="flex-1 p-6">
-          <h1 className="text-[30px] font-bold text-[#2D579A] mb-6">Stock In Detail</h1>
+          <h1 className="text-[30px] font-bold text-[#2D579A] mb-9">
+            Stock In Detail
+          </h1>
 
-          <div className="bg-white rounded-lg p-6">
+          <div className="bg-white rounded-lg p-6 shadow-lg">
             <form>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Left Column */}
                 <div>
                   <div className="mb-4">
-                    <label className="block text-[#2D579A] mb-2">Reference Name</label>
+                    <label className="block text-[#2D579A] mb-2">
+                      Reference Name
+                    </label>
                     <input
                       type="text"
                       defaultValue="Mararika"
@@ -39,19 +49,23 @@ export default function StockInDetail() {
                   </div>
 
                   <div className="mb-4">
-                    <label className="block text-[#2D579A] mb-2">Quantity</label>
+                    <label className="block text-[#2D579A] mb-2">
+                      Quantity
+                    </label>
                     <input
                       type="text"
-                      defaultValue="Mararika"
+                      defaultValue="34"
                       className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
 
                   <div className="mb-4">
-                    <label className="block text-[#2D579A] mb-2">Total Price</label>
+                    <label className="block text-[#2D579A] mb-2">
+                      Total Price
+                    </label>
                     <input
                       type="text"
-                      defaultValue="Mararika"
+                      defaultValue="100.00"
                       className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
@@ -60,44 +74,58 @@ export default function StockInDetail() {
                 {/* Right Column */}
                 <div>
                   <div className="mb-4">
-                    <label className="block text-[#2D579A] mb-2">Supplier</label>
+                    <label className="block text-[#2D579A] mb-2">
+                      Supplier
+                    </label>
                     <input
                       type="text"
-                      defaultValue="Mararika"
+                      defaultValue="Mararika Supplier"
                       className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
 
                   <div className="mb-4">
-                    <label className="block text-[#2D579A] mb-2">Stock In Date</label>
+                    <label className="block text-[#2D579A] mb-2">
+                      Stock In Date
+                    </label>
                     <div className="relative">
                       <input
                         type="text"
-                        defaultValue="Mararika"
+                        defaultValue="2025-09-23"
                         className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
-                      <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+                      <Calendar
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                        size={20}
+                      />
                     </div>
                   </div>
 
                   <div className="mb-4">
-                    <label className="block text-[#2D579A] mb-2">Unit Price</label>
+                    <label className="block text-[#2D579A] mb-2">
+                      Unit Price
+                    </label>
                     <input
                       type="text"
-                      defaultValue="Mararika"
+                      defaultValue="10.00"
                       className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                   </div>
 
                   <div className="mb-4">
-                    <label className="block text-[#2D579A] mb-2">Expire Date</label>
+                    <label className="block text-[#2D579A] mb-2">
+                      Expire Date
+                    </label>
                     <div className="relative">
                       <input
                         type="text"
-                        defaultValue="Mararika"
+                        defaultValue="2025-12-31"
                         className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
-                      <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+                      <Calendar
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                        size={20}
+                      />
                     </div>
                   </div>
                 </div>
@@ -105,31 +133,13 @@ export default function StockInDetail() {
 
               {/* Action Buttons */}
               <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  type="button"
-                  className="px-6 py-1.5 text-[15px] bg-[#EF2B2E] text-white rounded-lg hover:bg-[#FB6365] transition-colors"
-                >
-                  Delete
-                </button>
-                <button
-                  type="button"
-                  className="px-6 py-1.5 text-[15px] bg-[#26BD5D] text-white rounded-lg hover:bg-green-400 transition-colors"
-                >
-                  Update
-                </button>
-                {/* <button
-                  type="submit"
-                  className="px-6 py-1.5 text-[15px] bg-[#2D579A] text-white rounded-lg hover:bg-[#6499EF] transition-colors"
-                >
-                  Save
-                </button> */}
+                <Button onClick={handleDelete} label="Delete" variant="delete" />
+                <Button onClick={handleUpdate} label="Update" variant="update" />
               </div>
             </form>
           </div>
         </main>
       </div>
     </div>
-  )
+  );
 }
-
-

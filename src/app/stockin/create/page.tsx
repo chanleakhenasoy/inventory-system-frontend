@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { Calendar, Plus } from "lucide-react"
+import Button from "@/app/components/button"
 
 
 export default function AddNewStock() {
@@ -53,6 +54,10 @@ export default function AddNewStock() {
         expireDate: "",
       }))
     }
+  }
+
+  function handleSave(): void {
+    throw new Error("Function not implemented.")
   }
 
   return (
@@ -171,12 +176,7 @@ export default function AddNewStock() {
 
           {/* Save Button */}
           <div className="flex justify-end">
-            <button
-              type="button"
-              className="px-6 py-1.5 text-[15px] bg-[#2D579A] text-white rounded-lg hover:bg-[#6499EF] transition-colors"
-            >
-              Save
-            </button>
+          <Button onClick={handleSave} label="Save" variant="save" />
           </div>
         </div>
       </div>
