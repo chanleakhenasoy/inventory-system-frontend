@@ -3,6 +3,8 @@
 import { useState } from "react";
 import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
+import { Link } from "lucide-react";
+import router from "next/router";
 
 export default function Category() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,10 +32,14 @@ export default function Category() {
 
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">Category</h1>
-          <button className="px-6 py-1.5 bg-[#2D579A] text-white rounded-lg hover:bg-[#6499EF] transition cursor-pointer">
-            create
-          </button>
+          <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
+            Category
+          </h1>
+          <Link href="/category/create">
+            <button className="px-6 py-1.5 bg-[#2D579A] text-white rounded-lg hover:bg-[#6499EF] transition cursor-pointer">
+              Create
+            </button>
+          </Link>
         </div>
 
         {/* Table */}
@@ -46,8 +52,8 @@ export default function Category() {
                   Category Name
                 </th>
                 <th className="px-18 py-3 font-semibold text-[18px]">
-                    Description
-                    </th>
+                  Description
+                </th>
                 <th className="px-18 py-3 font-semibold text-[18px]">
                   Create At
                 </th>
@@ -58,12 +64,27 @@ export default function Category() {
             </thead>
             <tbody className="text-[#2B5190]">
               {category.map((category, index) => (
-                <tr key={index} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer">
-                  <td className="px-6 py-3 text-[16px]">{category.id}</td>
-                  <td className="px-22 py-3 text-[16px]">{category.category_name}</td>
-                  <td className="px-18 py-3 text-[16px]">{category.description}</td>
-                  <td className="px-18 py-3 text-[16px]">{category.createdAt}</td>
-                  <td className="px-2 py-3 text-[16px]">{category.updatedAt}</td>
+                <tr
+                  key={index}
+                  className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
+                >
+                  <td className="px-5 py-3 text-[16px]">
+                    <Link href={`/category/detail?id=${category.id}`}>
+                      {category.id}
+                    </Link>
+                  </td>
+                  <td className="px-22 py-3 text-[16px]">
+                    {category.category_name}
+                  </td>
+                  <td className="px-18 py-3 text-[16px]">
+                    {category.description}
+                  </td>
+                  <td className="px-18 py-3 text-[16px]">
+                    {category.createdAt}
+                  </td>
+                  <td className="px-2 py-3 text-[16px]">
+                    {category.updatedAt}
+                  </td>
                 </tr>
               ))}
             </tbody>
