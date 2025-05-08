@@ -5,6 +5,17 @@ import Navbar from "./navbar";
 import { SidebarItem } from "./sidebarItem";
 
 import { Package, Store, PackageX, Layers, LayoutDashboard, BoxIcon, Boxes, User } from "lucide-react";
+import {
+  Package,
+  Store,
+  PackageX,
+  LayoutDashboard,
+  BoxIcon,
+  Boxes,
+  User,
+  Layers,
+} from "lucide-react";
+
 
 export default function LayoutWrapper({
   children,
@@ -32,7 +43,7 @@ export default function LayoutWrapper({
             <SidebarItem icon={<Package size={25} />} text="Stock In" href="/stockin" />
             <SidebarItem icon={<PackageX size={25} />} text="Stock Out" href="/stockout" />
             <SidebarItem icon={<User size={25} />} text="Create User" href="/register" />
-            
+        
           </nav>
         </div>
 
