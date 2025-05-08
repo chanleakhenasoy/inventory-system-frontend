@@ -63,7 +63,7 @@ export default function AddNewStock() {
   return (
     
       <div className="p-6">
-        <h1 className="text-[30px] font-bold text-[#2D579A] mb-6">Add New Stock</h1>
+        <h1 className="text-[30px] font-bold text-[#2D579A] mb-12">Add New Stock</h1>
 
         <div className="bg-white  rounded-lg p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

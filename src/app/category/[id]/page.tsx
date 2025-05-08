@@ -32,7 +32,7 @@ export default function CategoryDetail() {
   return (
     
       <div className="p-6">
-        <h1 className="text-[30px] font-bold text-[#2D579A] mb-9">Category Detail</h1>
+        <h1 className="text-[30px] font-bold text-[#2D579A] mb-12">Category Detail</h1>
 
         <div className="bg-white rounded-lg p-6 shadow-sm">
           <div className="space-y-6">

@@ -19,7 +19,7 @@ export default function StockInDetail() {
       <div className="flex-1 flex flex-col ">
         {/* Content */}
         <main className="flex-1 p-6">
-          <h1 className="text-[30px] font-bold text-[#2D579A] mb-9">
+          <h1 className="text-[30px] font-bold text-[#2D579A] mb-12">
             Stock In Detail
           </h1>
 
