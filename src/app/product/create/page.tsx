@@ -28,7 +28,7 @@ export default function CategoryDetail() {
   return (
     
       <div className="p-6">
-        <h1 className="text-[30px] font-bold text-[#2D579A] mb-6">Create New Product</h1>
+        <h1 className="text-[30px] font-bold text-[#2D579A] mb-12">Create New Product</h1>
 
         <div className="bg-white rounded-lg p-6 shadow-sm">
           <div className="space-y-6">

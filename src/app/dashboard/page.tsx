@@ -25,8 +25,8 @@ export default function Dashboard() {
               <div className="w-full sm:w-[10%] md:w-[30%] lg:w-[50%]">
                
               </div>
-              <div>
-                <h1 className="text-[30px] font-bold text-[#2D579A] mb-6">
+              <div className="flex items-center justify-between mb-7">
+                <h1 className="text-[30px] font-bold text-[#2D579A] mb-9">
                   Dashboard
                 </h1>
               </div>
