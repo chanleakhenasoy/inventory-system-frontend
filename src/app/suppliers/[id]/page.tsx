@@ -1,5 +1,6 @@
 "use client"
 
+import Button from "@/app/components/button"
 import type React from "react"
 
 import { useState } from "react"
@@ -83,20 +84,8 @@ export default function SupplierDetail() {
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 mt-6">
-              <button
-                type="button"
-                onClick={handleDelete}
-                className="px-6 py-1.5 text-[15px] bg-[#EF2B2E] text-white rounded-lg hover:bg-[#FB6365] transition-colors"
-              >
-                Delete
-              </button>
-              <button
-                type="button"
-                onClick={handleUpdate}
-                className="px-6 py-1.5 text-[15px] bg-[#26BD5D] text-white rounded-lg hover:bg-green-400 transition-colors"
-              >
-                Update
-              </button>
+            <Button onClick={handleDelete} label="Delete" variant="delete" />
+            <Button onClick={handleUpdate} label="Update" variant="update" />
             </div>
           </div>
         </div>

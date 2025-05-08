@@ -1,5 +1,6 @@
 "use client"
 
+import Button from "@/app/components/button"
 import type React from "react"
 
 import { useState } from "react"
@@ -7,7 +8,7 @@ import { useState } from "react"
 
 export default function ProductDetail() {
   const [formData, setFormData] = useState({
-    ProductCode: "Mararika",
+    productCode: "Mararika",
     nameEn: "Mararika",
     nameKh: "Mararika",
     imgUrl: "Mararika",
@@ -43,7 +44,7 @@ export default function ProductDetail() {
               <input
                 type="text"
                 name="supplierName"
-                value={formData.ProductCode}
+                value={formData.productCode}
                 onChange={handleChange}
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -83,21 +84,9 @@ export default function ProductDetail() {
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 mt-6">
-              <button
-                type="button"
-                onClick={handleDelete}
-                className="px-6 py-1.5 text-[15px] bg-[#EF2B2E] text-white rounded-lg hover:bg-[#FB6365] transition-colors"
-              >
-                Delete
-              </button>
-              <button
-                type="button"
-                onClick={handleUpdate}
-                className="px-6 py-1.5 text-[15px] bg-[#26BD5D] text-white rounded-lg hover:bg-green-400 transition-colors"
-              >
-                Update
-              </button>
-            </div>
+                <Button onClick={handleDelete} label="Delete" variant="delete" />
+                <Button onClick={handleUpdate} label="Update" variant="update" />
+              </div>
           </div>
         </div>
       </div>

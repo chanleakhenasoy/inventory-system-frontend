@@ -3,6 +3,7 @@
 import { useState } from "react";
 import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
+import Button from "../components/button";
 
 export default function Supplier() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,6 +23,10 @@ export default function Supplier() {
     setCurrentPage(page);
   };
 
+  function handleCreat(): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <main className="flex-1 overflow-y-auto p-6">
@@ -33,9 +38,7 @@ export default function Supplier() {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">Supplier</h1>
-          <button className="px-6 py-1.5 bg-[#2D579A] text-white rounded-lg hover:bg-[#6499EF] transition cursor-pointer">
-            create
-          </button>
+          <Button onClick={handleCreat} label="Create" />
         </div>
 
         {/* Table */}

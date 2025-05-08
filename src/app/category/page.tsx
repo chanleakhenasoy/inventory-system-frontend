@@ -5,6 +5,7 @@ import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
 import { Link } from "lucide-react";
 import router from "next/router";
+import Button from "../components/button";
 
 export default function Category() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,6 +23,10 @@ export default function Category() {
     setCurrentPage(page);
   };
 
+  function handleCreat(): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <main className="flex-1 overflow-y-auto p-6">
@@ -35,11 +40,9 @@ export default function Category() {
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
             Category
           </h1>
-          <Link href="/category/create">
-            <button className="px-6 py-1.5 bg-[#2D579A] text-white rounded-lg hover:bg-[#6499EF] transition cursor-pointer">
-              Create
-            </button>
-          </Link>
+          
+          <Button onClick={handleCreat} label="Create" />
+         
         </div>
 
         {/* Table */}
