@@ -95,7 +95,7 @@ export default function StockInDetail() {
                         className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                       <Calendar
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                         size={20}
                       />
                     </div>
@@ -123,7 +123,7 @@ export default function StockInDetail() {
                         className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                       />
                       <Calendar
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer"
                         size={20}
                       />
                     </div>
