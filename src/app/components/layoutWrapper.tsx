@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import Navbar from "./navbar";
 import { SidebarItem } from "./sidebarItem";
 
-import { Package, Store, PackageX, Layers, LayoutDashboard, BoxIcon, Boxes, User } from "lucide-react";
+import { Package, Store, PackageX, Layers, LayoutDashboard, BoxIcon, Boxes, User, Database } from "lucide-react";
 
 
 export default function LayoutWrapper({
@@ -33,6 +33,7 @@ export default function LayoutWrapper({
             <SidebarItem icon={<Package size={25} />} text="Stock In" href="/stockin" />
             <SidebarItem icon={<PackageX size={25} />} text="Stock Out" href="/stockout" />
             <SidebarItem icon={<User size={25} />} text="Create User" href="/register" />
+            <SidebarItem icon={<Database size={25} />} text="Product Database" href="/product-database" />
         
           </nav>
         </div>
