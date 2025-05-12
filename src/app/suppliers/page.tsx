@@ -4,10 +4,12 @@ import { useState } from "react";
 import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
 import Button from "../components/button";
+import { useRouter } from "next/navigation";
 
 export default function Supplier() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10;
+  const router = useRouter();
 
   const suppliers = Array(10).fill({
     id: "001",
@@ -23,8 +25,8 @@ export default function Supplier() {
     setCurrentPage(page);
   };
 
-  function handleCreat(): void {
-    throw new Error("Function not implemented.");
+  function handleCreat() {
+    router.push("/suppliers/create");
   }
 
   return (

@@ -5,10 +5,12 @@ import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
 import Category from "../category/page";
 import Button from "../components/button";
+import { useRouter } from "next/navigation";
 
 export default function Product() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10;
+    const router = useRouter();
 
   const products = Array(10).fill({
     id: "001",
@@ -24,10 +26,10 @@ export default function Product() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
-  function handleCreat(): void {
-    throw new Error("Function not implemented.");
+  function handleCreat() {
+    router.push("/product/create");
   }
+
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
