@@ -4,10 +4,11 @@ import { useState } from "react";
 import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
 import { Link } from "lucide-react";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 import Button from "../components/button";
 
 export default function Category() {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10;
 
@@ -23,9 +24,13 @@ export default function Category() {
     setCurrentPage(page);
   };
 
-  function handleCreat(): void {
-    throw new Error("Function not implemented.");
-  }
+  const handleClickToCategoryCreate = () => {
+    router.push("/category/create"); // Replace with your route
+  };
+
+  const handleClickToCategoryId = () => {
+    router.push("/category/[id]"); // Replace with your route
+  };
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -40,9 +45,7 @@ export default function Category() {
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
             Category
           </h1>
-          
-          <Button onClick={handleCreat} label="Create" />
-         
+          <Button onClick={handleClickToCategoryCreate} label="Create" />
         </div>
 
         {/* Table */}
@@ -70,11 +73,9 @@ export default function Category() {
                 <tr
                   key={index}
                   className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
-                >
+                  onClick={handleClickToCategoryId}>
                   <td className="px-5 py-3 text-[16px]">
-                    <Link href={`/category/detail?id=${category.id}`}>
                       {category.id}
-                    </Link>
                   </td>
                   <td className="px-22 py-3 text-[16px]">
                     {category.category_name}

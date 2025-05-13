@@ -5,8 +5,10 @@ import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
 import Link from "next/link";
 import Button from "../components/button";
+import { useRouter } from "next/navigation";
 
 export default function StockIn() {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10;
 
@@ -18,6 +20,14 @@ export default function StockIn() {
     createdAt: "2025-09-23",
     updatedAt: "2025-10-23",
   });
+
+  const handleClickToStockinCreate = () => {
+    router.push("/stockin/create"); // Replace with your route
+  };
+
+  const handleClickToStockinId = () => {
+    router.push("/stockin/[id]"); // Replace with your route
+  };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -36,9 +46,7 @@ export default function StockIn() {
 
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">Stock In</h1>
-          <Link href={"/stockin/create"}>
-          <Button onClick={handleCreat} label="Create" />
-          </Link>
+          <Button onClick={handleClickToStockinCreate} label="Create" />
         </div>
 
         <div className="overflow-x-auto bg-white rounded-md mt-10">
@@ -55,8 +63,9 @@ export default function StockIn() {
             </thead>
             <tbody className="text-[#2B5190]">
               {stockIn.map((stockin, index) => (
-                <tr key={index} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer">
-                  <td className="px-5 py-3 text-[16px]"><Link href={`/stockin/detail?id=${stockin.id}`}>{stockin.id}</Link></td>
+                <tr key={index} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
+                onClick={handleClickToStockinId}>
+                  <td className="px-5 py-3 text-[16px]">{stockin.id}</td>
                   <td className="px-14 py-3 text-[16px]">{stockin.product_name}</td>
                   <td className="px-8 py-3 text-[16px]">{stockin.supplier_name}</td>
                   <td className="px-8 py-3 text-[16px]">{stockin.quantity}</td>

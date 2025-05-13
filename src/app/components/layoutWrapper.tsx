@@ -23,15 +23,15 @@ export default function LayoutWrapper({
       <Navbar />
       <div className="flex h-[750px]">
         {/* Sidebar */}
-        <div className="w-90 bg-[#2D579A] text-white text-[20px]">
+        <div className="w-80 bg-[#2D579A] text-white text-[20px]">
           <nav className="mt-6">
-          <SidebarItem icon={<LayoutDashboard size={25} />} text="Dashboard" href="/dashboard" />
-            <SidebarItem icon={<Store size={25} />} text="Suppliers" href="/suppliers" />
-            <SidebarItem icon={<BoxIcon size={25} />} text="Category" href="/category" />
-            <SidebarItem icon={<Boxes size={25} />} text="Product" href="/product" />
-            <SidebarItem icon={<Package size={25} />} text="Stock In" href="/stockin" />
-            <SidebarItem icon={<PackageX size={25} />} text="Stock Out" href="/stockout" />
-            <SidebarItem icon={<User size={25} />} text="Create User" href="/register" />
+          <SidebarItem icon={<LayoutDashboard size={20} />} text="Dashboard" href="/dashboard" />
+            <SidebarItem icon={<Store size={20} />} text="Suppliers" href="/suppliers" />
+            <SidebarItem icon={<BoxIcon size={20} />} text="Category" href="/category" />
+            <SidebarItem icon={<Boxes size={20} />} text="Product" href="/product" />
+            <SidebarItem icon={<Package size={20} />} text="Stock In" href="/stockin" />
+            <SidebarItem icon={<PackageX size={20} />} text="Stock Out" href="/stockout" />
+            <SidebarItem icon={<User size={20} />} text="Create User" href="/register" />
             
           </nav>
         </div>
