@@ -3,13 +3,13 @@
 import { useState } from "react";
 import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
+import Button from "@/app/components/button";
 import { useRouter } from "next/navigation";
-import Button from "../components/button";
 
 export default function StockOut() {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10;
-    const router = useRouter();
 
   const stockOut = Array(10).fill({
     id: "001",
@@ -23,9 +23,10 @@ export default function StockOut() {
     setCurrentPage(page);
   };
 
-  function handleCreat() {
-    router.push("/stockout/create");
-  }
+  const handleClickToStockoutCreate = () => {
+    router.push("/stockout/create"); // Replace with your route
+  };
+
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -37,11 +38,8 @@ export default function StockOut() {
 
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
-            Stock Out
-          </h1>
-
-          <Button onClick={handleCreat} label="Create" />
+          <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">Stock Out</h1>
+          <Button onClick={handleClickToStockoutCreate} label="Create" />
         </div>
 
         {/* Table */}

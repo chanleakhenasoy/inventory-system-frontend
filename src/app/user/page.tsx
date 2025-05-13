@@ -31,7 +31,7 @@ export default function AllUser() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <main className="flex-1 overflow-y-auto p-6">
-        <BackButton />
+        
 
         {/* Search Bar */}
         <div className="mb-4 w-full sm:w-[50%] mt-4">
@@ -39,7 +39,10 @@ export default function AllUser() {
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center mb-4">
+          <div className="mt-4.5 mr-4">
+          <BackButton />
+          </div>
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
             All User
           </h1>

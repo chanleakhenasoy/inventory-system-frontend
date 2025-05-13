@@ -5,12 +5,13 @@ import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
 import Category from "../category/page";
 import Button from "../components/button";
+import { useNavigate } from "react-router-dom";
 import { useRouter } from "next/navigation";
 
 export default function Product() {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10;
-    const router = useRouter();
 
   const products = Array(10).fill({
     id: "001",
@@ -26,10 +27,18 @@ export default function Product() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-  function handleCreat() {
-    router.push("/product/create");
-  }
 
+  // function handleCreat(): void {
+  //   throw new Error("Function not implemented.");
+  // }
+
+  const handleClickToProductCreate = () => {
+    router.push("/product/create"); // Replace with your route
+  };
+
+  const handleClickToProductId = () => {
+    router.push("/product/[id]"); // Replace with your route
+  };
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -42,7 +51,7 @@ export default function Product() {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">Product</h1>
-          <Button onClick={handleCreat} label="Create" />
+          <Button onClick={handleClickToProductCreate} label="Create" />
         </div>
 
         {/* Table */}
@@ -76,7 +85,8 @@ export default function Product() {
             </thead>
             <tbody className="text-[#2B5190]">
               {products.map((product, index) => (
-                <tr key={index} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer">
+                <tr key={index} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
+                onClick={handleClickToProductId}>
                   <td className="px-5 py-3 text-[16px]">{product.id}</td>
                   <td className="px-12 py-3 text-[16px]">{product.category_name}</td>
                   <td className="px-4 py-3 text-[16px]">{product.product_code}</td>
