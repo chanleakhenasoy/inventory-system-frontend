@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { Calendar, Plus } from "lucide-react"
 import Button from "@/app/components/button"
-
+import BackButton from "@/app/components/backButton"
 
 export default function AddNewStock() {
   const [items, setItems] = useState<
@@ -63,7 +63,14 @@ export default function AddNewStock() {
   return (
     
       <div className="p-6">
-        <h1 className="text-[30px] font-bold text-[#2D579A] mb-12">Add New Stock</h1>
+        <div className="flex items-center mb-4">
+                  <div className="mt-4.5 mr-4">
+                  <BackButton />
+                  </div>
+                  <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
+                    Add New Stock
+                  </h1>
+                </div>
 
         <div className="bg-white  rounded-lg p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Calendar } from "lucide-react";
 import Button from "@/app/components/button";
+import BackButton from "@/app/components/backButton";
 
 export default function StockInDetail() {
   const handleDelete = () => {
@@ -19,9 +20,14 @@ export default function StockInDetail() {
       <div className="flex-1 flex flex-col ">
         {/* Content */}
         <main className="flex-1 p-6">
-          <h1 className="text-[30px] font-bold text-[#2D579A] mb-12">
-            Stock In Detail
-          </h1>
+          <div className="flex items-center mb-4">
+                    <div className="mt-4.5 mr-4">
+                    <BackButton />
+                    </div>
+                    <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
+                      Stock In Detail
+                    </h1>
+                  </div>
 
           <div className="bg-white rounded-lg p-6 shadow-lg">
             <form>
