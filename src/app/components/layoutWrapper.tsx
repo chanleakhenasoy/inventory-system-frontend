@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "./navbar";
 import { SidebarItem } from "./sidebarItem";
+import { useEffect, useState } from "react";
 
 import { Package, Store, PackageX, Layers, LayoutDashboard, BoxIcon, Boxes, User, Database } from "lucide-react";
 
@@ -13,7 +14,13 @@ export default function LayoutWrapper({
 }) {
   const pathname = usePathname();
   const isLoginPage = pathname === "/";
+  const [role, setRole] = useState<string | null>(null);
 
+  useEffect(() => {
+    // Load user role from localStorage (or API if necessary)
+    const storedRole = localStorage.getItem("userRole");
+    setRole(storedRole);
+  }, []);
   if (isLoginPage) {
     return <>{children}</>;
   }
@@ -32,7 +39,9 @@ export default function LayoutWrapper({
             <SidebarItem icon={<Package size={25} />} text="Stock In" href="/stockin" />
             <SidebarItem icon={<PackageX size={25} />} text="Stock Out" href="/stockout" />
             <SidebarItem icon={<Database size={25} />} text="Product Database" href="/product-database" />
-            <SidebarItem icon={<User size={25} />} text="Create User" href="/register" />
+            {role === "admin" && (
+              <SidebarItem icon={<User size={25} />} text="Create User" href="/register" />
+            )}
         
           </nav>
         </div>
