@@ -2,7 +2,7 @@
 
 import Button from "@/app/components/button"
 import type React from "react"
-
+import BackButton from "@/app/components/backButton"
 import { useState } from "react"
 
 
@@ -36,7 +36,14 @@ export default function CategoryDetail() {
   return (
     
       <div className="p-6">
-        <h1 className="text-[30px] font-bold text-[#2D579A] mb-12">Create New Category</h1>
+        <div className="flex items-center mb-4">
+                  <div className="mt-4.5 mr-4">
+                  <BackButton />
+                  </div>
+                  <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
+                    Create New Category
+                  </h1>
+                </div>
 
         <div className="bg-white rounded-lg p-6 shadow-sm">
           <div className="space-y-6">

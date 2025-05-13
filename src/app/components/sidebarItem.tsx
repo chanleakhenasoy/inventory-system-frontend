@@ -20,7 +20,7 @@ export function SidebarItem({ icon, text, href, active = false }: SidebarItemPro
   return (
     <button
       onClick={handleNavigation}
-      className={`flex items-center px-6 py-4 text-white ${
+      className={`flex items-center px-10 py-6 text-white cursor-pointer ${
         active ? "font-medium" : "hover:bg-[#6499EF] w-full"
       }`}
     >

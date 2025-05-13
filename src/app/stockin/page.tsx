@@ -8,9 +8,9 @@ import Button from "../components/button";
 import { useRouter } from "next/navigation";
 
 export default function StockIn() {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10;
-    const router = useRouter();
 
   const stockIn = Array(10).fill({
     id: "001",
@@ -21,13 +21,21 @@ export default function StockIn() {
     updatedAt: "2025-10-23",
   });
 
+  const handleClickToStockinCreate = () => {
+    router.push("/stockin/create"); // Replace with your route
+  };
+
+  const handleClickToStockinId = () => {
+    router.push("/stockin/[id]"); // Replace with your route
+  };
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-  function handleCreat() {
-    router.push("/stockin/create");
-  }
 
+  function handleCreat(): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -37,11 +45,8 @@ export default function StockIn() {
         </div>
 
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
-            Stock In
-          </h1>
-
-          <Button onClick={handleCreat} label="Create" />
+          <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">Stock In</h1>
+          <Button onClick={handleClickToStockinCreate} label="Create" />
         </div>
 
         <div className="overflow-x-auto bg-white rounded-md mt-10">
@@ -49,44 +54,22 @@ export default function StockIn() {
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
               <tr>
                 <th className="px-6 py-3 font-semibold">ID</th>
-                <th className="px-14 py-3 font-semibold text-[18px]">
-                  Product Name
-                </th>
-                <th className="px-8 py-3 font-semibold text-[18px]">
-                  Supplier Name
-                </th>
-                <th className="px-8 py-3 font-semibold text-[18px]">
-                  Quantity
-                </th>
-                <th className="px-18 py-3 font-semibold text-[18px]">
-                  Create At
-                </th>
-                <th className="px-2 py-3 font-semibold text-[18px]">
-                  Update At
-                </th>
+                <th className="px-14 py-3 font-semibold text-[18px]">Product Name</th>
+                <th className="px-8 py-3 font-semibold text-[18px]">Supplier Name</th>
+                <th className="px-8 py-3 font-semibold text-[18px]">Quantity</th>
+                <th className="px-18 py-3 font-semibold text-[18px]">Create At</th>
+                <th className="px-2 py-3 font-semibold text-[18px]">Update At</th>
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
               {stockIn.map((stockin, index) => (
-                <tr
-                  key={index}
-                  className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
-                >
-                  <td className="px-5 py-3 text-[16px]">
-                    <Link href={`/stockin/detail?id=${stockin.id}`}>
-                      {stockin.id}
-                    </Link>
-                  </td>
-                  <td className="px-14 py-3 text-[16px]">
-                    {stockin.product_name}
-                  </td>
-                  <td className="px-8 py-3 text-[16px]">
-                    {stockin.supplier_name}
-                  </td>
+                <tr key={index} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
+                onClick={handleClickToStockinId}>
+                  <td className="px-5 py-3 text-[16px]">{stockin.id}</td>
+                  <td className="px-14 py-3 text-[16px]">{stockin.product_name}</td>
+                  <td className="px-8 py-3 text-[16px]">{stockin.supplier_name}</td>
                   <td className="px-8 py-3 text-[16px]">{stockin.quantity}</td>
-                  <td className="px-18 py-3 text-[16px]">
-                    {stockin.createdAt}
-                  </td>
+                  <td className="px-18 py-3 text-[16px]">{stockin.createdAt}</td>
                   <td className="px-2 py-3 text-[16px]">{stockin.updatedAt}</td>
                 </tr>
               ))}
@@ -95,11 +78,7 @@ export default function StockIn() {
         </div>
 
         <div className="flex justify-end items-center mt-4 space-x-2">
-          <Pagination
-            totalPages={totalPages}
-            initialPage={currentPage}
-            onPageChange={handlePageChange}
-          />
+          <Pagination totalPages={totalPages} initialPage={currentPage} onPageChange={handlePageChange} />
         </div>
       </main>
     </div>
