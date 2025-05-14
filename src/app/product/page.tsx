@@ -19,7 +19,8 @@ export default function Product() {
     product_code: "2437658765",
     name_en: "Football",
     name_kh: "Football",
-    img_url: "Football",
+    beginning_quantity: "Football",
+    minimumstock: "Football",
     createdAt: "2025-09-23",
     updatedAt: "2025-09-23",
   });
@@ -73,7 +74,10 @@ export default function Product() {
                    Name Kh
                 </th>
                 <th className="px-6 py-3 font-semibold text-[18px]">
-                   Image Url
+                   Beginning Quantity
+                </th>
+                <th className="px-6 py-3 font-semibold text-[18px]">
+                   Minimum Stock
                 </th>
                 <th className="px-8 py-3 font-semibold text-[18px]">
                   Create At
@@ -92,7 +96,8 @@ export default function Product() {
                   <td className="px-4 py-3 text-[16px]">{product.product_code}</td>
                   <td className="px-10 py-3 text-[16px]">{product.name_en}</td>
                   <td className="px-8 py-3 text-[16px]">{product.name_kh}</td>
-                  <td className="px-6 py-3 text-[16px]">{product.img_url}</td>
+                  <td className="px-6 py-3 text-[16px]">{product.beginning_quantity}</td>
+                  <td className="px-6 py-3 text-[16px]">{product.minimumstock}</td>
                   <td className="px-8 py-3 cursor-pointer text-[16px]">
                     {product.createdAt}
                   </td>

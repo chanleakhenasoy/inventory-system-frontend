@@ -4,36 +4,50 @@ import Button from "@/app/components/button"
 import type React from "react"
 import BackButton from "@/app/components/backButton"
 import { useState } from "react"
-
+import { useRouter } from "next/navigation";
 
 export default function CategoryDetail() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
-    supplierName: "",
-    phoneNumber: "",
+    supplier_name: "",
+    phone_number: "",
     address: "",
-    companyName: "",
-  })
+    company_name: "",
+  });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const handleUpdate = () => {
-    console.log("Updating category:", formData)
-    // Here you would typically send the data to your backend
-  }
+  const handleSave = async () => {
+    setLoading(true);
 
-  const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
-      console.log("Deleting category:", formData)
-      // Here you would typically send a delete request to your backend
+    try {
+      const response = await fetch("http://localhost:3001/api/supplier/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        alert("Supplier created successfully!");
+        router.push("/suppliers"); // Redirect to the supplier list
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to create supplier: ${errorData.message || "Unknown error"}`);
+      }
+    } catch (error) {
+      console.error("Error creating supplier:", error);
+      alert("An error occurred while creating the supplier.");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-    function handleSave(): void {
-        throw new Error("Function not implemented.")
-    }
 
   return (
     
@@ -55,7 +69,7 @@ export default function CategoryDetail() {
               <input
                 type="text"
                 name="supplierName"
-                value={formData.supplierName}
+                value={formData.supplier_name}
                 onChange={handleChange}
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -67,7 +81,7 @@ export default function CategoryDetail() {
               <input
                 type="text"
                 name="phoneNumber"
-                value={formData.phoneNumber}
+                value={formData.phone_number}
                 onChange={handleChange}
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -87,7 +101,7 @@ export default function CategoryDetail() {
               <input
                 type="text"
                 name="companyName"
-                value={formData.companyName}
+                value={formData.company_name}
                 onChange={handleChange}
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
