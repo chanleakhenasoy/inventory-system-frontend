@@ -14,6 +14,7 @@ export default function StockIn() {
 
   const stockIn = Array(10).fill({
     id: "001",
+    reference_name: "leakhena",
     product_name: "leakhena",
     supplier_name: "mararika",
     quantity: "34",
@@ -54,6 +55,7 @@ export default function StockIn() {
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
               <tr>
                 <th className="px-6 py-3 font-semibold">ID</th>
+                <th className="px-14 py-3 font-semibold text-[18px]">Reference Name</th>
                 <th className="px-14 py-3 font-semibold text-[18px]">Product Name</th>
                 <th className="px-8 py-3 font-semibold text-[18px]">Supplier Name</th>
                 <th className="px-8 py-3 font-semibold text-[18px]">Quantity</th>
@@ -66,6 +68,7 @@ export default function StockIn() {
                 <tr key={index} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
                 onClick={handleClickToStockinId}>
                   <td className="px-5 py-3 text-[16px]">{stockin.id}</td>
+                  <td className="px-14 py-3 text-[16px]">{stockin.reference_name}</td>
                   <td className="px-14 py-3 text-[16px]">{stockin.product_name}</td>
                   <td className="px-8 py-3 text-[16px]">{stockin.supplier_name}</td>
                   <td className="px-8 py-3 text-[16px]">{stockin.quantity}</td>

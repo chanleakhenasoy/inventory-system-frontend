@@ -107,7 +107,7 @@ export default function CategoryDetail() {
             <label className="block text-[#2D579A] mb-2">Quantity</label>
             <input
               type="text"
-              name="phoneNumber"
+              name="quantity"
               value={formData.quantity}
               onChange={handleChange}
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -119,7 +119,7 @@ export default function CategoryDetail() {
 
             <div className="relative text-gray-600">
               <select
-                name="productName"
+                name="employee"
                 value={formData.productName}
                 onChange={handleChange}
                 className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"

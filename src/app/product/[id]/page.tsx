@@ -11,7 +11,8 @@ export default function ProductDetail() {
     productCode: "Mararika",
     nameEn: "Mararika",
     nameKh: "Mararika",
-    imgUrl: "Mararika",
+    beginningStock: "Mararika",
+    minimumStock: "Mararika",
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -50,7 +51,7 @@ export default function ProductDetail() {
               <label className="block text-[#2D579A] mb-2">Product Code</label>
               <input
                 type="text"
-                name="supplierName"
+                name="productCode"
                 value={formData.productCode}
                 onChange={handleChange}
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -62,7 +63,7 @@ export default function ProductDetail() {
               <label className="block text-[#2D579A] mb-2">Name En</label>
               <input
                 type="text"
-                name="phoneNumber"
+                name="nameEn"
                 value={formData.nameEn}
                 onChange={handleChange}
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -72,18 +73,28 @@ export default function ProductDetail() {
               <label className="block text-[#2D579A] mb-2">Name Kh</label>
               <input
                 type="text"
-                name="address"
+                name="nameKh"
                 value={formData.nameKh}
                 onChange={handleChange}
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-[#2D579A] mb-2">Image Url</label>
+              <label className="block text-[#2D579A] mb-2">Benning Quantity</label>
               <input
                 type="text"
-                name="companyName"
-                value={formData.imgUrl}
+                name="beginningStock"
+                value={formData.beginningStock}
+                onChange={handleChange}
+                className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-[#2D579A] mb-2">Minimum Stock</label>
+              <input
+                type="text"
+                name="minimumStock"
+                value={formData.minimumStock}
                 onChange={handleChange}
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
               />

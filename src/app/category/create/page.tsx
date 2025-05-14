@@ -4,6 +4,7 @@ import Button from "@/app/components/button"
 import type React from "react"
 import BackButton from "@/app/components/backButton"
 import { useState } from "react"
+import router from "next/router"
 
 
 export default function CategoryDetail() {
@@ -12,27 +13,39 @@ export default function CategoryDetail() {
     description: "",
   })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleUpdate = () => {
-    console.log("Updating category:", formData)
-    // Here you would typically send the data to your backend
-  }
-
-  const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
-      console.log("Deleting category:", formData)
-      // Here you would typically send a delete request to your backend
-    }
-  }
-
-  function handleSave(): void {
-    throw new Error("Function not implemented.")
-  }
-
+   const [loading, setLoading] = useState(false);
+  
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+  
+    const handleSave = async () => {
+      setLoading(true);
+  
+      try {
+        const response = await fetch("http://localhost:3001/api/category/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+  
+        if (response.ok) {
+          alert("Supplier created successfully!");
+          router.push("/suppliers"); // Redirect to the supplier list
+        } else {
+          const errorData = await response.json();
+          alert(`Failed to create supplier: ${errorData.message || "Unknown error"}`);
+        }
+      } catch (error) {
+        console.error("Error creating supplier:", error);
+        alert("An error occurred while creating the supplier.");
+      } finally {
+        setLoading(false);
+      }
+    };
   return (
     
       <div className="p-6">
