@@ -139,10 +139,10 @@ export default function Supplier() {
                       {supplier.company_name}
                     </td>
                     <td className="w-[300px] py-3 text-[16px]">
-                      {supplier.created_at}
+                      {new Date (supplier.created_at).toLocaleString()}
                     </td>
                     <td className="w-[300px]  py-3 text-[16px]">
-                      {supplier.updated_at}
+                      {new Date(supplier.updated_at).toLocaleString()}
                     </td>
                   </tr>
                 ))

@@ -344,7 +344,7 @@ export default function AddNewStock() {
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <Button onClick={handleSave} label="Save" variant="save" />
+          <Button onClick={handleSave} label="Create" variant="create" />
         </div>
       </div>
     </div>
