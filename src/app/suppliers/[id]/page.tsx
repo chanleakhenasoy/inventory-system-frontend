@@ -4,39 +4,38 @@ import Button from "@/app/components/button";
 import type React from "react";
 import BackButton from "@/app/components/backButton";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 export default function SupplierDetail() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const supplierId = searchParams.get("id");
+ const params = useParams(); // Use params instead of searchParams
+  const id = params?.id ? String(params.id) : "";
 
-  const [formData, setFormData] = useState({
-    supplier_name: "",
-    phone_number: "",
-    address: "",
-    company_name: "",
-  });
+   const [formData, setFormData] = useState<{ supplier_name?: string; phone_number?: string ; address?: string, company_name?: string }>({});;
   const [loading, setLoading] = useState(false);
-
   // Fetch Supplier by ID
   useEffect(() => {
-    if (supplierId) {
-      fetchSupplierById(supplierId);
+    if (id) {
+      fetchSupplierById(id);
     }
-  }, [supplierId]);
+  }, [id]);
 
   const fetchSupplierById = async (id: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/supplier/${id}`);
+      const token = localStorage.getItem("token")
+      const response = await fetch(`http://localhost:3001/api/supplier/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
       if (response.ok) {
-        const data = await response.json();
-        setFormData({
-          supplier_name: data.supplier_name,
-          phone_number: data.phone_number,
-          address: data.address,
-          company_name: data.company_name,
-        });
+        const result = await response.json();
+        console.log("Fetched supplier data:", result);
+        setFormData(result.data);
       } else {
         console.error("Failed to fetch supplier");
       }
@@ -55,14 +54,17 @@ export default function SupplierDetail() {
   const handleUpdate = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem("token")
       const response = await fetch(
-        `http://localhost:3001/api/supplier/${supplierId}`,
+        `http://localhost:3001/api/supplier/${id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
           },
           body: JSON.stringify(formData),
+          
         }
       );
 
@@ -84,15 +86,19 @@ export default function SupplierDetail() {
       return;
 
     try {
+      const token = localStorage.getItem("token")
       const response = await fetch(
-        `http://localhost:3001/api/supplier/${supplierId}`,
+        `http://localhost:3001/api/supplier/${id}`,
         {
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
         }
       );
 
       if (response.ok) {
-        alert("Supplier deleted successfully!");
         router.push("/suppliers");
       } else {
         alert("Failed to delete supplier");
@@ -120,7 +126,7 @@ export default function SupplierDetail() {
             <label className="block text-[#2D579A] mb-2">Supplier Name</label>
             <input
               type="text"
-              name="supplierName"
+              name="supplier_name"
               value={formData.supplier_name}
               onChange={handleChange}
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -132,7 +138,7 @@ export default function SupplierDetail() {
             <label className="block text-[#2D579A] mb-2">Phone Number</label>
             <input
               type="text"
-              name="phoneNumber"
+              name="phone_number"
               value={formData.phone_number}
               onChange={handleChange}
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -152,7 +158,7 @@ export default function SupplierDetail() {
             <label className="block text-[#2D579A] mb-2">Company Name</label>
             <input
               type="text"
-              name="companyName"
+              name="company_name"
               value={formData.company_name}
               onChange={handleChange}
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
