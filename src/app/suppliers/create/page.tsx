@@ -14,6 +14,7 @@ export default function CategoryDetail() {
     address: "",
     company_name: "",
   });
+  console.log(formData)
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -25,16 +26,17 @@ export default function CategoryDetail() {
     setLoading(true);
 
     try {
+      const token = localStorage.getItem("token")
       const response = await fetch("http://localhost:3001/api/supplier/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
-        alert("Supplier created successfully!");
         router.push("/suppliers"); // Redirect to the supplier list
       } else {
         const errorData = await response.json();
@@ -68,7 +70,7 @@ export default function CategoryDetail() {
               <label className="block text-[#2D579A] mb-2">Supplier Name</label>
               <input
                 type="text"
-                name="supplierName"
+                name="supplier_name"
                 value={formData.supplier_name}
                 onChange={handleChange}
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -80,7 +82,7 @@ export default function CategoryDetail() {
               <label className="block text-[#2D579A] mb-2">Phone Number</label>
               <input
                 type="text"
-                name="phoneNumber"
+                name="phone_number"
                 value={formData.phone_number}
                 onChange={handleChange}
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -100,7 +102,7 @@ export default function CategoryDetail() {
               <label className="block text-[#2D579A] mb-2">Company Name</label>
               <input
                 type="text"
-                name="companyName"
+                name="company_name"
                 value={formData.company_name}
                 onChange={handleChange}
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -109,7 +111,7 @@ export default function CategoryDetail() {
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 mt-6 cursor-pointer">
-            <Button onClick={handleSave} label="Save" variant="save" />
+            <Button onClick={handleSave} label="Create" variant="create" />
              
             </div>
           </div>
