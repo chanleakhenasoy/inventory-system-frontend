@@ -15,6 +15,8 @@ export default function Pagination({ totalPages, initialPage = 1, onPageChange }
     onPageChange?.(page)
   }
 
+  
+
   return (
     <div className="flex justify-center items-center mt-4 space-x-2">
       <button

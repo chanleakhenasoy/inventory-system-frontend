@@ -4,44 +4,45 @@ import Button from "@/app/components/button"
 import type React from "react"
 import BackButton from "@/app/components/backButton"
 import { useState } from "react"
-import router from "next/router"
+import { useRouter } from "next/navigation";
 
 
 export default function CategoryDetail() {
   const [formData, setFormData] = useState({
-    categoryName: "",
+    category_name: "",
     description: "",
   })
+  console.log(formData)
 
    const [loading, setLoading] = useState(false);
+   const router = useRouter();
   
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
     };
-  
+    
     const handleSave = async () => {
       setLoading(true);
-  
       try {
+        const token = localStorage.getItem("token");
         const response = await fetch("http://localhost:3001/api/category/create", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(formData),
         });
   
         if (response.ok) {
-          alert("Supplier created successfully!");
-          router.push("/suppliers"); // Redirect to the supplier list
+          router.push("/category"); 
         } else {
           const errorData = await response.json();
-          alert(`Failed to create supplier: ${errorData.message || "Unknown error"}`);
+          alert(`Failed to create category: ${errorData.message || "Unknown error"}`);
         }
       } catch (error) {
-        console.error("Error creating supplier:", error);
-        alert("An error occurred while creating the supplier.");
+        console.error("Error creating category:", error);
       } finally {
         setLoading(false);
       }
@@ -65,8 +66,8 @@ export default function CategoryDetail() {
               <label className="block text-[#2D579A] mb-2">Category Name</label>
               <input
                 type="text"
-                name="categoryName"
-                value={formData.categoryName}
+                name="category_name"
+                value={formData.category_name}
                 onChange={handleChange}
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -86,7 +87,7 @@ export default function CategoryDetail() {
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 mt-6">
-            <Button onClick={handleSave} label="Save" variant="save" />
+            <Button onClick={handleSave} label="Create" variant="create" />
              
             </div>
           </div>
