@@ -108,7 +108,6 @@
 //   );
 // }
 
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -124,6 +123,7 @@ export default function Category() {
   const totalPages = 10;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  console.log(categories);
 
   useEffect(() => {
     const fetchcategories = async () => {
@@ -131,17 +131,20 @@ export default function Category() {
       setError("");
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:3001/api/category/getAll", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, 
-          },
-        });
-  
+        const response = await fetch(
+          "http://localhost:3001/api/category/getAll",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
         if (response.ok) {
-          const data = await response.json();
-          setCategories(data.suppliers); // Adjust according to your API response structure
+          const result = await response.json();
+          setCategories(result.data || []); // Adjust according to your API response structure
         } else {
           const errorData = await response.json();
           setError(errorData.message || "Failed to fetch category.");
@@ -152,13 +155,13 @@ export default function Category() {
         setLoading(false);
       }
     };
-    
+
     fetchcategories();
   }, [setCurrentPage]);
-  
+
   const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-      };
+    setCurrentPage(page);
+  };
   const handleClickToCategoryCreate = () => {
     router.push("/category/create");
   };
@@ -166,6 +169,12 @@ export default function Category() {
   const handleClickToCategoryId = (id: string) => {
     router.push(`/category/${id}`);
   };
+
+  const itemsPerPage = 10;
+  const displayedCategories = categories.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -177,7 +186,9 @@ export default function Category() {
 
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">Category</h1>
+          <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
+            Category
+          </h1>
           <Button onClick={handleClickToCategoryCreate} label="Create" />
         </div>
 
@@ -189,37 +200,47 @@ export default function Category() {
           <div className="text-center mt-10">Loading...</div>
         ) : (
           <div className="overflow-x-auto bg-white rounded-md mt-10">
-            <table className="min-w-full text-left">
+            <table className="min-w-full text-center">
               <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
                 <tr>
-                  <th className="px-6 py-3 font-semibold">ID</th>
-                  <th className="px-22 py-3 font-semibold text-[18px]">
+                  <th className="px-6 py-3 font-semibold">No</th>
+                  <th className="px-6 py-3 font-semibold text-[18px]">
                     Category Name
                   </th>
-                  <th className="px-18 py-3 font-semibold text-[18px]">
+                  <th className="px-6 py-3 font-semibold text-[18px]">
                     Description
                   </th>
-                  <th className="px-18 py-3 font-semibold text-[18px]">
+                  <th className="px-6 py-3 font-semibold text-[18px]">
                     Create At
                   </th>
-                  <th className="px-2 py-3 font-semibold text-[18px]">
+                  <th className="px-6 py-3 font-semibold text-[18px]">
                     Update At
                   </th>
                 </tr>
               </thead>
               <tbody className="text-[#2B5190]">
-                {categories.length > 0 ? (
-                  categories.map((category: any) => (
+                {displayedCategories.length > 0 ? (
+                  displayedCategories.map((category: any, index) => (
                     <tr
-                      key={category.id}
+                      key={index}
                       className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
                       onClick={() => handleClickToCategoryId(category.id)}
                     >
-                      <td className="px-5 py-3 text-[16px]">{category.id}</td>
-                      <td className="px-22 py-3 text-[16px]">{category.category_name}</td>
-                      <td className="px-18 py-3 text-[16px]">{category.description}</td>
-                      <td className="px-18 py-3 text-[16px]">{category.created_at}</td>
-                      <td className="px-2 py-3 text-[16px]">{category.updated_at}</td>
+                      <td className="px-5 py-3 text-[16px]">
+                        {(currentPage - 1) * itemsPerPage + index + 1}
+                      </td>
+                      <td className="px-5 py-3 text-[16px]">
+                        {category.category_name}
+                      </td>
+                      <td className="px-5 py-3 text-[16px]">
+                        {category.description}
+                      </td>
+                      <td className="px-5 py-3 text-[16px]">
+                        {category.created_at}
+                      </td>
+                      <td className="px-5 py-3 text-[16px]">
+                        {category.updated_at}
+                      </td>
                     </tr>
                   ))
                 ) : (

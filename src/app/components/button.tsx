@@ -3,7 +3,7 @@ import { FC } from "react";
 interface ButtonProps {
   onClick?: () => void;
   label: string;
-  variant?: "update" | "save" | "delete" | "create";
+  variant?: "update" | "delete" | "create";
 }
 
 const Button: FC<ButtonProps> = ({ onClick, label, variant = "create" }) => {
@@ -11,7 +11,6 @@ const Button: FC<ButtonProps> = ({ onClick, label, variant = "create" }) => {
 
   const styles = {
     update: "bg-[#26BD5D] hover:bg-green-400 cursor-pointer",
-    save: "bg-[#2D579A] hover:bg-[#6499EF] cursor-pointer",
     delete: "bg-[#EF2B2E] hover:bg-[#FB6365] cursor-pointer",
     create: "bg-[#2D579A] hover:bg-[#6499EF] cursor-pointer",
   };

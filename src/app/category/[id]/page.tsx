@@ -4,39 +4,44 @@ import Button from "@/app/components/button"
 import type React from "react"
 import BackButton from "@/app/components/backButton"
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 
 
 export default function CategoryDetail() {
-const router = useRouter();
-  const searchParams = useSearchParams();
-  const categoryId = searchParams.get("id");
+  const router = useRouter();
+  const params = useParams(); // Use params instead of searchParams
+  const id = params?.id ? String(params.id) : "";
 
-  const [formData, setFormData] = useState({
-    category_name: "",
-    description: "",
-    
-  });
+  const [formData, setFormData] = useState<{ category_name?: string; description?: string }>({});;
   const [loading, setLoading] = useState(false);
+
+  console.log("fetch by id:", formData)
+  console.log("Fetching category with ID:", id);
 
   // Fetch Supplier by ID
   useEffect(() => {
-    if (categoryId) {
-      fetchCategoryById(categoryId);
+    if (id) {
+      fetchCategoryById(id);
     }
-  }, [categoryId]);
+  }, [id]);
 
   const fetchCategoryById = async (id: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/category/${id}`);
+      const token = localStorage.getItem("token")
+      const response = await fetch(`http://localhost:3001/api/category/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
       if (response.ok) {
-        const data = await response.json();
-        setFormData({
-          category_name: data.category_name,
-          description: data.description,
-          
-        });
+        const result = await response.json();
+        console.log("Fetched category data:", result);
+        setFormData(result.data);
       } else {
         console.error("Failed to fetch category");
       }
@@ -55,12 +60,14 @@ const router = useRouter();
   const handleUpdate = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem("token")
       const response = await fetch(
-        `http://localhost:3001/api/supplier/${categoryId}`,
+        `http://localhost:3001/api/category/${id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
           },
           body: JSON.stringify(formData),
         }
@@ -68,7 +75,7 @@ const router = useRouter();
 
       if (response.ok) {
         alert("category updated successfully!");
-        router.push("/suppliers");
+        router.push("/category");
       } else {
         alert("Failed to update category");
       }
@@ -84,16 +91,20 @@ const router = useRouter();
       return;
 
     try {
+      const token = localStorage.getItem("token")
       const response = await fetch(
-        `http://localhost:3001/api/supplier/${categoryId}`,
+        `http://localhost:3001/api/category/${id}`,
         {
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+            },
         }
       );
 
       if (response.ok) {
-        alert("Category deleted successfully!");
-        router.push("/suppliers");
+        router.push("/category");
       } else {
         alert("Failed to delete category");
       }
