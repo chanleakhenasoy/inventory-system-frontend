@@ -126,10 +126,10 @@ export default function Category() {
                         {category.description}
                       </td>
                       <td className="px-5 py-3 text-[16px]">
-                        {category.created_at}
+                        {new Date(category.created_at).toLocaleString()}
                       </td>
                       <td className="px-5 py-3 text-[16px]">
-                        {category.updated_at}
+                        {new Date(category.updated_at).toLocaleString()}
                       </td>
                     </tr>
                   ))
