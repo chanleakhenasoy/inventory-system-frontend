@@ -23,7 +23,7 @@ export default function Supplier() {
       setLoading(true);
       try {
         const response = await fetch(
-          "http://localhost:3001/api/supplier/getAll",
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/getAll`,
           {
             method: "GET",
             headers: {
@@ -94,7 +94,7 @@ export default function Supplier() {
           <table className="min-w-full text-center">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
               <tr>
-                <th className="px-10 py-3 font-semibold">ID</th>
+                <th className="px-10 py-3 font-semibold">No</th>
                 <th className="w-[300px] py-3 font-semibold text-[18px]">
                   Supplier Name
                 </th>

@@ -25,7 +25,7 @@ export default function StockIn() {
       setLoading(true);
       try {
         const response = await fetch(
-          "http://localhost:3001/api/stockIn/getAll",
+         `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/getAll`,
           {
             method: "GET",
             headers: {
@@ -37,7 +37,7 @@ export default function StockIn() {
 
         if (response.ok) {
           const result = await response.json();
-          setStockIn(result.invoices || []); // Adjust according to your API response structure
+          setStockIn(result.data || []); 
         } else {
           const errorData = await response.json();
           setError(errorData.message || "Failed to fetch stock in.");
@@ -56,7 +56,7 @@ export default function StockIn() {
     router.push("/stockin/create"); // Replace with your route
   };
 
-  const handleClickToStockinId = () => {
+  const handleClickToStockinId = (id: any) => {
     router.push("/stockin/[id]"); // Replace with your route
   };
 
@@ -64,6 +64,11 @@ export default function StockIn() {
     setCurrentPage(page);
   };
 
+  const itemsPerPage = 10;
+  const displayedStockin = Array.isArray(stockIn)
+    ? stockIn.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+    : [];
+  
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <main className="flex-1 overflow-y-auto p-6">
@@ -79,60 +84,44 @@ export default function StockIn() {
         </div>
 
         <div className="overflow-x-auto bg-white rounded-md mt-10">
-          <table className="min-w-full text-left">
+          <table className="min-w-full text-center">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
               <tr>
-                <th className="px-6 py-3 font-semibold">ID</th>
-                <th className="px-14 py-3 font-semibold text-[18px]">
+                <th className="px-6 py-3 font-semibold">No</th>
+                <th className="px-6 py-3 font-semibold text-[18px]">
                   Reference Number
                 </th>
-                <th className="px-14 py-3 font-semibold text-[18px]">
+                <th className="px-6 py-3 font-semibold text-[18px]">
                   Product Name
                 </th>
-                <th className="px-8 py-3 font-semibold text-[18px]">
+                <th className="px-6 py-3 font-semibold text-[18px]">
                   Supplier Name
                 </th>
-                <th className="px-8 py-3 font-semibold text-[18px]">
+                <th className="px-6 py-3 font-semibold text-[18px]">
                   Quantity
                 </th>
-                <th className="px-18 py-3 font-semibold text-[18px]">
+                <th className="px-6 py-3 font-semibold text-[18px]">
                   Create At
                 </th>
-                <th className="px-2 py-3 font-semibold text-[18px]">
+                <th className="px-6 py-3 font-semibold text-[18px]">
                   Update At
                 </th>
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
-              {(stockIn ?? []).map((stockin, index) => (
-                <React.Fragment key={index}>
-                  {stockin.items.map((item: any, itemIndex: any) => (
-                    <tr
-                      key={itemIndex}
-                      className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
-                      onClick={handleClickToStockinId}
-                    >
-                      <td className="px-5 py-3 text-[16px]">{index + 1}</td>
-                      <td className="px-14 py-3 text-[16px]">
-                        {stockin.reference_number}
-                      </td>
-                      <td className="px-14 py-3 text-[16px]">
-                        {item.product_id}
-                      </td>
-                      <td className="px-8 py-3 text-[16px]">
-                        {stockin.supplier_id}
-                      </td>
-                      <td className="px-8 py-3 text-[16px]">{item.quantity}</td>
-                      <td className="px-18 py-3 text-[16px]">
-                        {new Date(stockin.created_at).toLocaleString()}
-                      </td>
-                      <td className="px-2 py-3 text-[16px]">
-                        {new Date(stockin.updated_at).toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
-                </React.Fragment>
-              ))}
+              {displayedStockin.map((stockin, index) =>
+                stockin.items.map((item: any, itemIndex: any) => (
+                  <tr key={itemIndex} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer" onClick={() => handleClickToStockinId(stockin.id)}>
+                    <td className="px-5 py-3">{(currentPage - 1) * itemsPerPage + index + 1}</td>
+                    <td className="px-14 py-3">{stockin.reference_number}</td>
+                    <td className="px-14 py-3">{item.product_name}</td>
+                    <td className="px-8 py-3">{stockin.supplier_name}</td>
+                    <td className="px-8 py-3">{item.quantity}</td>
+                    <td className="px-18 py-3">{new Date(stockin.created_at).toLocaleString()}</td>
+                    <td className="px-2 py-3">{new Date(stockin.updated_at).toLocaleString()}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

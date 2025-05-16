@@ -29,7 +29,7 @@ export default function CategoryDetail() {
   const fetchCategoryById = async (id: string) => {
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`http://localhost:3001/api/category/${id}`,
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/category/${id}`,
         {
           method: "GET",
           headers: {
@@ -62,7 +62,7 @@ export default function CategoryDetail() {
     try {
       const token = localStorage.getItem("token")
       const response = await fetch(
-        `http://localhost:3001/api/category/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/category/${id}`,
         {
           method: "PUT",
           headers: {
@@ -93,7 +93,7 @@ export default function CategoryDetail() {
     try {
       const token = localStorage.getItem("token")
       const response = await fetch(
-        `http://localhost:3001/api/category/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/category/${id}`,
         {
           method: "DELETE",
           headers: {

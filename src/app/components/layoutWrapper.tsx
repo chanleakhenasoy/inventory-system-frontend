@@ -28,7 +28,7 @@ export default function LayoutWrapper({
   return (
     <>
       <Navbar />
-      <div className="flex h-[750px]">
+      <div className="flex h-[850px]">
         {/* Sidebar */}
         <div className="w-80 bg-[#2D579A] text-white text-[20px]">
           <nav className="mt-6">
