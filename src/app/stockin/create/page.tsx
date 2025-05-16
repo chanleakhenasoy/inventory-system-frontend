@@ -133,16 +133,44 @@ export default function AddNewStock() {
           </div>
 
           {/* Supplier */}
-          <div className="mt-11.5">
-            <label className="block text-[#2D579A] mb-2">Supplier</label>
-            <input
-              type="text"
-              name="supplier"
-              value={formData.supplier}
-              onChange={handleChange}
-              className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
+          <div className="relative mt-11.5">
+  <label className="block text-[#2D579A] mb-2">Supplier</label>
+
+  <select
+    name="supplier"
+    value={formData.supplier}
+    onChange={handleChange}
+    className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+  >
+    <option value="" className="text-gray-500">
+      Select a supplier
+    </option>
+    <option value="Supplier A" className="text-gray-500">
+      Supplier A
+    </option>
+    <option value="Supplier B" className="text-gray-500">
+      Supplier B
+    </option>
+    {/* Add more suppliers as needed */}
+  </select>
+
+  {/* Custom dropdown icon */}
+  <div className="pointer-events-none absolute inset-y-0 right-3 mt-8 flex items-center">
+    <svg
+      className="w-5 h-5 text-gray-500"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M19 9l-7 7-7-7"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </div>
+</div>
 
           {/* Reference number */}
           <div>

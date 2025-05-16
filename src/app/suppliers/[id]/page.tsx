@@ -23,7 +23,7 @@ export default function SupplierDetail() {
   const fetchSupplierById = async (id: string) => {
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch(`http://localhost:3001/api/supplier/${id}`,
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/${id}`,
         {
           method: "GET",
           headers: {
@@ -56,7 +56,7 @@ export default function SupplierDetail() {
     try {
       const token = localStorage.getItem("token")
       const response = await fetch(
-        `http://localhost:3001/api/supplier/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/${id}`,
         {
           method: "PUT",
           headers: {
@@ -88,7 +88,7 @@ export default function SupplierDetail() {
     try {
       const token = localStorage.getItem("token")
       const response = await fetch(
-        `http://localhost:3001/api/supplier/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/${id}`,
         {
           method: "DELETE",
           headers: {

@@ -22,7 +22,7 @@ export default function Category() {
       setLoading(true);
       try {
         const response = await fetch(
-          "http://localhost:3001/api/category/getAll",
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/category/getAll`,
           {
             method: "GET",
             headers: {
