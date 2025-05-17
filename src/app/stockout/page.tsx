@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
 import Button from "@/app/components/button";
@@ -10,15 +10,44 @@ export default function StockOut() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10;
+  const [stockouts, setStockouts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  console.log(stockouts)
 
-  const stockOut = Array(10).fill({
-    id: "001",
-    product_name: "Bikecycle",
-    quantity: "12",
-    employee: "Sopheak",
-    stockout_date: "2025-10-23",
-  });
-
+  useEffect(() => {
+      const fetchStockouts = async () => {
+        const token = localStorage.getItem("token");
+        setError("");
+        setLoading(true);
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/getAll`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+  
+          if (response.ok) {
+            const result = await response.json();
+            setStockouts(result.data); // Adjust according to your API response structure
+          } else {
+            const errorData = await response.json();
+            setError(errorData.message || "Failed to fetch stockout.");
+          }
+        } catch (err) {
+          setError("Network error. Please try again.");
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchStockouts();
+    }, [currentPage]);
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -26,6 +55,12 @@ export default function StockOut() {
   const handleClickToStockoutCreate = () => {
     router.push("/stockout/create"); // Replace with your route
   };
+
+  const itemsPerPage = 10;
+  const displayedStockout = Array.isArray(stockouts) ? stockouts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  ) : [];
 
 
   return (
@@ -63,15 +98,24 @@ export default function StockOut() {
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
-              {stockOut.map((stockout, index) => (
+            {displayedStockout.length > 0 ? (
+                displayedStockout.map((stockout: any, index) => (
                 <tr key={index} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer">
-                  <td className="px-6 py-3 text-[16px]">{stockout.id}</td>
-                  <td className="px-34 py-3 text-[16px]">{stockout.product_name}</td>
+                  <td className="px-6 py-3 text-[16px]">
+                    {(currentPage - 1) * itemsPerPage + index + 1}</td>
+                  <td className="px-34 py-3 text-[16px]">{stockout.name_en}</td>
                   <td className="px-18 py-3 text-[16px]">{stockout.quantity}</td>
-                  <td className="px-30 py-3 text-[16px]">{stockout.employee}</td>
-                  <td className="px-2 py-3 text-[16px]">{stockout.stockout_date}</td>
+                  <td className="px-30 py-3 text-[16px]">{stockout.user_name}</td>
+                  <td className="px-2 py-3 text-[16px]"> {new Date(stockout.created_at).toLocaleString()}</td>
                 </tr>
-              ))}
+              ))
+              ) : (
+                <tr>
+                <td colSpan={7} className="text-center py-4 text-gray-500">
+                  No suppliers found.
+                </td>
+              </tr>
+            )}
             </tbody>
           </table>
         </div>

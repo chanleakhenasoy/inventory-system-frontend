@@ -2,21 +2,33 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Calendar, Plus } from "lucide-react";
 import Button from "@/app/components/button";
 import BackButton from "@/app/components/backButton";
 
+interface Supplier {
+  id: string;
+  supplier_name: string;
+}
+interface Product {
+  id: string;
+  name_en: string;
+}
+
 export default function AddNewStock() {
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [items, setItems] = useState<
-    Array<{
+  Array<{
       product: string;
       quantity: string;
       expireDate: string;
       totalPrice: string;
     }>
   >([]);
-
   const [formData, setFormData] = useState({
     purchaseDate: "",
     supplier: "",
@@ -28,10 +40,77 @@ export default function AddNewStock() {
     expireDate: "",
   });
 
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target
-  //   setFormData((prev) => ({ ...prev, [name]: value }))
-  // }
+  console.log(suppliers)
+  console.log(products)
+  console.log(items);
+
+
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      const token = localStorage.getItem("token");
+      setError("");
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/getAll`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          setSuppliers(result.data); // Adjust according to your API response structure
+        } else {
+          const errorData = await response.json();
+          setError(errorData.message || "Failed to fetch suppliers.");
+        }
+      } catch (err) {
+        setError("Network error. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchProducts = async () => {
+      const token = localStorage.getItem("token");
+      setError("");
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          setProducts(result.data); 
+        } else {
+          const errorData = await response.json();
+          setError(errorData.message || "Failed to fetch product.");
+        }
+      } catch (err) {
+        setError("Network error. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  fetchSuppliers();
+  }, []);
+
+  
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -43,14 +122,14 @@ export default function AddNewStock() {
       [name]: value,
     }));
   };
-
-  const handleAddItem = () => {
+  function handleSave(): void {
+    throw new Error("Function not implemented.");
+  }
+  const handleAddItem = (): void => {
     if (formData.selectedItems && formData.quantity) {
-      const totalPrice =
-        Number.parseFloat(formData.quantity) *
-        (Number.parseFloat(formData.unitPrice) || 0);
+      const totalPrice = Number(formData.quantity) * Number(formData.unitPrice || 0);
 
-      setItems([
+      const newItems = [
         ...items,
         {
           product: formData.selectedItems,
@@ -58,22 +137,13 @@ export default function AddNewStock() {
           expireDate: formData.expireDate,
           totalPrice: totalPrice.toFixed(2),
         },
-      ]);
+      ];
 
-      // Reset form fields except purchase date and supplier
-      setFormData((prev) => ({
-        ...prev,
-        selectedItems: "",
-        quantity: "",
-        unitPrice: "",
-        expireDate: "",
-      }));
+      setItems(newItems);
+      console.log(newItems);
     }
   };
-
-  function handleSave(): void {
-    throw new Error("Function not implemented.");
-  }
+  
 
   return (
     <div className="p-6">
@@ -134,47 +204,44 @@ export default function AddNewStock() {
 
           {/* Supplier */}
           <div className="relative mt-11.5">
-  <label className="block text-[#2D579A] mb-2">Supplier</label>
+            <label className="block text-[#2D579A] mb-2">Supplier</label>
 
-  <select
-    name="supplier"
-    value={formData.supplier}
-    onChange={handleChange}
-    className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
-  >
-    <option value="" className="text-gray-500">
-      Select a supplier
-    </option>
-    <option value="Supplier A" className="text-gray-500">
-      Supplier A
-    </option>
-    <option value="Supplier B" className="text-gray-500">
-      Supplier B
-    </option>
-    {/* Add more suppliers as needed */}
-  </select>
+            <select
+              name="supplier"
+              value={formData.supplier}
+              onChange={handleChange}
+              className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+            >
+             
+              {suppliers.map((supplier) => (
+                <option key={supplier.id} value={supplier.supplier_name} >
+                  {supplier.supplier_name}
+                </option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-3 mt-8 flex items-center">
+              <svg
+                className="w-5 h-5 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19 9l-7 7-7-7"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
 
-  {/* Custom dropdown icon */}
-  <div className="pointer-events-none absolute inset-y-0 right-3 mt-8 flex items-center">
-    <svg
-      className="w-5 h-5 text-gray-500"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        d="M19 9l-7 7-7-7"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  </div>
-</div>
+          </div>
 
           {/* Reference number */}
           <div>
-            <label className="block text-[#2D579A] mb-2">Reference Number</label>
+            <label className="block text-[#2D579A] mb-2">
+              Reference Number
+            </label>
             <input
               type="text"
               name="referenceNumber"
@@ -229,25 +296,22 @@ export default function AddNewStock() {
 
           {/* Select Items */}
           <div className="relative mt-8">
-          <p className="text-[#2D579A] mb-4 font-bold text-[20px]">Product</p>
+            <p className="text-[#2D579A] mb-4 font-bold text-[20px]">Product</p>
             <label className="block text-[#2D579A] mb-2">Select Product</label>
 
             <select
-              name="selectedItems"
-              value={formData.selectedItems}
-              onChange={handleChange}
-              className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
-            >
-              <option value="" className="text-gray-500">
-                Select an item
-              </option>
-              <option value="Bike" className="text-gray-500">
-                Bike
-              </option>
-              <option value="Ball" className="text-gray-500">
-                Ball
-              </option>
-            </select>
+          name="selectedItems"
+          value={formData.selectedItems}
+          onChange={handleChange}
+          className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+        >
+          
+          {products.map((product) => (
+            <option key={product.id} value={product.name_en}>
+              {product.name_en}
+            </option>
+          ))}
+        </select>
 
             {/* Custom dropdown icon */}
             <div className="pointer-events-none absolute inset-y-0 right-3 mt-19 flex items-center">
@@ -271,7 +335,7 @@ export default function AddNewStock() {
           <div className="mt-19.5">
             <label className="block text-[#2D579A] mb-2">Quantity</label>
             <input
-              type="text"
+              type="number"
               name="quantity"
               value={formData.quantity}
               onChange={handleChange}
@@ -285,6 +349,7 @@ export default function AddNewStock() {
             <input
               type="text"
               name="unitPrice"
+              placeholder="$"
               value={formData.unitPrice}
               onChange={handleChange}
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -346,29 +411,41 @@ export default function AddNewStock() {
         </div>
 
         {/* Items Table */}
-        <div className="text-black border-gray-300 border rounded-lg mb-6 overflow-hidden mt-16">
-          <div className="grid grid-cols-4 bg-gray-50 p-3 border-b border-gray-300 text-[#2D579A]">
-            <div className="font-medium">Product</div>
-            <div className="font-medium">Quantity</div>
-            <div className="font-medium">Expire Date</div>
-            <div className="font-medium">Total Price</div>
-          </div>
+        <div className="bg-white rounded-lg p-6">
+        <table className="w-full text-black border border-gray-300 rounded-lg mb-6 mt-16">
+          <thead className="bg-gray-50 text-[#2D579A]">
+            <tr>
+              <th className="p-3 border-b border-gray-300">Product</th>
+              <th className="p-3 border-b border-gray-300">Quantity</th>
+              <th className="p-3 border-b border-gray-300">Expire Date</th>
+              <th className="p-3 border-b border-gray-300">Total Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.length > 0 ? (
+              items.map((item, index) => (
+                <tr key={index} className="border-b">
+                  <td className="p-3">{item.product}</td>
+                  <td className="p-3">{item.quantity}</td>
+                  <td className="p-3">{item.expireDate}</td>
+                  <td className="p-3">{item.totalPrice}$</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} className="p-3 text-center text-gray-500">No items added yet</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-          {items.map((item, index) => (
-            <div key={index} className="grid grid-cols-4 p-3 border-b">
-              <div>{item.product}</div>
-              <div>{item.quantity}</div>
-              <div>{item.expireDate}</div>
-              <div>{item.totalPrice}</div>
-            </div>
-          ))}
-
-          {items.length === 0 && (
+          {/* {items.length === 0 && (
             <div className="p-3 text-gray-500 text-center">
               No items added yet
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* Save Button */}
         <div className="flex justify-end">
