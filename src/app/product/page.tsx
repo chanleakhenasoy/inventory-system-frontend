@@ -7,23 +7,49 @@ import Category from "../category/page";
 import Button from "../components/button";
 import { useNavigate } from "react-router-dom";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Product() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
+  const [products, setProduct] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const totalPages = 10;
 
-  const products = Array(10).fill({
-    id: "001",
-    category_name: "Ball",
-    product_code: "2437658765",
-    name_en: "Football",
-    name_kh: "Football",
-    beginning_quantity: "Football",
-    minimumstock: "Football",
-    createdAt: "2025-09-23",
-    updatedAt: "2025-09-23",
-  });
+  useEffect(() => {
+    const fetchcategories = async () => {
+      const token = localStorage.getItem("token");
+      setError("");
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/product/getAll`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          setProduct(result.data || []); // Adjust according to your API response structure
+        } else {
+          const errorData = await response.json();
+          setError(errorData.message || "Failed to fetch product.");
+        }
+      } catch (err) {
+        setError("Network error. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchcategories();
+  }, [setCurrentPage]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -37,9 +63,17 @@ export default function Product() {
     router.push("/product/create"); // Replace with your route
   };
 
-  const handleClickToProductId = () => {
+  const handleClickToProductId = (id: any) => {
     router.push("/product/[id]"); // Replace with your route
   };
+
+  const itemsPerPage = 10;
+  const displayedProducts = Array.isArray(products)
+    ? products.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+      )
+    : [];
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -57,55 +91,79 @@ export default function Product() {
 
         {/* Table */}
         <div className="overflow-x-auto bg-white rounded-md mt-10">
-          <table className="min-w-full text-left">
+          <table className="min-w-full text-center">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
               <tr>
-                <th className="px-6 py-3 font-semibold">ID</th>
-                <th className="px-12 py-3 font-semibold text-[18px]">
+                <th className="px-6 py-3 font-semibold">No</th>
+                <th className="w-[200px] py-3 font-semibold text-[18px]">
                   Category Name
                 </th>
-                <th className="px-4 py-3 font-semibold text-[18px]">
+                <th className="w-[200px] py-3 font-semibold text-[18px]">
                   Product Code
                 </th>
-                <th className="px-10 py-3 font-semibold text-[18px]">
-                    Name En
-                    </th>
-                <th className="px-8 py-3 font-semibold text-[18px]">
-                   Name Kh
+                <th className="w-[150px] py-3 font-semibold text-[18px]">
+                  Name En
                 </th>
-                <th className="px-6 py-3 font-semibold text-[18px]">
-                   Beginning Quantity
+                <th className="w-[150px] py-3 font-semibold text-[18px]">
+                  Name Kh
                 </th>
-                <th className="px-6 py-3 font-semibold text-[18px]">
-                   Minimum Stock
+                <th className="w-[200px] py-3 font-semibold text-[18px]">
+                  Beginning Quantity
                 </th>
-                <th className="px-8 py-3 font-semibold text-[18px]">
+                <th className="w-[200px] py-3 font-semibold text-[18px]">
+                  Minimum Stock
+                </th>
+                <th className="w-[150px] py-3 font-semibold text-[18px]">
                   Create At
                 </th>
-                <th className="px-2 py-3 font-semibold text-[18px]">
+                <th className="w-[130px] py-3 font-semibold text-[18px]">
                   Update At
                 </th>
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
-              {products.map((product, index) => (
-                <tr key={index} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
-                onClick={handleClickToProductId}>
-                  <td className="px-5 py-3 text-[16px]">{product.id}</td>
-                  <td className="px-12 py-3 text-[16px]">{product.category_name}</td>
-                  <td className="px-4 py-3 text-[16px]">{product.product_code}</td>
-                  <td className="px-10 py-3 text-[16px]">{product.name_en}</td>
-                  <td className="px-8 py-3 text-[16px]">{product.name_kh}</td>
-                  <td className="px-6 py-3 text-[16px]">{product.beginning_quantity}</td>
-                  <td className="px-6 py-3 text-[16px]">{product.minimumstock}</td>
-                  <td className="px-8 py-3 cursor-pointer text-[16px]">
-                    {product.createdAt}
-                  </td>
-                  <td className="px-2 py-3 text-[16px]">
-                    {product.updatedAt}
+              {displayedProducts.length > 0 ? (
+                displayedProducts.map((product: any, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
+                    onClick={() => handleClickToProductId(product.id)} // still use product.id to route correctly
+                  >
+                    <td className="px-5 py-3 text-[16px]">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
+                    </td>
+                    {/* 👈 Index displayed here */}
+                    <td className="px-12 py-3 text-[16px]">
+                      {product.category_name}
+                    </td>
+                    <td className="px-4 py-3 text-[16px]">
+                      {product.product_code}
+                    </td>
+                    <td className="px-10 py-3 text-[16px]">
+                      {product.name_en}
+                    </td>
+                    <td className="px-8 py-3 text-[16px]">{product.name_kh}</td>
+                    <td className="px-6 py-3 text-[16px]">
+                      {product.beginning_quantity}
+                    </td>
+                    <td className="px-6 py-3 text-[16px]">
+                      {product.minimum_stock}
+                    </td>
+                    <td className="px-8 py-3 cursor-pointer text-[16px]">
+                      {new Date(product.created_at).toLocaleString()}
+                    </td>
+                    <td className="px-2 py-3 text-[16px]">
+                      {new Date(product.updated_at).toLocaleString()}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={9} className="py-4 text-center">
+                    No products found.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
