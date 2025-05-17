@@ -14,9 +14,77 @@ import Navbar from "../components/navbar";
 import { SidebarItem } from "../components/sidebarItem";
 import { OverviewCard } from "../components/overviewCard";
 import { ChartLegendItem } from "../components/chartLegendItem";
+import { useEffect, useState } from "react";
 
 export default function Dashboard() {
-  return (
+  const [totalProduct, setProduct] = useState<number>(0);
+  const [totalCategory, setCategory] = useState<number>(0);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchTotalProduct = async () => {
+      const token = localStorage.getItem("token");
+      setLoading(true);
+      setError("");
+  
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/product/total`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (response.ok) {
+          const result = await response.json();
+          setProduct(result.data || []);
+        } else {
+          const errorData = await response.json();
+          setError(errorData.message || "Failed to fetch total products.");
+        }
+      } catch (err) {
+        setError("Network error. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchTotalCategory = async () => {
+      const token = localStorage.getItem("token");
+      setLoading(true);
+      setError("");
+  
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/category/total`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        if (response.ok) {
+          const result = await response.json();
+          setCategory(result.data || []);
+        } else {
+          const errorData = await response.json();
+          setError(errorData.message || "Failed to fetch total category.");
+        }
+      } catch (err) {
+        setError("Network error. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchTotalProduct();
+    fetchTotalCategory();
+  }, []);
+  
+  
+    return (
       <div className="flex h-screen">
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
@@ -39,7 +107,7 @@ export default function Dashboard() {
                 <OverviewCard
                   icon={<Package className="text-blue-600" size={45} />}
                   title="Total Products"
-                  value="300"
+                  value= {totalProduct}
                   bgColor="bg-blue-50"
                   iconColor="text-blue-600"
                 />
@@ -60,7 +128,7 @@ export default function Dashboard() {
                 <OverviewCard
                   icon={<Layers className="text-cyan-500" size={45} />}
                   title="Total product category"
-                  value="300"
+                  value={totalCategory}
                   bgColor="bg-cyan-50"
                   iconColor="text-cyan-500"
                 />
