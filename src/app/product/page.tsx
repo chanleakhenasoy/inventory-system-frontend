@@ -24,7 +24,7 @@ export default function Product() {
       setLoading(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/product/getAll`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll`,
           {
             method: "GET",
             headers: {
@@ -63,9 +63,10 @@ export default function Product() {
     router.push("/product/create"); // Replace with your route
   };
 
-  const handleClickToProductId = (id: any) => {
-    router.push("/product/[id]"); // Replace with your route
-  };
+ const handleClickToProductId = (id: string) => {
+  router.push(`/product/${id}`);
+};
+
 
   const itemsPerPage = 10;
   const displayedProducts = Array.isArray(products)
