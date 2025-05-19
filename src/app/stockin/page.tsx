@@ -92,7 +92,10 @@ export default function StockIn() {
                   Reference Number
                 </th>
                 <th className="px-6 py-3 font-semibold text-[18px]">
-                  Product Name
+                   Name En
+                </th>
+                <th className="px-6 py-3 font-semibold text-[18px]">
+                  Name Kh
                 </th>
                 <th className="px-6 py-3 font-semibold text-[18px]">
                   Supplier Name
@@ -114,7 +117,8 @@ export default function StockIn() {
                   <tr key={itemIndex} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer" onClick={() => handleClickToStockinId(stockin.id)}>
                     <td className="px-5 py-3">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                     <td className="px-14 py-3">{stockin.reference_number}</td>
-                    <td className="px-14 py-3">{item.product_name}</td>
+                    <td className="px-14 py-3">{item.name_en}</td>
+                    <td className="px-14 py-3">{item.name_kh}</td>
                     <td className="px-8 py-3">{stockin.supplier_name}</td>
                     <td className="px-8 py-3">{item.quantity}</td>
                     <td className="px-18 py-3">{new Date(stockin.created_at).toLocaleString()}</td>
