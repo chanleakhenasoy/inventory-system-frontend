@@ -122,22 +122,22 @@ export default function StockIn() {
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
               <tr>
                 <th className="px-6 py-3 font-semibold">No</th>
-                <th className="px-6 py-3 font-semibold text-[18px]">
+                <th className="px-16 py-3 font-semibold text-[18px]">
                   Reference Number
                 </th>
-                <th className="px-6 py-3 font-semibold text-[18px]">
+                <th className="px-12 py-3 font-semibold text-[18px]">
                   Product Name
                 </th>
-                <th className="px-6 py-3 font-semibold text-[18px]">
+                <th className="px-14 py-3 font-semibold text-[18px]">
                   Supplier Name
                 </th>
-                <th className="px-6 py-3 font-semibold text-[18px]">
+                <th className="px-14 py-3 font-semibold text-[18px]">
                   Quantity
                 </th>
                 <th className="px-6 py-3 font-semibold text-[18px]">
                   Created At
                 </th>
-                <th className="px-6 py-3 font-semibold text-[18px]">
+                <th className="px-10 py-3 font-semibold text-[18px]">
                   Updated At
                 </th>
               </tr>

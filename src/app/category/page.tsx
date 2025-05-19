@@ -134,16 +134,16 @@ export default function Category() {
               <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
                 <tr>
                   <th className="px-6 py-3 font-semibold">No</th>
-                  <th className="px-6 py-3 font-semibold text-[18px]">
+                  <th className="px-12 py-3 font-semibold text-[18px]">
                     Category Name
                   </th>
-                  <th className="px-6 py-3 font-semibold text-[18px]">
+                  <th className="px-10 py-3 font-semibold text-[18px]">
                     Description
                   </th>
-                  <th className="px-6 py-3 font-semibold text-[18px]">
+                  <th className="px-10 py-3 font-semibold text-[18px]">
                     Create At
                   </th>
-                  <th className="px-6 py-3 font-semibold text-[18px]">
+                  <th className="px-10 py-3 font-semibold text-[18px]">
                     Update At
                   </th>
                 </tr>
