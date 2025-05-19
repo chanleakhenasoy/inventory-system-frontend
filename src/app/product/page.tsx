@@ -211,7 +211,7 @@ export default function Product() {
       setError("")
       setLoading(true)
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/getAll`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -254,12 +254,8 @@ export default function Product() {
         if (!searchTerm) return true
 
         const searchLower = searchTerm.toLowerCase()
-        // Search in name_en, name_kh, product_code, and category_name
         return (
           (product.name_en && product.name_en.toLowerCase().includes(searchLower))
-          // (product.name_kh && product.name_kh.toLowerCase().includes(searchLower)) ||
-          // (product.product_code && product.product_code.toLowerCase().includes(searchLower)) ||
-          // (product.category_name && product.category_name.toLowerCase().includes(searchLower))
         )
       })
     : []
