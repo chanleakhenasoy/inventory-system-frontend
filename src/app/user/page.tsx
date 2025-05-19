@@ -133,13 +133,13 @@ export default function AllUser() {
 
         {/* Table */}
         <div className="overflow-x-auto bg-white rounded-md mt-10">
-          <table className="min-w-full text-left">
+          <table className="min-w-full text-center">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
               <tr>
                 <th className="px-6 py-3 font-semibold text-[18px]">No</th>
-                <th className="px-6 py-3 font-semibold text-[18px]">User Name</th>
-                <th className="px-6 py-3 font-semibold text-[18px]">Email</th>
-                <th className="px-6 py-3 font-semibold text-[18px]">Role</th>
+                <th className="px-24 py-3 font-semibold text-[18px]">User Name</th>
+                <th className="px-4 py-3 font-semibold text-[18px]">Email</th>
+                <th className="px-30 py-3 font-semibold text-[18px]">Role</th>
                 <th className="px-4 py-3 font-semibold text-[18px]">Action</th>
               </tr>
             </thead>

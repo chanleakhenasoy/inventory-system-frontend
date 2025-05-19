@@ -106,10 +106,10 @@ export default function ProductDatabase() {
           <p>Loading...</p>
         ) : (
           <div className="bg-white rounded-md mt-5">
-            <table className="min-w-full text-left">
+            <table className="min-w-full text-center">
               <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
                 <tr>
-                  <th className="px-8 py-3 font-semibold">ID</th>
+                  <th className="px-8 py-3 font-semibold">No</th>
                   <th className="px-8 py-3 font-semibold">Name En</th>
                   <th className="px-8 py-3 font-semibold">Name Kh</th>
                   <th className="px-8 py-3 font-semibold">Beginning Quantity</th>
