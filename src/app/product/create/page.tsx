@@ -30,7 +30,7 @@ export default function CreateProduct() {
 
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchcategories = async () => {
       const token = localStorage.getItem("token");
       setError("");
       setLoading(true);
@@ -59,7 +59,7 @@ export default function CreateProduct() {
         setLoading(false);
       }
     };
-    fetchUsers();
+    fetchcategories();
   },[]);
 
   const handleChange = (
@@ -74,7 +74,7 @@ export default function CreateProduct() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/product/create${formData.selectedCategoryId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/create/${formData.selectedCategoryId}`,
         {
           method: "POST",
           headers: {
@@ -132,8 +132,8 @@ export default function CreateProduct() {
         );
         setFormData((prev) => ({
           ...prev,
-          name_en: selectedCategory ? selectedCategory.category_name : "",
-          selectedProductId: selectedCategory ? selectedCategory.id : "",
+          category_name: selectedCategory ? selectedCategory.category_name : "",
+          selectedCategoryId: selectedCategory ? selectedCategory.id : "",
         }));
       }}
       className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
