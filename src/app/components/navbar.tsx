@@ -12,7 +12,6 @@ export default function Navbar() {
             alt="PSE Pour Un Sourire D'Enfant"
             width={220}
             height={100}
-            className="cursor-pointer"
           />
       </div>
       <div className="flex items-center justify-between p-4">
@@ -26,7 +25,7 @@ export default function Navbar() {
         <div className="flex items-center">
           <Link href="/">
             <button className="p-2 text-red-600 hover:text-[#6499EF] cursor-pointer">
-              <LogOut size={32} />
+              <LogOut size={26} />
             </button>
           </Link>
         </div>
