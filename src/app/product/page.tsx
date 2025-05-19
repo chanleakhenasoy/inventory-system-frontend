@@ -32,7 +32,7 @@ export default function Product() {
       setError("")
       setLoading(true)
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/getAll`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -62,12 +62,13 @@ export default function Product() {
   }
 
   const handleClickToProductCreate = () => {
-    router.push("/product/create") // Replace with your route
+    router.push("/product/create") 
   }
 
-  const handleClickToProductId = (id: any) => {
-    router.push("/product/[id]") // Replace with your route
-  }
+  const handleClickToProductId = (id: string) => {
+    router.push(`/product/${id}`);
+  };
+  
 
   // Filter products based on search term
   const filteredProducts = Array.isArray(products)

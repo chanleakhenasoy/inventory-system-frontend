@@ -3,20 +3,23 @@
 import type React from "react";
 
 import { useEffect, useState } from "react";
-import { Calendar, Plus } from "lucide-react";
+import { Calendar, Plus, Router } from "lucide-react";
 import Button from "@/app/components/button";
 import BackButton from "@/app/components/backButton";
+import { useRouter } from "next/navigation";
 
 interface Supplier {
   id: string;
   supplier_name: string;
 }
 interface Product {
+  supplier_name: string;
   id: string;
   name_en: string;
 }
 
 export default function AddNewStock() {
+  const route = useRouter();
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -25,25 +28,24 @@ export default function AddNewStock() {
   Array<{
       product: string;
       quantity: string;
-      expireDate: string;
-      totalPrice: string;
+      expire_date: string;
+      total_price: string;
     }>
   >([]);
   const [formData, setFormData] = useState({
-    purchaseDate: "",
-    supplier: "",
-    referenceNumber: "",
-    dueDate: "",
-    selectedItems: "",
+    selectedProductId: "",
+    purchase_date: "",
+    selectedSupplierId: "",
+    reference_number: "",
+    due_date: "",
     quantity: "",
-    unitPrice: "",
-    expireDate: "",
+    unit_price: "",
+    expire_date: "",
+    name_en:"",
+    supplier_name:""
   });
 
-  console.log(suppliers)
-  console.log(products)
-  console.log(items);
-
+  console.log(formData.selectedSupplierId, formData.selectedProductId)
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -64,7 +66,7 @@ export default function AddNewStock() {
 
         if (response.ok) {
           const result = await response.json();
-          setSuppliers(result.data); // Adjust according to your API response structure
+          setSuppliers(result.data); 
         } else {
           const errorData = await response.json();
           setError(errorData.message || "Failed to fetch suppliers.");
@@ -122,29 +124,94 @@ export default function AddNewStock() {
       [name]: value,
     }));
   };
-  function handleSave(): void {
-    throw new Error("Function not implemented.");
-  }
+  const createStockin = async () => {
+   
+    setLoading(true);
+    setError("");
+  
+    try {
+      const token = localStorage.getItem("token");
+  
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/create/${formData.selectedSupplierId}/${formData.selectedProductId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            purchase_date: formData.purchase_date,
+            reference_number: formData.reference_number,
+            due_date: formData.due_date,
+            items: items.map((item) => ({
+              quantity: Number(item.quantity),
+              unit_price: Number(item.total_price) / Number(item.quantity), // or use your formData.unitPrice if you saved it differently
+              expire_date: item.expire_date,
+            })),
+            // quantity: Number(formData.quantity),
+            // unit_price: Number(formData.unit_price),
+            // expire_date: formData.expire_date,
+
+          }),
+        }
+      );
+  
+      if (response.ok) {
+        alert("Stock created successfully!");
+        // reset form
+        setFormData({
+          selectedProductId: "",
+          purchase_date: "",
+          selectedSupplierId: "",
+          reference_number: "",
+          due_date: "",
+          quantity: "",
+          unit_price: "",
+          expire_date: "",
+          name_en:"",
+          supplier_name:""
+        });
+        setItems([]);
+      } else {
+        const errData = await response.json();
+        setError(errData.message || "Failed to create stock.");
+        route.push("/stockkin")
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleAddItem = (): void => {
-    if (formData.selectedItems && formData.quantity) {
-      const totalPrice = Number(formData.quantity) * Number(formData.unitPrice || 0);
+    if (formData.selectedProductId && formData.quantity) {
+      const totalPrice = Number(formData.quantity) * Number(formData.unit_price || 0);
 
       const newItems = [
         ...items,
         {
-          product: formData.selectedItems,
+          product: formData.name_en,
           quantity: formData.quantity,
-          expireDate: formData.expireDate,
-          totalPrice: totalPrice.toFixed(2),
+          expire_date: formData.expire_date,
+          total_price: totalPrice.toFixed(2),
         },
       ];
 
       setItems(newItems);
       console.log(newItems);
     }
+
+    setFormData((prev) => ({  
+      ...prev,
+      selectedProductId: "",
+      quantity: "",
+      unit_price: "",
+      expire_date: "",
+    }));
   };
   
-
+ 
   return (
     <div className="p-6">
       <div className="flex items-center mb-4">
@@ -167,11 +234,11 @@ export default function AddNewStock() {
               {/* Main date input */}
               <input
                 type="Date"
-                name="purchaseDate"
-                value={formData.purchaseDate}
+                name="purchase_date"
+                value={formData.purchase_date}
                 onChange={handleChange}
                 className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
-        [&::-webkit-calendar-picker-indicator]:opacity-0"
+               [&::-webkit-calendar-picker-indicator]:opacity-0"
               />
 
               {/* Custom calendar icon */}
@@ -194,8 +261,8 @@ export default function AddNewStock() {
               {/* Transparent clickable input to trigger calendar, bound to same state */}
               <input
                 type="Date"
-                name="purchaseDate"
-                value={formData.purchaseDate}
+                name="purchase_date"
+                value={formData.purchase_date}
                 onChange={handleChange}
                 className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
               />
@@ -207,18 +274,29 @@ export default function AddNewStock() {
             <label className="block text-[#2D579A] mb-2">Supplier</label>
 
             <select
-              name="supplier"
-              value={formData.supplier}
-              onChange={handleChange}
-              className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
-            >
-             
-              {suppliers.map((supplier) => (
-                <option key={supplier.id} value={supplier.supplier_name} >
-                  {supplier.supplier_name}
-                </option>
-              ))}
-            </select>
+                name="selectedSupplierId"
+                value={formData.selectedSupplierId}
+                onChange={(e) => {
+                  const selectedSupplier = suppliers.find(
+                    (s) => s.id === e.target.value
+                  );
+                  setFormData((prev) => ({
+                    ...prev,
+                    supplier_name: selectedSupplier ? selectedSupplier.supplier_name : "",
+                    selectedSupplierId: selectedSupplier
+                      ? selectedSupplier.id
+                      : "",
+                  }));
+                }}
+                className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+              >
+                <option value="">Select a supplier</option>
+                {suppliers.map((supplier) => (
+                  <option key={supplier.id} value={supplier.id}>
+                    {supplier.supplier_name}
+                  </option>
+                ))}
+              </select>
             <div className="pointer-events-none absolute inset-y-0 right-3 mt-8 flex items-center">
               <svg
                 className="w-5 h-5 text-gray-500"
@@ -244,8 +322,8 @@ export default function AddNewStock() {
             </label>
             <input
               type="text"
-              name="referenceNumber"
-              value={formData.referenceNumber}
+              name="reference_number"
+              value={formData.reference_number}
               onChange={handleChange}
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
@@ -259,8 +337,8 @@ export default function AddNewStock() {
               {/* Main date input */}
               <input
                 type="Date"
-                name="dueDate"
-                value={formData.dueDate}
+                name="due_date"
+                value={formData.due_date}
                 onChange={handleChange}
                 className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
         [&::-webkit-calendar-picker-indicator]:opacity-0"
@@ -286,8 +364,8 @@ export default function AddNewStock() {
               {/* Transparent clickable input to trigger calendar, bound to same state */}
               <input
                 type="Date"
-                name="dueDate"
-                value={formData.dueDate}
+                name="due_date"
+                value={formData.due_date}
                 onChange={handleChange}
                 className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
               />
@@ -296,22 +374,33 @@ export default function AddNewStock() {
 
           {/* Select Items */}
           <div className="relative mt-8">
-            <p className="text-[#2D579A] mb-4 font-bold text-[20px]">Product</p>
-            <label className="block text-[#2D579A] mb-2">Select Product</label>
+            <p className="text-[#2D579A] mb-4 font-bold text-[20px]">Item</p>
+            <label className="block text-[#2D579A] mb-2">Product</label>
 
             <select
-          name="selectedItems"
-          value={formData.selectedItems}
-          onChange={handleChange}
-          className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
-        >
-          
-          {products.map((product) => (
-            <option key={product.id} value={product.name_en}>
-              {product.name_en}
-            </option>
-          ))}
-        </select>
+                name="selectedProductId"
+                value={formData.selectedProductId}
+                onChange={(e) => {
+                  const selectedProduct = products.find(
+                    (p) => p.id === e.target.value
+                  );
+                  setFormData((prev) => ({
+                    ...prev,
+                    name_en: selectedProduct ? selectedProduct.name_en : "",
+                    selectedProductId: selectedProduct
+                      ? selectedProduct.id
+                      : "",
+                  }));
+                }}
+                className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+              >
+                <option value="">Select a product</option>
+                {products.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {product.name_en}
+                  </option>
+                ))}
+              </select>
 
             {/* Custom dropdown icon */}
             <div className="pointer-events-none absolute inset-y-0 right-3 mt-19 flex items-center">
@@ -348,9 +437,9 @@ export default function AddNewStock() {
             <label className="block text-[#2D579A] mb-2">Unit Price</label>
             <input
               type="text"
-              name="unitPrice"
+              name="unit_price"
               placeholder="$"
-              value={formData.unitPrice}
+              value={formData.unit_price}
               onChange={handleChange}
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
@@ -364,8 +453,8 @@ export default function AddNewStock() {
               {/* Main date input */}
               <input
                 type="Date"
-                name="expireDate"
-                value={formData.expireDate}
+                name="expire_date"
+                value={formData.expire_date}
                 onChange={handleChange}
                 className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
         [&::-webkit-calendar-picker-indicator]:opacity-0"
@@ -391,8 +480,8 @@ export default function AddNewStock() {
               {/* Transparent clickable input to trigger calendar, bound to same state */}
               <input
                 type="Date"
-                name="expireDate"
-                value={formData.expireDate}
+                name="expire_date"
+                value={formData.expire_date}
                 onChange={handleChange}
                 className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
               />
@@ -427,8 +516,8 @@ export default function AddNewStock() {
                 <tr key={index} className="border-b">
                   <td className="p-3">{item.product}</td>
                   <td className="p-3">{item.quantity}</td>
-                  <td className="p-3">{item.expireDate}</td>
-                  <td className="p-3">{item.totalPrice}$</td>
+                  <td className="p-3">{item.expire_date}</td>
+                  <td className="p-3">{item.total_price}$</td>
                 </tr>
               ))
             ) : (
@@ -439,19 +528,12 @@ export default function AddNewStock() {
           </tbody>
         </table>
       </div>
-
-          {/* {items.length === 0 && (
-            <div className="p-3 text-gray-500 text-center">
-              No items added yet
-            </div>
-          )}
-        </div> */}
-
         {/* Save Button */}
         <div className="flex justify-end">
-          <Button onClick={handleSave} label="Create" variant="create" />
+          <Button onClick={createStockin} label="Create" variant="create" />
         </div>
       </div>
     </div>
   );
-}
+};
+
