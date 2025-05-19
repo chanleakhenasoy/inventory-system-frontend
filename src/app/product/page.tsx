@@ -1,87 +1,127 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import SearchBar from "@/app/components/search";
-import Pagination from "@/app/components/pagination";
-import Category from "../category/page";
-import Button from "../components/button";
-import { useNavigate } from "react-router-dom";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useState, useEffect, useCallback } from "react"
+import Pagination from "@/app/components/pagination"
+import Button from "../components/button"
+import { useRouter } from "next/navigation"
 
 export default function Product() {
-  const router = useRouter();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [products, setProduct] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const totalPages = 10;
+  const router = useRouter()
+  const [currentPage, setCurrentPage] = useState(1)
+  const [products, setProduct] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [searchTerm, setSearchTerm] = useState("") // New state for search term
+  const totalPages = 10
+
+  // Create a ref to access the search input value
+  const searchInputRef = useCallback((inputElement: HTMLInputElement) => {
+    if (inputElement) {
+      // Add event listener to the search input
+      inputElement.addEventListener("input", (e) => {
+        const target = e.target as HTMLInputElement
+        setSearchTerm(target.value)
+        setCurrentPage(1) // Reset to first page when searching
+      })
+    }
+  }, [])
 
   useEffect(() => {
     const fetchcategories = async () => {
-      const token = localStorage.getItem("token");
-      setError("");
-      setLoading(true);
+      const token = localStorage.getItem("token")
+      setError("")
+      setLoading(true)
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/getAll`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        })
 
         if (response.ok) {
-          const result = await response.json();
-          setProduct(result.data || []); // Adjust according to your API response structure
+          const result = await response.json()
+          setProduct(result.data || []) // Adjust according to your API response structure
         } else {
-          const errorData = await response.json();
-          setError(errorData.message || "Failed to fetch product.");
+          const errorData = await response.json()
+          setError(errorData.message || "Failed to fetch product.")
         }
       } catch (err) {
-        setError("Network error. Please try again.");
+        setError("Network error. Please try again.")
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchcategories();
-  }, [setCurrentPage]);
+    fetchcategories()
+  }, [setCurrentPage])
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  // function handleCreat(): void {
-  //   throw new Error("Function not implemented.");
-  // }
+    setCurrentPage(page)
+  }
 
   const handleClickToProductCreate = () => {
-    router.push("/product/create"); // Replace with your route
-  };
+    router.push("/product/create") // Replace with your route
+  }
 
- const handleClickToProductId = (id: string) => {
-  router.push(`/product/${id}`);
-};
+  const handleClickToProductId = (id: any) => {
+    router.push("/product/[id]") // Replace with your route
+  }
 
+  // Filter products based on search term
+  const filteredProducts = Array.isArray(products)
+    ? products.filter((product) => {
+        if (!searchTerm) return true
 
-  const itemsPerPage = 10;
-  const displayedProducts = Array.isArray(products)
-    ? products.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      )
-    : [];
+        const searchLower = searchTerm.toLowerCase()
+        // Search in name_en, name_kh, product_code, and category_name
+        return (
+          (product.name_en && product.name_en.toLowerCase().includes(searchLower))
+          // (product.name_kh && product.name_kh.toLowerCase().includes(searchLower)) ||
+          // (product.product_code && product.product_code.toLowerCase().includes(searchLower)) ||
+          // (product.category_name && product.category_name.toLowerCase().includes(searchLower))
+        )
+      })
+    : []
+
+  const itemsPerPage = 10
+  // Use filtered products instead of all products
+  const displayedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+
+  // Calculate total pages based on filtered results
+  const calculatedTotalPages = Math.ceil(filteredProducts.length / itemsPerPage)
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <main className="flex-1 overflow-y-auto p-6">
-        {/* Search Bar */}
+        {/* Search Bar with DOM ref to access the input element */}
         <div className="mb-4 w-full sm:w-[50%]">
-          <SearchBar />
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <input
+              ref={searchInputRef}
+              type="text"
+              className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
+              placeholder="Search..."
+              defaultValue={searchTerm}
+            />
+          </div>
         </div>
 
         {/* Header */}
@@ -96,30 +136,14 @@ export default function Product() {
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
               <tr>
                 <th className="px-6 py-3 font-semibold">No</th>
-                <th className="w-[200px] py-3 font-semibold text-[18px]">
-                  Category Name
-                </th>
-                <th className="w-[200px] py-3 font-semibold text-[18px]">
-                  Product Code
-                </th>
-                <th className="w-[150px] py-3 font-semibold text-[18px]">
-                  Name En
-                </th>
-                <th className="w-[150px] py-3 font-semibold text-[18px]">
-                  Name Kh
-                </th>
-                <th className="w-[200px] py-3 font-semibold text-[18px]">
-                  Beginning Quantity
-                </th>
-                <th className="w-[200px] py-3 font-semibold text-[18px]">
-                  Minimum Stock
-                </th>
-                <th className="w-[150px] py-3 font-semibold text-[18px]">
-                  Create At
-                </th>
-                <th className="w-[130px] py-3 font-semibold text-[18px]">
-                  Update At
-                </th>
+                <th className="w-[200px] py-3 font-semibold text-[18px]">Category Name</th>
+                <th className="w-[200px] py-3 font-semibold text-[18px]">Product Code</th>
+                <th className="w-[150px] py-3 font-semibold text-[18px]">Name En</th>
+                <th className="w-[150px] py-3 font-semibold text-[18px]">Name Kh</th>
+                <th className="w-[200px] py-3 font-semibold text-[18px]">Beginning Quantity</th>
+                <th className="w-[200px] py-3 font-semibold text-[18px]">Minimum Stock</th>
+                <th className="w-[150px] py-3 font-semibold text-[18px]">Create At</th>
+                <th className="w-[130px] py-3 font-semibold text-[18px]">Update At</th>
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
@@ -130,32 +154,18 @@ export default function Product() {
                     className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
                     onClick={() => handleClickToProductId(product.id)} // still use product.id to route correctly
                   >
-                    <td className="px-5 py-3 text-[16px]">
-                      {(currentPage - 1) * itemsPerPage + index + 1}
-                    </td>
+                    <td className="px-5 py-3 text-[16px]">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                     {/* 👈 Index displayed here */}
-                    <td className="px-12 py-3 text-[16px]">
-                      {product.category_name}
-                    </td>
-                    <td className="px-4 py-3 text-[16px]">
-                      {product.product_code}
-                    </td>
-                    <td className="px-10 py-3 text-[16px]">
-                      {product.name_en}
-                    </td>
+                    <td className="px-12 py-3 text-[16px]">{product.category_name}</td>
+                    <td className="px-4 py-3 text-[16px]">{product.product_code}</td>
+                    <td className="px-10 py-3 text-[16px]">{product.name_en}</td>
                     <td className="px-8 py-3 text-[16px]">{product.name_kh}</td>
-                    <td className="px-6 py-3 text-[16px]">
-                      {product.beginning_quantity}
-                    </td>
-                    <td className="px-6 py-3 text-[16px]">
-                      {product.minimum_stock}
-                    </td>
+                    <td className="px-6 py-3 text-[16px]">{product.beginning_quantity}</td>
+                    <td className="px-6 py-3 text-[16px]">{product.minimum_stock}</td>
                     <td className="px-8 py-3 cursor-pointer text-[16px]">
                       {new Date(product.created_at).toLocaleString()}
                     </td>
-                    <td className="px-2 py-3 text-[16px]">
-                      {new Date(product.updated_at).toLocaleString()}
-                    </td>
+                    <td className="px-2 py-3 text-[16px]">{new Date(product.updated_at).toLocaleString()}</td>
                   </tr>
                 ))
               ) : (
@@ -172,12 +182,12 @@ export default function Product() {
         {/* Pagination */}
         <div className="flex justify-end items-center mt-4 space-x-2">
           <Pagination
-            totalPages={totalPages}
+            totalPages={calculatedTotalPages || 1}
             initialPage={currentPage}
             onPageChange={handlePageChange}
           />
         </div>
       </main>
     </div>
-  );
+  )
 }
