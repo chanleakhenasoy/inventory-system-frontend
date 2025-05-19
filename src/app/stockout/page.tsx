@@ -79,20 +79,23 @@ export default function StockOut() {
 
         {/* Table */}
         <div className="overflow-x-auto bg-white rounded-md mt-10">
-          <table className="min-w-full text-left">
+          <table className="min-w-full text-center">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
               <tr>
-                <th className="px-6 py-3 font-semibold">ID</th>
-                <th className="px-34 py-3 font-semibold text-[18px]">
-                  Product Name
+                <th className="px-10 py-3 font-semibold">ID</th>
+                <th className="px-10 py-3 font-semibold text-[18px]">
+                  Name En
                 </th>
-                <th className="px-18 py-3 font-semibold text-[18px]">
+                <th className="px-10 py-3 font-semibold text-[18px]">
+                  Name Kh
+                </th>
+                <th className="px-10 py-3 font-semibold text-[18px]">
                     Quantity
                     </th>
-                <th className="px-30 py-3 font-semibold text-[18px]">
+                <th className="px-10 py-3 font-semibold text-[18px]">
                   Employee
                 </th>
-                <th className="px-2 py-3 font-semibold text-[18px]">
+                <th className="px-10 py-3 font-semibold text-[18px]">
                   Stock Out Date
                 </th>
               </tr>
@@ -104,6 +107,7 @@ export default function StockOut() {
                   <td className="px-6 py-3 text-[16px]">
                     {(currentPage - 1) * itemsPerPage + index + 1}</td>
                   <td className="px-34 py-3 text-[16px]">{stockout.name_en}</td>
+                  <td className="px-34 py-3 text-[16px]">{stockout.name_kh}</td>
                   <td className="px-18 py-3 text-[16px]">{stockout.quantity}</td>
                   <td className="px-30 py-3 text-[16px]">{stockout.user_name}</td>
                   <td className="px-2 py-3 text-[16px]"> {new Date(stockout.created_at).toLocaleString()}</td>
