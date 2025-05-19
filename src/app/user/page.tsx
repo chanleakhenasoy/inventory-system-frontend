@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
 import { useParams, useRouter } from "next/navigation";
@@ -10,16 +10,28 @@ interface User {
   user_name: string;
   email: string;
   role: string;
+  _id?: string;
 }
 
 export default function AllUser() {
   const [currentPage, setCurrentPage] = useState(1);
   const [allUser, setAllUser] = useState<User[]>([]);
-  const totalPages = 10;
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const id = useParams();
+  const itemsPerPage = 10;
 
-  console.log(allUser);
+  // Attach listener to search input
+  const searchInputRef = useCallback((inputElement: HTMLInputElement) => {
+    if (inputElement) {
+      inputElement.addEventListener("input", (e) => {
+        const target = e.target as HTMLInputElement;
+        setSearchTerm(target.value);
+        setCurrentPage(1);
+      });
+    }
+  }, []);
 
   useEffect(() => {
     fetchUsers();
@@ -27,17 +39,13 @@ export default function AllUser() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/getAll`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            
-            },
-            }
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/getAll`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (!response.ok) throw new Error("Failed to fetch users");
-
       const result = await response.json();
       setAllUser(result.data);
     } catch (error) {
@@ -49,63 +57,89 @@ export default function AllUser() {
     setCurrentPage(page);
   };
 
-  const handleDelete = async (index: number) => {
-    if (!window.confirm("Are you sure you want to dissable this user?")) return;
+  const handleDelete = async (index: number, userId?: string) => {
+    if (!window.confirm("Are you sure you want to disable this user?")) return;
     const updatedUsers = [...allUser];
     updatedUsers.splice(index, 1);
     setAllUser(updatedUsers);
-    console.log("Deleted user at index:", index);
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3001/api/auth/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/${userId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(`Deleted user with id: ${id}`);
+      if (!response.ok) {
+        console.error("Failed to delete user");
+      }
     } catch (error) {
       console.error("Delete error:", error);
     }
   };
 
-  const itemsPerPage = 10;
-  const displayedUsers = Array.isArray(allUser)
-    ? allUser.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      )
-    : [];
+  const filteredUser = allUser.filter((user) =>
+    user.user_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const displayedUsers = filteredUser.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredUser.length / itemsPerPage);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <main className="flex-1 overflow-y-auto p-6">
-        <div className="mb-4 w-full sm:w-[50%] mt-4">
-          <SearchBar />
+        {/* Search bar */}
+        <div className="mb-4 w-full sm:w-[50%]">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <input
+              ref={searchInputRef}
+              type="text"
+              className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5"
+              placeholder="Search..."
+              defaultValue={searchTerm}
+            />
+          </div>
         </div>
 
+        {/* Header */}
         <div className="flex items-center mb-4">
           <div className="mt-4.5 mr-4">
             <BackButton />
           </div>
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
-            All User
+            All Users
           </h1>
         </div>
 
+        {/* Table */}
         <div className="overflow-x-auto bg-white rounded-md mt-10">
           <table className="min-w-full text-left">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
               <tr>
-              <th className="px-24 py-3 font-semibold text-[18px]">
-                  No
-                </th>
-                <th className="px-24 py-3 font-semibold text-[18px]">
-                  User Name
-                </th>
-                <th className="px-18 py-3 font-semibold text-[18px]">Email</th>
-                <th className="px-36 py-3 font-semibold text-[18px]">Role</th>
+                <th className="px-6 py-3 font-semibold text-[18px]">No</th>
+                <th className="px-6 py-3 font-semibold text-[18px]">User Name</th>
+                <th className="px-6 py-3 font-semibold text-[18px]">Email</th>
+                <th className="px-6 py-3 font-semibold text-[18px]">Role</th>
                 <th className="px-4 py-3 font-semibold text-[18px]">Action</th>
               </tr>
             </thead>
@@ -113,9 +147,11 @@ export default function AllUser() {
               {displayedUsers.length > 0 ? (
                 displayedUsers.map((user, index) => (
                   <tr key={index} className="hover:bg-[#F3F3F3] h-[55px]">
-                    <td className="px-24 py-3 text-[16px]">  {(currentPage - 1) * itemsPerPage + index + 1}</td>
-                    <td className="px-24 py-3 text-[16px]">{user.user_name}</td>
-                    <td className="px-2 py-3 text-[16px]">
+                    <td className="px-6 py-3 text-[16px]">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
+                    </td>
+                    <td className="px-6 py-3 text-[16px]">{user.user_name}</td>
+                    <td className="px-6 py-3 text-[16px]">
                       <a
                         href={`mailto:${user.email}`}
                         className="text-[#2D579A] underline"
@@ -123,10 +159,10 @@ export default function AllUser() {
                         {user.email}
                       </a>
                     </td>
-                    <td className="px-36 py-3 text-[16px]">{user.role}</td>
+                    <td className="px-6 py-3 text-[16px]">{user.role}</td>
                     <td className="px-4 py-3 text-[16px]">
                       <button
-                        onClick={() => handleDelete(index)}
+                        onClick={() => handleDelete(index, user._id)}
                         className="bg-[#EF2B2E] text-white px-4 py-1 rounded-md hover:bg-[#FB6365] text-[10px]"
                       >
                         Delete
@@ -136,7 +172,7 @@ export default function AllUser() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} className="text-center py-4">
+                  <td colSpan={5} className="text-center py-4 text-gray-500">
                     No users found.
                   </td>
                 </tr>
@@ -145,6 +181,7 @@ export default function AllUser() {
           </table>
         </div>
 
+        {/* Pagination */}
         <div className="flex justify-end items-center mt-4 space-x-2">
           <Pagination
             totalPages={totalPages}

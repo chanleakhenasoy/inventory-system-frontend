@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
-import Link from "next/link";
 import Button from "../components/button";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -11,12 +9,12 @@ import React from "react";
 export default function StockIn() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 10;
   const [stockIn, setStockIn] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  console.log("stock in", stockIn);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchStockIn = async () => {
@@ -25,7 +23,7 @@ export default function StockIn() {
       setLoading(true);
       try {
         const response = await fetch(
-         `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/getAll`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/getAll`,
           {
             method: "GET",
             headers: {
@@ -37,7 +35,7 @@ export default function StockIn() {
 
         if (response.ok) {
           const result = await response.json();
-          setStockIn(result.data || []); 
+          setStockIn(result.data || []);
         } else {
           const errorData = await response.json();
           setError(errorData.message || "Failed to fetch stock in.");
@@ -50,30 +48,66 @@ export default function StockIn() {
     };
 
     fetchStockIn();
-  }, [currentPage]);
+  }, []);
 
   const handleClickToStockinCreate = () => {
-    router.push("/stockin/create"); // Replace with your route
+    router.push("/stockin/create");
   };
 
   const handleClickToStockinId = (id: any) => {
-    router.push("/stockin/[id]"); // Replace with your route
+    router.push(`/stockin/${id}`);
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  const itemsPerPage = 10;
-  const displayedStockin = Array.isArray(stockIn)
-    ? stockIn.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-    : [];
-  
+  // Filter by product name (name_en inside items[])
+  const filteredStockIn = stockIn.filter((stockin) =>
+    stockin.items.some((item: any) =>
+      item.name_en?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
+  const totalPages = Math.ceil(filteredStockIn.length / itemsPerPage);
+
+  const displayedStockIn = filteredStockIn.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <main className="flex-1 overflow-y-auto p-6">
+        {/* Search */}
         <div className="mb-4 w-full sm:w-[50%]">
-          <SearchBar />
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <input
+              type="text"
+              className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
+              placeholder="Search by product name..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+            />
+          </div>
         </div>
 
         <div className="flex items-center justify-between mb-4">
@@ -92,10 +126,7 @@ export default function StockIn() {
                   Reference Number
                 </th>
                 <th className="px-6 py-3 font-semibold text-[18px]">
-                   Name En
-                </th>
-                <th className="px-6 py-3 font-semibold text-[18px]">
-                  Name Kh
+                  Product Name
                 </th>
                 <th className="px-6 py-3 font-semibold text-[18px]">
                   Supplier Name
@@ -104,27 +135,47 @@ export default function StockIn() {
                   Quantity
                 </th>
                 <th className="px-6 py-3 font-semibold text-[18px]">
-                  Create At
+                  Created At
                 </th>
                 <th className="px-6 py-3 font-semibold text-[18px]">
-                  Update At
+                  Updated At
                 </th>
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
-              {displayedStockin.map((stockin, index) =>
-                stockin.items.map((item: any, itemIndex: any) => (
-                  <tr key={itemIndex} className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer" onClick={() => handleClickToStockinId(stockin.id)}>
-                    <td className="px-5 py-3">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                    <td className="px-14 py-3">{stockin.reference_number}</td>
-                    <td className="px-14 py-3">{item.name_en}</td>
-                    <td className="px-14 py-3">{item.name_kh}</td>
-                    <td className="px-8 py-3">{stockin.supplier_name}</td>
-                    <td className="px-8 py-3">{item.quantity}</td>
-                    <td className="px-18 py-3">{new Date(stockin.created_at).toLocaleString()}</td>
-                    <td className="px-2 py-3">{new Date(stockin.updated_at).toLocaleString()}</td>
-                  </tr>
-                ))
+              {displayedStockIn.map((stockin, stockinIndex) =>
+                stockin.items.map((item: any, itemIndex: number) => {
+                  if (
+                    item.name_en
+                      ?.toLowerCase()
+                      .includes(searchTerm.toLowerCase())
+                  ) {
+                    return (
+                      <tr
+                        key={`${stockin.id}-${itemIndex}`}
+                        className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
+                        onClick={() => handleClickToStockinId(stockin.id)}
+                      >
+                        <td className="px-5 py-3">
+                          {(currentPage - 1) * itemsPerPage + stockinIndex + 1}
+                        </td>
+                        <td className="px-14 py-3">
+                          {stockin.reference_number}
+                        </td>
+                        <td className="px-14 py-3">{item.name_en}</td>
+                        <td className="px-8 py-3">{stockin.supplier_name}</td>
+                        <td className="px-8 py-3">{item.quantity}</td>
+                        <td className="px-18 py-3">
+                          {new Date(stockin.created_at).toLocaleString()}
+                        </td>
+                        <td className="px-2 py-3">
+                          {new Date(stockin.updated_at).toLocaleString()}
+                        </td>
+                      </tr>
+                    );
+                  }
+                  return null;
+                })
               )}
             </tbody>
           </table>

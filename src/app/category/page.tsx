@@ -1,33 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
 import { useRouter } from "next/navigation";
 import Button from "../components/button";
-import { useCallback } from "react";
 
 export default function Category() {
   const router = useRouter();
   const [categories, setCategories] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 10;
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("")
+  const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState("");
-  console.log(categories);
 
-  // Create a ref to access the search input value
-    const searchInputRef = useCallback((inputElement: HTMLInputElement) => {
-      if (inputElement) {
-        // Add event listener to the search input
-        inputElement.addEventListener("input", (e) => {
-          const target = e.target as HTMLInputElement
-          setSearchTerm(target.value)
-          setCurrentPage(1) // Reset to first page when searching
-        })
-      }
-    }, [])
+  const itemsPerPage = 10;
+
+  const searchInputRef = useCallback((inputElement: HTMLInputElement) => {
+    if (inputElement) {
+      inputElement.addEventListener("input", (e) => {
+        const target = e.target as HTMLInputElement;
+        setSearchTerm(target.value);
+        setCurrentPage(1);
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const fetchcategories = async () => {
@@ -48,7 +45,7 @@ export default function Category() {
 
         if (response.ok) {
           const result = await response.json();
-          setCategories(result.data || []); // Adjust according to your API response structure
+          setCategories(result.data || []);
         } else {
           const errorData = await response.json();
           setError(errorData.message || "Failed to fetch category.");
@@ -61,11 +58,12 @@ export default function Category() {
     };
 
     fetchcategories();
-  }, [setCurrentPage]);
+  }, []);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+
   const handleClickToCategoryCreate = () => {
     router.push("/category/create");
   };
@@ -74,29 +72,23 @@ export default function Category() {
     router.push(`/category/${id}`);
   };
 
-  // Filter products based on search term
-  const filteredCategory = Array.isArray(categories)
-    ? categories.filter((category) => {
-        if (!searchTerm) return true
+  const filteredCategories = categories.filter((category) => {
+    if (!searchTerm) return true;
+    return category.category_name
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase());
+  });
 
-        const searchLower = searchTerm.toLowerCase()
-        // Search in category_name
-        return (
-          (category.category_name && category.category_name.toLowerCase().includes(searchLower))
-        )
-      })
-    : []
-
-  const itemsPerPage = 10;
-  const displayedCategories = categories.slice(
+  const displayedCategories = filteredCategories.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
+  const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <main className="flex-1 overflow-y-auto p-6">
-        {/* Search Bar with DOM ref to access the input element */}
         <div className="mb-4 w-full sm:w-[50%]">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -125,7 +117,6 @@ export default function Category() {
           </div>
         </div>
 
-        {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
             Category
@@ -133,10 +124,8 @@ export default function Category() {
           <Button onClick={handleClickToCategoryCreate} label="Create" />
         </div>
 
-        {/* Error Message */}
         {error && <div className="text-red-500 mb-4">{error}</div>}
 
-        {/* Loading Indicator */}
         {loading ? (
           <div className="text-center mt-10">Loading...</div>
         ) : (
@@ -196,7 +185,6 @@ export default function Category() {
           </div>
         )}
 
-        {/* Pagination */}
         <div className="flex justify-end items-center mt-4 space-x-2">
           <Pagination
             totalPages={totalPages}
