@@ -62,12 +62,13 @@ export default function Product() {
   }
 
   const handleClickToProductCreate = () => {
-    router.push("/product/create") // Replace with your route
+    router.push("/product/create") 
   }
 
-  const handleClickToProductId = (id: any) => {
-    router.push("/product/[id]") // Replace with your route
-  }
+  const handleClickToProductId = (id: string) => {
+    router.push(`/product/${id}`);
+  };
+  
 
   // Filter products based on search term
   const filteredProducts = Array.isArray(products)
