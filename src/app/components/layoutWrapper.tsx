@@ -31,9 +31,7 @@ export default function LayoutWrapper({
       <div className="flex h-[850px]">
         {/* Sidebar */}
         <div className="w-80 bg-[#2D579A] text-white text-[20px]">
-          <nav className="mt-6">
-
-    
+          <nav>
           <SidebarItem icon={<LayoutDashboard size={20} />} text="Dashboard" href="/dashboard" />
             <SidebarItem icon={<Store size={20} />} text="Suppliers" href="/suppliers" />
             <SidebarItem icon={<BoxIcon size={20} />} text="Category" href="/category" />
@@ -44,9 +42,6 @@ export default function LayoutWrapper({
                 {role === "admin" && (
               <SidebarItem icon={<User size={20} />} text="Create User" href="/register" />
             )}
-
-            
-
           </nav>
         </div>
 
