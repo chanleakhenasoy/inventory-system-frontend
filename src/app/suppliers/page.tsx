@@ -5,6 +5,7 @@ import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
 import Button from "../components/button";
 import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 
 export default function Supplier() {
   const router = useRouter();
@@ -13,8 +14,21 @@ export default function Supplier() {
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   console.log("suppliers", suppliers);
+
+  // Create a ref to access the search input value
+    const searchInputRef = useCallback((inputElement: HTMLInputElement) => {
+      if (inputElement) {
+        // Add event listener to the search input
+        inputElement.addEventListener("input", (e) => {
+          const target = e.target as HTMLInputElement
+          setSearchTerm(target.value)
+          setCurrentPage(1) // Reset to first page when searching
+        })
+      }
+    }, [])
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -62,6 +76,18 @@ export default function Supplier() {
     router.push(`/suppliers/${id}`);
   };
 
+  // Filter products based on search term
+  const filteredSupplier = Array.isArray(suppliers)
+    ? suppliers.filter((supplier) => {
+        if (!searchTerm) return true
+
+        const searchLower = searchTerm.toLowerCase()
+        return (
+          (supplier.supplier_name && supplier.supplier_name.toLowerCase().includes(searchLower))
+        )
+      })
+    : []
+
   const itemsPerPage = 10;
   const displayedSuppliers = Array.isArray(suppliers) ? suppliers.slice(
     (currentPage - 1) * itemsPerPage,
@@ -72,9 +98,33 @@ export default function Supplier() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <main className="flex-1 overflow-y-auto p-6">
-        {/* Search Bar */}
+        {/* Search Bar with DOM ref to access the input element */}
         <div className="mb-4 w-full sm:w-[50%]">
-          <SearchBar />
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <input
+              ref={searchInputRef}
+              type="text"
+              className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
+              placeholder="Search..."
+              defaultValue={searchTerm}
+            />
+          </div>
         </div>
 
         {/* Header */}
