@@ -2,7 +2,7 @@
 
 export default function Notification() {
   return (
-    <div className="flex flex-col p-6">
+    <div className="flex flex-col p-6 mt-25">
       {/* Title */}
       <h1 className="text-[30px] font-bold text-[#2D579A] mb-4 mt-6">Notification</h1>
 

@@ -125,7 +125,7 @@ export default function CreateUser() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 mt-25">
       {/* Header */}
       {success && (
         <div className="absolute top-0 right-0 w-[500px] max-w-full bg-green-500 text-white text-center py-3 px-6 rounded-tl-lg rounded-bl-lg shadow-lg">

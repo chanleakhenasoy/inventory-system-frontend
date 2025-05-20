@@ -30,7 +30,7 @@ export default function LayoutWrapper({
       <Navbar />
       <div className="flex h-[850px]">
         {/* Sidebar */}
-        <div className="w-80 bg-[#2D579A] text-white text-[20px]">
+        <div className="w-80 bg-[#2D579A] text-white text-[20px] mt-[102.4px]">
           <nav>
           <SidebarItem icon={<LayoutDashboard size={20} />} text="Dashboard" href="/dashboard" />
             <SidebarItem icon={<Store size={20} />} text="Suppliers" href="/suppliers" />
