@@ -15,6 +15,7 @@ import { SidebarItem } from "../components/sidebarItem";
 import { OverviewCard } from "../components/overviewCard";
 import { ChartLegendItem } from "../components/chartLegendItem";
 import { useEffect, useState } from "react";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 export default function Dashboard() {
   const [totalProduct, setProduct] = useState<number>(0);
@@ -55,7 +56,7 @@ export default function Dashboard() {
       const token = localStorage.getItem("token");
       setLoading(true);
       setError("");
-  
+
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/category/total`, {
           method: "GET",
@@ -85,6 +86,7 @@ export default function Dashboard() {
   
   
     return (
+      <ProtectedRoute>
       <div className="flex h-screen">
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
@@ -186,5 +188,6 @@ export default function Dashboard() {
           </main>
         </div>
       </div>
+      </ProtectedRoute>
   );
 }
