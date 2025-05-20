@@ -222,24 +222,7 @@ export default function CreateNewStockout() {
             <label className="block text-[#2D579A] mb-2">Employee</label>
 
             <div className="relative">
-              {/* <select
-                name="user_name"
-                value={formData.user_name}
-                onChange={handleChange}
-                className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
-              >
-                <option value="">Select a employee</option>
-                {employees.map((employee) => (
-                  <option
-                    key={employee.id}
-                    value={employee.user_name}
-                  >
-                    {employee.user_name}
-                  </option>
-                ))}
-              </select> */}
-
-<select
+              <select
                 name="selectedUserId"
                 value={formData.selectedUserId}
                 onChange={(e) => {
@@ -249,9 +232,7 @@ export default function CreateNewStockout() {
                   setFormData((prev) => ({
                     ...prev,
                     user_name: selectedUser ? selectedUser.user_name : "",
-                    selectedUserId: selectedUser
-                      ? selectedUser.id
-                      : "",
+                    selectedUserId: selectedUser ? selectedUser.id : "",
                   }));
                 }}
                 className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
