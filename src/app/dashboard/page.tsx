@@ -87,7 +87,7 @@ export default function Dashboard() {
   
     return (
       <ProtectedRoute>
-      <div className="flex h-screen">
+      <div className="flex h-screen mt-25">
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <main className="flex-1 overflow-y-auto p-6">

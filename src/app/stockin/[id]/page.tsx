@@ -33,7 +33,7 @@ export default function StockInDetail() {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen mt-25">
       {/* Main Content */}
       <div className="flex-1 flex flex-col ">
         {/* Content */}
