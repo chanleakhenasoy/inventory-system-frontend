@@ -10,7 +10,7 @@ interface User {
   user_name: string;
   email: string;
   role: string;
-  _id?: string;
+  id?: string;
 }
 
 export default function AllUser() {
@@ -162,8 +162,8 @@ export default function AllUser() {
                     <td className="px-6 py-3 text-[16px]">{user.role}</td>
                     <td className="px-4 py-3 text-[16px]">
                       <button
-                        onClick={() => handleDelete(index, user._id)}
-                        className="bg-[#EF2B2E] text-white px-4 py-1 rounded-md hover:bg-[#FB6365] text-[10px]"
+                        onClick={() => handleDelete(index, user.id)}
+                        className="bg-[#EF2B2E] text-white px-4 py-1 rounded-md hover:bg-[#FB6365] text-[10px] cursor-pointer"
                       >
                         Delete
                       </button>
