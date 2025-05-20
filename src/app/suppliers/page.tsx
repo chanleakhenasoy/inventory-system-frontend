@@ -315,7 +315,7 @@ export default function Supplier() {
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="flex-1 flex flex-col overflow-hidden mt-25">
       <main className="flex-1 overflow-y-auto p-6">
         {/* Search Bar */}
         <div className="mb-4 w-full sm:w-[50%]">
