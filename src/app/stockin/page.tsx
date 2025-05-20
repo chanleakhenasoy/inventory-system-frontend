@@ -14,6 +14,8 @@ export default function StockIn() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
+  console.log(stockIn)
+  
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -126,7 +128,10 @@ export default function StockIn() {
                   Reference Number
                 </th>
                 <th className="px-12 py-3 font-semibold text-[18px]">
-                  Product Name
+                  Name En
+                </th>
+                <th className="px-12 py-3 font-semibold text-[18px]">
+                  Name Kh
                 </th>
                 <th className="px-14 py-3 font-semibold text-[18px]">
                   Supplier Name
@@ -163,6 +168,7 @@ export default function StockIn() {
                           {stockin.reference_number}
                         </td>
                         <td className="px-14 py-3">{item.name_en}</td>
+                        <td className="px-14 py-3">{item.name_kh}</td>
                         <td className="px-8 py-3">{stockin.supplier_name}</td>
                         <td className="px-8 py-3">{item.quantity}</td>
                         <td className="px-18 py-3">

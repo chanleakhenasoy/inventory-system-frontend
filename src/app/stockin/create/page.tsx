@@ -25,8 +25,9 @@ export default function AddNewStock() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [items, setItems] = useState<
-  Array<{
+    Array<{
       product: string;
+      product_id: string;
       quantity: string;
       expire_date: string;
       total_price: string;
@@ -41,11 +42,11 @@ export default function AddNewStock() {
     quantity: "",
     unit_price: "",
     expire_date: "",
-    name_en:"",
-    supplier_name:""
+    name_en: "",
+    supplier_name: "",
   });
 
-  console.log(formData.selectedSupplierId, formData.selectedProductId)
+  console.log(formData.selectedSupplierId, formData.selectedProductId);
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -66,7 +67,7 @@ export default function AddNewStock() {
 
         if (response.ok) {
           const result = await response.json();
-          setSuppliers(result.data); 
+          setSuppliers(result.data);
         } else {
           const errorData = await response.json();
           setError(errorData.message || "Failed to fetch suppliers.");
@@ -96,7 +97,7 @@ export default function AddNewStock() {
 
         if (response.ok) {
           const result = await response.json();
-          setProducts(result.data); 
+          setProducts(result.data);
         } else {
           const errorData = await response.json();
           setError(errorData.message || "Failed to fetch product.");
@@ -108,10 +109,8 @@ export default function AddNewStock() {
       }
     };
     fetchProducts();
-  fetchSuppliers();
+    fetchSuppliers();
   }, []);
-
-  
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -125,15 +124,14 @@ export default function AddNewStock() {
     }));
   };
   const createStockin = async () => {
-   
     setLoading(true);
     setError("");
-  
+
     try {
       const token = localStorage.getItem("token");
-  
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/create/${formData.selectedSupplierId}/${formData.selectedProductId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/create/${formData.selectedSupplierId}`,
         {
           method: "POST",
           headers: {
@@ -145,21 +143,16 @@ export default function AddNewStock() {
             reference_number: formData.reference_number,
             due_date: formData.due_date,
             items: items.map((item) => ({
+              product_id: item.product_id,
               quantity: Number(item.quantity),
-              unit_price: Number(item.total_price) / Number(item.quantity), // or use your formData.unitPrice if you saved it differently
+              unit_price: Number(item.total_price) / Number(item.quantity),
               expire_date: item.expire_date,
             })),
-            // quantity: Number(formData.quantity),
-            // unit_price: Number(formData.unit_price),
-            // expire_date: formData.expire_date,
-
           }),
         }
       );
-  
+
       if (response.ok) {
-        alert("Stock created successfully!");
-        // reset form
         setFormData({
           selectedProductId: "",
           purchase_date: "",
@@ -169,14 +162,14 @@ export default function AddNewStock() {
           quantity: "",
           unit_price: "",
           expire_date: "",
-          name_en:"",
-          supplier_name:""
+          name_en: "",
+          supplier_name: "",
         });
         setItems([]);
+        route.push("/stockin");
       } else {
         const errData = await response.json();
         setError(errData.message || "Failed to create stock.");
-        route.push("/stockkin")
       }
     } catch (err) {
       setError("Network error. Please try again.");
@@ -186,12 +179,14 @@ export default function AddNewStock() {
   };
   const handleAddItem = (): void => {
     if (formData.selectedProductId && formData.quantity) {
-      const totalPrice = Number(formData.quantity) * Number(formData.unit_price || 0);
+      const totalPrice =
+        Number(formData.quantity) * Number(formData.unit_price || 0);
 
       const newItems = [
         ...items,
         {
           product: formData.name_en,
+          product_id: formData.selectedProductId,
           quantity: formData.quantity,
           expire_date: formData.expire_date,
           total_price: totalPrice.toFixed(2),
@@ -202,7 +197,7 @@ export default function AddNewStock() {
       console.log(newItems);
     }
 
-    setFormData((prev) => ({  
+    setFormData((prev) => ({
       ...prev,
       selectedProductId: "",
       quantity: "",
@@ -210,8 +205,7 @@ export default function AddNewStock() {
       expire_date: "",
     }));
   };
-  
- 
+
   return (
     <div className="p-6 mt-25">
       <div className="flex items-center mb-4">
@@ -274,29 +268,31 @@ export default function AddNewStock() {
             <label className="block text-[#2D579A] mb-2">Supplier</label>
 
             <select
-                name="selectedSupplierId"
-                value={formData.selectedSupplierId}
-                onChange={(e) => {
-                  const selectedSupplier = suppliers.find(
-                    (s) => s.id === e.target.value
-                  );
-                  setFormData((prev) => ({
-                    ...prev,
-                    supplier_name: selectedSupplier ? selectedSupplier.supplier_name : "",
-                    selectedSupplierId: selectedSupplier
-                      ? selectedSupplier.id
-                      : "",
-                  }));
-                }}
-                className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
-              >
-                <option value="">Select a supplier</option>
-                {suppliers.map((supplier) => (
-                  <option key={supplier.id} value={supplier.id}>
-                    {supplier.supplier_name}
-                  </option>
-                ))}
-              </select>
+              name="selectedSupplierId"
+              value={formData.selectedSupplierId}
+              onChange={(e) => {
+                const selectedSupplier = suppliers.find(
+                  (s) => s.id === e.target.value
+                );
+                setFormData((prev) => ({
+                  ...prev,
+                  supplier_name: selectedSupplier
+                    ? selectedSupplier.supplier_name
+                    : "",
+                  selectedSupplierId: selectedSupplier
+                    ? selectedSupplier.id
+                    : "",
+                }));
+              }}
+              className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none cursor-pointer"
+            >
+              <option value="">Select a supplier</option>
+              {suppliers.map((supplier) => (
+                <option key={supplier.id} value={supplier.id}>
+                  {supplier.supplier_name}
+                </option>
+              ))}
+            </select>
             <div className="pointer-events-none absolute inset-y-0 right-3 mt-8 flex items-center">
               <svg
                 className="w-5 h-5 text-gray-500"
@@ -312,7 +308,6 @@ export default function AddNewStock() {
                 />
               </svg>
             </div>
-
           </div>
 
           {/* Reference number */}
@@ -341,7 +336,7 @@ export default function AddNewStock() {
                 value={formData.due_date}
                 onChange={handleChange}
                 className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
-        [&::-webkit-calendar-picker-indicator]:opacity-0"
+        [&::-webkit-calendar-picker-indicator]:opacity-0 cursor-pointer"
               />
 
               {/* Custom calendar icon */}
@@ -378,29 +373,27 @@ export default function AddNewStock() {
             <label className="block text-[#2D579A] mb-2">Product</label>
 
             <select
-                name="selectedProductId"
-                value={formData.selectedProductId}
-                onChange={(e) => {
-                  const selectedProduct = products.find(
-                    (p) => p.id === e.target.value
-                  );
-                  setFormData((prev) => ({
-                    ...prev,
-                    name_en: selectedProduct ? selectedProduct.name_en : "",
-                    selectedProductId: selectedProduct
-                      ? selectedProduct.id
-                      : "",
-                  }));
-                }}
-                className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
-              >
-                <option value="">Select a product</option>
-                {products.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.name_en}
-                  </option>
-                ))}
-              </select>
+              name="selectedProductId"
+              value={formData.selectedProductId}
+              onChange={(e) => {
+                const selectedProduct = products.find(
+                  (p) => p.id === e.target.value
+                );
+                setFormData((prev) => ({
+                  ...prev,
+                  name_en: selectedProduct ? selectedProduct.name_en : "",
+                  selectedProductId: selectedProduct ? selectedProduct.id : "",
+                }));
+              }}
+              className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none cursor-pointer"
+            >
+              <option value="">Select a product</option>
+              {products.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.name_en}
+                </option>
+              ))}
+            </select>
 
             {/* Custom dropdown icon */}
             <div className="pointer-events-none absolute inset-y-0 right-3 mt-19 flex items-center">
@@ -428,7 +421,7 @@ export default function AddNewStock() {
               name="quantity"
               value={formData.quantity}
               onChange={handleChange}
-              className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
             />
           </div>
 
@@ -501,33 +494,35 @@ export default function AddNewStock() {
 
         {/* Items Table */}
         <div className="bg-white rounded-lg p-6">
-        <table className="w-full text-black border border-gray-300 rounded-lg mb-6 mt-16">
-          <thead className="bg-gray-50 text-[#2D579A]">
-            <tr>
-              <th className="p-3 border-b border-gray-300">Product</th>
-              <th className="p-3 border-b border-gray-300">Quantity</th>
-              <th className="p-3 border-b border-gray-300">Expire Date</th>
-              <th className="p-3 border-b border-gray-300">Total Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.length > 0 ? (
-              items.map((item, index) => (
-                <tr key={index} className="border-b">
-                  <td className="p-3">{item.product}</td>
-                  <td className="p-3">{item.quantity}</td>
-                  <td className="p-3">{item.expire_date}</td>
-                  <td className="p-3">{item.total_price}$</td>
-                </tr>
-              ))
-            ) : (
+          <table className="w-full text-black border border-gray-300 rounded-lg mb-6 mt-16">
+            <thead className="bg-gray-50 text-[#2D579A]">
               <tr>
-                <td colSpan={4} className="p-3 text-center text-gray-500">No items added yet</td>
+                <th className="p-3 border-b border-gray-300">Product</th>
+                <th className="p-3 border-b border-gray-300">Quantity</th>
+                <th className="p-3 border-b border-gray-300">Expire Date</th>
+                <th className="p-3 border-b border-gray-300">Total Price</th>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {items.length > 0 ? (
+                items.map((item, index) => (
+                  <tr key={index} className="border-b">
+                    <td className="p-3">{item.product}</td>
+                    <td className="p-3">{item.quantity}</td>
+                    <td className="p-3">{item.expire_date}</td>
+                    <td className="p-3">{item.total_price}$</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className="p-3 text-center text-gray-500">
+                    No items added yet
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
         {/* Save Button */}
         <div className="flex justify-end">
           <Button onClick={createStockin} label="Create" variant="create" />
@@ -535,5 +530,4 @@ export default function AddNewStock() {
       </div>
     </div>
   );
-};
-
+}

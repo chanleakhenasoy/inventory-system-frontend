@@ -215,7 +215,7 @@ console.log(formData)
                     : "",
                 }));
               }}
-              className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+              className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none cursor-pointer"
             >
               <option value="">Select a category</option>
               {categories.map((category) => (
