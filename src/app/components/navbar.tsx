@@ -7,7 +7,7 @@ export default function Navbar() {
   return (
     // <header className="bg-white shadow-sm z-10 flex items-center justify-between">
     <header className="fixed top-0 left-0 w-full bg-white shadow-sm z-50 flex items-center justify-between">
-      <div className="p-4">
+      <div className="p-4 ml-8">
           <Image
             src={logo}
             alt="PSE Pour Un Sourire D'Enfant"
