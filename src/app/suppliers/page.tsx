@@ -1,34 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import SearchBar from "@/app/components/search";
-import Pagination from "@/app/components/pagination";
-import Button from "../components/button";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import Button from "../components/button";
+import Pagination from "@/app/components/pagination";
 
 export default function Supplier() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 10;
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-
-  console.log("suppliers", suppliers);
-
-  // Create a ref to access the search input value
-    const searchInputRef = useCallback((inputElement: HTMLInputElement) => {
-      if (inputElement) {
-        // Add event listener to the search input
-        inputElement.addEventListener("input", (e) => {
-          const target = e.target as HTMLInputElement
-          setSearchTerm(target.value)
-          setCurrentPage(1) // Reset to first page when searching
-        })
-      }
-    }, [])
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -49,7 +33,7 @@ export default function Supplier() {
 
         if (response.ok) {
           const result = await response.json();
-          setSuppliers(result.data); // Adjust according to your API response structure
+          setSuppliers(result.data);
         } else {
           const errorData = await response.json();
           setError(errorData.message || "Failed to fetch suppliers.");
@@ -62,7 +46,7 @@ export default function Supplier() {
     };
 
     fetchSuppliers();
-  }, [currentPage]);
+  }, []);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -76,29 +60,25 @@ export default function Supplier() {
     router.push(`/suppliers/${id}`);
   };
 
-  // Filter products based on search term
+  // ✅ Correct filtering based on supplier_name
   const filteredSupplier = Array.isArray(suppliers)
     ? suppliers.filter((supplier) => {
-        if (!searchTerm) return true
-
-        const searchLower = searchTerm.toLowerCase()
-        return (
-          (supplier.supplier_name && supplier.supplier_name.toLowerCase().includes(searchLower))
-        )
+        const name = supplier?.supplier_name || "";
+        return name.toLowerCase().includes(searchTerm.toLowerCase());
       })
-    : []
+    : [];
 
-  const itemsPerPage = 10;
-  const displayedSuppliers = Array.isArray(suppliers) ? suppliers.slice(
+  const totalPages = Math.ceil(filteredSupplier.length / itemsPerPage);
+
+  const displayedSuppliers = filteredSupplier.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
-  ) : [];
-  
+  );
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
       <main className="flex-1 overflow-y-auto p-6">
-        {/* Search Bar with DOM ref to access the input element */}
+        {/* Search */}
         <div className="mb-4 w-full sm:w-[50%]">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -118,11 +98,14 @@ export default function Supplier() {
               </svg>
             </div>
             <input
-              ref={searchInputRef}
               type="text"
               className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
               placeholder="Search..."
-              defaultValue={searchTerm}
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
             />
           </div>
         </div>
@@ -158,10 +141,10 @@ export default function Supplier() {
                   Company Name
                 </th>
                 <th className="w-[300px] py-3 font-semibold text-[18px]">
-                  Create At
+                  Created At
                 </th>
                 <th className="w-[300px] py-3 font-semibold text-[18px]">
-                  Update At
+                  Updated At
                 </th>
               </tr>
             </thead>
@@ -189,7 +172,7 @@ export default function Supplier() {
                       {supplier.company_name}
                     </td>
                     <td className="w-[300px] py-3 text-[16px]">
-                      {new Date (supplier.created_at).toLocaleString()}
+                      {new Date(supplier.created_at).toLocaleString()}
                     </td>
                     <td className="w-[300px]  py-3 text-[16px]">
                       {new Date(supplier.updated_at).toLocaleString()}
@@ -219,4 +202,3 @@ export default function Supplier() {
     </div>
   );
 }
-
