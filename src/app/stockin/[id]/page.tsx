@@ -554,6 +554,7 @@ interface StockInItem {
   quantity: number;
   unit_price: number;
   expire_date: string;
+  total_price:number;
 }
 
 interface FormData {
@@ -563,7 +564,6 @@ interface FormData {
   reference_number: string;
   purchase_date: string;
   due_date: string;
-  expire_date: string;
   items: StockInItem[];
   selectedItem?: {
     item_id: string;
@@ -571,6 +571,8 @@ interface FormData {
     product_name: string;
     quantity: number;
     unit_price: number;
+    expire_date: string;
+    total_price: number;
   };
 }
 
@@ -605,6 +607,7 @@ export default function StockInDetail() {
         quantity: number;
         unit_price: number;
         expire_date: string;
+        total_price:number;
       }
     | undefined
   >(undefined);
@@ -732,11 +735,13 @@ export default function StockInDetail() {
         quantity: item.quantity,
         unit_price: item.unit_price,
         expire_date: item.expire_date,
+        total_price: item.total_price,
         purchase_date: formData.purchase_date,
         due_date: formData.due_date,
         reference_number: formData.reference_number,
         supplier_id: formData.selectedSupplierId,
         invoice_stockin_id: formData.invoice_id,
+        
       });
     }
   };
@@ -832,6 +837,7 @@ export default function StockInDetail() {
             product_id: selectedItem.selectedProductId,
             quantity: selectedItem.quantity,
             unit_price: selectedItem.unit_price,
+            total_price: selectedItem.total_price,
             expire_date: selectedItem.expire_date,
             purchase_date: selectedItem.purchase_date,
             due_date: selectedItem.due_date,
@@ -843,7 +849,6 @@ export default function StockInDetail() {
 
       if (!res.ok) throw new Error("Failed to update");
 
-      // ✅ Refresh updated invoice from API
       const updatedRes = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/${invoiceId}`,
         {
@@ -856,13 +861,12 @@ export default function StockInDetail() {
 
       const updatedData = await updatedRes.json();
 
-      // ✅ Update state with new invoice data
+    
       setFormData((prev) => ({
         ...prev,
         ...updatedData.data,
       }));
 
-      // ✅ Clear selected item to return to list view
       // setSelectedItem(undefined);
     } catch (err) {
       setError("Failed to update item.");
@@ -913,7 +917,7 @@ export default function StockInDetail() {
       </div>
 
       {error && <div className="text-red-500 mb-4">{error}</div>}
-      {loading && <div className="text-[#2D579A] mb-4">Loading...</div>}
+      {/* {loading && <div className="text-[#2D579A] mb-4">Loading...</div>} */}
 
       <div className="bg-white rounded-lg p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -1064,6 +1068,7 @@ export default function StockInDetail() {
                   <th className="px-4 py-2">Product Name</th>
                   <th className="px-4 py-2">Unit Price</th>
                   <th className="px-4 py-2">Quantity</th>
+                  <th className="px-4 py-2">Total Price</th>
                   <th className="px-4 py-2">Expire Date</th>
                   <th className="px-4 py-2">Action</th>
                 </tr>
@@ -1086,6 +1091,7 @@ export default function StockInDetail() {
                     </td>
                     <td className="px-4 py-2">${item.unit_price}</td>
                     <td className="px-4 py-2">{item.quantity}</td>
+                    <td className="px-4 py-2">{item.total_price}</td>
                     <td className="px-4 py-2">
                       {item.expire_date
                         ? new Date(item.expire_date).toLocaleDateString()
@@ -1149,6 +1155,27 @@ export default function StockInDetail() {
                   className="w-full p-2 text-black border-gray-300 border focus:outline-none focus:ring-1 focus:ring-blue-500 rounded-lg"
                 />
               </div>
+
+              <div>
+                <label className="block mb-2 text-[#2D579A]">Expire Date</label>
+                <input
+                  type="date"
+                  name="expire_date"
+                  value={selectedItem.expire_date}
+                  onChange={handleSelectedItemChange}
+                  className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-[#2D579A]">Total Price</label>
+                <input
+                  type="number"
+                  name="total_price"
+                  value={selectedItem.total_price}
+                  onChange={handleSelectedItemChange}
+                  className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
               
               {/* Expire Date */}
           <div className="relative">
@@ -1190,7 +1217,6 @@ export default function StockInDetail() {
     />
   </div>
 </div>
-
             </div>
 
             <div className="flex justify-end gap-4 mt-4">
