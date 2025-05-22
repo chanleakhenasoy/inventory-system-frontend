@@ -584,13 +584,12 @@ export default function StockInDetail() {
   const [products, setProducts] = useState<Product[]>([]);
   const [invoiceList, setInvoiceList] = useState([]);
   const [formData, setFormData] = useState<FormData>({
-    invoice_id: "",
+   invoice_id: "",
     selectedSupplierId: "",
     supplier_name: "",
     reference_number: "",
     purchase_date: "",
     due_date: "",
-    expire_date: "",
     items: [],
   });
 
@@ -689,10 +688,17 @@ export default function StockInDetail() {
             },
           }
         );
-        if (response.ok) {
+      if (response.ok) {
           const result = await response.json();
           const data = result.data;
           const supplier = suppliers.find((s) => s.id === data.supplier_id);
+          // Sanitize items to ensure unit_price and quantity are numbers
+          const sanitizedItems = (data.items || []).map((item: any) => ({
+            ...item,
+            unit_price: Number(item.unit_price) || 0,
+            quantity: Number(item.quantity) || 0,
+            total_price: Number(item.total_price) || Number(item.quantity) * Number(item.unit_price) || 0,
+          }));
           setFormData((prev) => ({
             ...prev,
             invoice_id: data.invoice_id || "",
@@ -701,7 +707,7 @@ export default function StockInDetail() {
             reference_number: data.reference_number || "",
             purchase_date: data.purchase_date || "",
             due_date: data.due_date || "",
-            items: data.items || [],
+            items: sanitizedItems,
           }));
         } else {
           const errorData = await response.json();
@@ -732,10 +738,10 @@ export default function StockInDetail() {
         item_id: item.item_id,
         selectedProductId: item.product_id,
         product_name: product?.name_en || "N/A",
-        quantity: item.quantity,
-        unit_price: item.unit_price,
+        quantity: Number(item.quantity),
+        unit_price: Number(item.unit_price),
+        total_price: Number(item.quantity) * Number(item.unit_price),
         expire_date: item.expire_date,
-        total_price: item.total_price,
         purchase_date: formData.purchase_date,
         due_date: formData.due_date,
         reference_number: formData.reference_number,
@@ -794,17 +800,35 @@ export default function StockInDetail() {
     if (!selectedItem) return;
 
     const updatedValue =
-      name === "quantity" || name === "unit_price" ? Number(value) : value;
-
-    setSelectedItem({
+    name === "quantity" || name === "unit_price" || name === "total_price"
+        ? Number(value) || 0
+        : value;
+        const updatedItem = {
       ...selectedItem,
       [name]: updatedValue,
       product_name:
         name === "selectedProductId"
           ? products.find((p) => p.id === value)?.name_en || "N/A"
           : selectedItem.product_name,
-    });
+      total_price:
+        name === "quantity" || name === "unit_price"
+          ? (name === "quantity" ? Number(value) : selectedItem.quantity) *
+            (name === "unit_price" ? Number(value) : selectedItem.unit_price)
+          : selectedItem.total_price,
+    };
+
+    setSelectedItem(updatedItem);
   };
+
+  //   setSelectedItem({
+  //     ...selectedItem,
+  //     [name]: updatedValue,
+  //     product_name:
+  //       name === "selectedProductId"
+  //         ? products.find((p) => p.id === value)?.name_en || "N/A"
+  //         : selectedItem.product_name,
+  //   });
+  // };
 
   const handleCancelItemEdit = () => setSelectedItem(undefined);
 
@@ -1178,45 +1202,7 @@ export default function StockInDetail() {
               </div>
               
               {/* Expire Date */}
-          <div className="relative">
-  <label className="block text-[#2D579A] mb-2">Expire Date</label>
-  <div className="relative">
-    {/* Main date input */}
-    <input
-      type="date"
-      name="expire_date"
-      value={selectedItem.expire_date}
-      onChange={handleSelectedItemChange}
-      className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0"
-    />
-
-    {/* Custom calendar icon */}
-    <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-      <svg
-        className="w-5 h-5 text-gray-500"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-        />
-      </svg>
-    </div>
-
-    {/* Transparent clickable input to trigger calendar, bound to same state */}
-    <input
-      type="date"
-      name="expire_date"
-      value={selectedItem.expire_date}
-      onChange={handleSelectedItemChange}
-      className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
-    />
-  </div>
-</div>
+          
             </div>
 
             <div className="flex justify-end gap-4 mt-4">
