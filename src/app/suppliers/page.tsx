@@ -100,7 +100,7 @@ export default function Supplier() {
             <input
               type="text"
               className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
-              placeholder="Search..."
+              placeholder="Supplier Name..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);

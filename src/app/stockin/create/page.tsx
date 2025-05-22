@@ -487,7 +487,7 @@ export default function AddNewStock() {
           <button
             type="button"
             onClick={handleAddItem}
-            className="px-15 py-1.5 text-[15px] bg-[#2D579A] text-white rounded-lg hover:bg-[#6499EF] transition-colors flex items-center"
+            className="px-15 py-1.5 text-[15px] bg-[#2D579A] text-white rounded-lg hover:bg-[#6499EF] transition-colors flex items-center cursor-pointer"
           >
             <Plus size={18} className="mr-1" /> Add
           </button>
@@ -495,23 +495,31 @@ export default function AddNewStock() {
 
         {/* Items Table */}
         <div className="bg-white rounded-lg p-6">
-          <table className="w-full text-black border border-gray-300 rounded-lg mb-6 mt-16">
+          <table className="w-full text-black border border-gray-300 rounded-lg mb-6 mt-16 table-auto">
             <thead className="bg-gray-50 text-[#2D579A]">
               <tr>
-                <th className="p-3 border-b border-gray-300">Product</th>
-                <th className="p-3 border-b border-gray-300">Quantity</th>
-                <th className="p-3 border-b border-gray-300">Expire Date</th>
-                <th className="p-3 border-b border-gray-300">Total Price</th>
+                <th className="p-3 border-b border-gray-300 text-center">
+                  Product
+                </th>
+                <th className="p-3 border-b border-gray-300 text-center">
+                  Quantity
+                </th>
+                <th className="p-3 border-b border-gray-300 text-center">
+                  Expire Date
+                </th>
+                <th className="p-3 border-b border-gray-300 text-center">
+                  Total Price
+                </th>
               </tr>
             </thead>
             <tbody>
               {items.length > 0 ? (
                 items.map((item, index) => (
-                  <tr key={index} className="border-b">
-                    <td className="p-3">{item.product}</td>
-                    <td className="p-3">{item.quantity}</td>
-                    <td className="p-3">{item.expire_date}</td>
-                    <td className="p-3">{item.total_price}$</td>
+                  <tr key={index} className="border-b border-gray-300">
+                    <td className="p-3 text-center">{item.product}</td>
+                    <td className="p-3 text-center">{item.quantity}</td>
+                    <td className="p-3 text-center">{item.expire_date}</td>
+                    <td className="p-3 text-center">{item.total_price}$</td>
                   </tr>
                 ))
               ) : (
