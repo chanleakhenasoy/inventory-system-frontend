@@ -95,7 +95,7 @@ export default function StockOut() {
             <input
               type="text"
               className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
-              placeholder="Search..."
+              placeholder="Product Name..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -160,7 +160,7 @@ export default function StockOut() {
               ) : (
                 <tr>
                   <td colSpan={5} className="text-center py-4 text-gray-500">
-                    No stockouts found.
+                    No stock outs found.
                   </td>
                 </tr>
               )}
