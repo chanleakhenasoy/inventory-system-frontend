@@ -859,7 +859,7 @@ export default function StockInDetail() {
       }));
 
       // ✅ Clear selected item to return to list view
-      setSelectedItem(undefined);
+      // setSelectedItem(undefined);
     } catch (err) {
       setError("Failed to update item.");
     } finally {
@@ -874,7 +874,7 @@ export default function StockInDetail() {
     try {
       setLoading(true);
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/${itemId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/delete/${itemId}`,
         {
           method: "DELETE",
           headers: {
@@ -899,7 +899,7 @@ export default function StockInDetail() {
 
   return (
     <div className="flex-1 p-6">
-      <div className="flex items-center mb-4">
+      <div className="flex items-end mb-4 h-40">
         <div className="mt-4.5 mr-4">
           <BackButton />
         </div>
@@ -922,7 +922,7 @@ export default function StockInDetail() {
                 name="purchase_date"
                 value={formData.purchase_date}
                 onChange={handleChange}
-                className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+                className="w-full p-2 pr-10 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
               />
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
                 <Calendar className="w-5 h-5 text-gray-500" />
@@ -983,7 +983,7 @@ export default function StockInDetail() {
                 name="due_date"
                 value={formData.due_date}
                 onChange={handleChange}
-                className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+                className="w-full p-2 pr-10 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
               />
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
                 <Calendar className="w-5 h-5 text-gray-500" />
@@ -1003,13 +1003,14 @@ export default function StockInDetail() {
                   <th className="px-4 py-2">Unit Price</th>
                   <th className="px-4 py-2">Quantity</th>
                   <th className="px-4 py-2">Expire Date</th>
+                  <th className="px-4 py-2">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {formData.items.map((item, index) => (
                   <tr
                     key={item.item_id}
-                    className={`hover:bg-gray-100 cursor-pointer ${
+                    className={`hover:bg-gray-100 cursor-pointer text-[#2D579A]${
                       formData.selectedItem?.item_id === item.item_id
                         ? "bg-gray-200"
                         : ""
@@ -1028,11 +1029,13 @@ export default function StockInDetail() {
                         ? new Date(item.expire_date).toLocaleDateString()
                         : "N/A"}
                     </td>
-                    <Button
-                      label="Delete Item"
-                      onClick={() => handleDeleteItem(item.item_id)}
-                      variant="delete"
-                    />
+                    <td>
+                    <button
+                    className="px-2 py-1 bg-red-600 rounded-lg text-white text-[15px]"
+                    onClick={() => handleDeleteItem(item.item_id)}>
+                      Delete Item
+                    </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -1047,49 +1050,50 @@ export default function StockInDetail() {
             </p>
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block mb-2">Product</label>
+                <label className="block mb-2 text-[#2D579A]">Product</label>
                 <select
                   name="selectedProductId"
                   value={selectedItem.selectedProductId}
                   onChange={handleSelectedItemChange}
-                  className="w-full p-2 border rounded-lg"
+                  className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none cursor-pointer"
                 >
                   <option value="">Select product</option>
                   {products.map((product) => (
                     <option key={product.id} value={product.id}>
-                      {product.name_en}
+                      {product.name_en} {product.name_kh ? `(${product.name_kh}) `: ""}
                     </option>
                   ))}
                 </select>
+                
               </div>
               <div>
-                <label className="block mb-2">Quantity</label>
+                <label className="block mb-2 text-[#2D579A]">Quantity</label>
                 <input
                   type="number"
                   name="quantity"
                   value={selectedItem.quantity}
                   onChange={handleSelectedItemChange}
-                  className="w-full p-2 border rounded-lg"
+                  className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block mb-2">Unit Price</label>
+                <label className="block mb-2 text-[#2D579A]">Unit Price</label>
                 <input
                   type="number"
                   name="unit_price"
                   value={selectedItem.unit_price}
                   onChange={handleSelectedItemChange}
-                  className="w-full p-2 border rounded-lg"
+                  className="w-full p-2 text-black border-gray-300 border focus:outline-none focus:ring-1 focus:ring-blue-500 rounded-lg"
                 />
               </div>
               <div>
-                <label className="block mb-2">Expire Date</label>
+                <label className="block mb-2 text-[#2D579A]">Expire Date</label>
                 <input
                   type="date"
                   name="expire_date"
                   value={selectedItem.expire_date}
                   onChange={handleSelectedItemChange}
-                  className="w-full p-2 border rounded-lg"
+                  className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
             </div>
