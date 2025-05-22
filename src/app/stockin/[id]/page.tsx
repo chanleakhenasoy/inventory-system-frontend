@@ -526,6 +526,9 @@
 //   );
 // }
 
+
+
+
 "use client";
 
 import { Calendar } from "lucide-react";
@@ -560,6 +563,7 @@ interface FormData {
   reference_number: string;
   purchase_date: string;
   due_date: string;
+  expire_date: string;
   items: StockInItem[];
   selectedItem?: {
     item_id: string;
@@ -567,7 +571,6 @@ interface FormData {
     product_name: string;
     quantity: number;
     unit_price: number;
-    expire_date: string;
   };
 }
 
@@ -585,6 +588,7 @@ export default function StockInDetail() {
     reference_number: "",
     purchase_date: "",
     due_date: "",
+    expire_date: "",
     items: [],
   });
 
@@ -900,7 +904,7 @@ export default function StockInDetail() {
   return (
     <div className="flex-1 p-6">
       <div className="flex items-end mb-4 h-40">
-        <div className="mt-4.5 mr-4">
+        <div className="mt-4.5 mr-4 mb-1">
           <BackButton />
         </div>
         <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
@@ -915,19 +919,49 @@ export default function StockInDetail() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div className="relative">
             <p className="text-[#2D579A] mb-4 font-bold text-[20px]">Invoice</p>
+
+            {/* Purchase Date */}
+          <div className="relative">
             <label className="block text-[#2D579A] mb-2">Purchase Date</label>
+
             <div className="relative">
+              {/* Main date input */}
               <input
-                type="date"
+                type="Date"
                 name="purchase_date"
                 value={formData.purchase_date}
                 onChange={handleChange}
-                className="w-full p-2 pr-10 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+                className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
+        [&::-webkit-calendar-picker-indicator]:opacity-0"
               />
+
+              {/* Custom calendar icon */}
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                <Calendar className="w-5 h-5 text-gray-500" />
+                <svg
+                  className="w-5 h-5 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
               </div>
+
+              {/* Transparent clickable input to trigger calendar, bound to same state */}
+              <input
+                type="Date"
+                name="purchase_date"
+                value={formData.purchase_date}
+                onChange={handleChange}
+                className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
+              />
             </div>
+          </div>
           </div>
 
           <div className="relative mt-11.5">
@@ -976,26 +1010,54 @@ export default function StockInDetail() {
           </div>
 
           <div className="relative">
+            {/* Due Date */}
             <label className="block text-[#2D579A] mb-2">Due Date</label>
             <div className="relative">
+              {/* Main date input */}
               <input
-                type="date"
+                type="Date"
                 name="due_date"
                 value={formData.due_date}
                 onChange={handleChange}
-                className="w-full p-2 pr-10 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+                className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
+        [&::-webkit-calendar-picker-indicator]:opacity-0"
               />
+
+              {/* Custom calendar icon */}
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                <Calendar className="w-5 h-5 text-gray-500" />
+                <svg
+                  className="w-5 h-5 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
               </div>
+
+              {/* Transparent clickable input to trigger calendar, bound to same state */}
+              <input
+                type="Date"
+                name="due_date"
+                value={formData.due_date}
+                onChange={handleChange}
+                className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
+              />
             </div>
+          </div>
+
           </div>
         </div>
 
         <div className="relative mt-8">
           <p className="text-[#2D579A] mb-4 font-bold text-[20px]">Items</p>
           <div className="overflow-x-auto">
-            <table className="min-w-full table-auto text-left border">
+            <table className="min-w-full table-auto text-center border">
               <thead className="bg-[#EEF1F7] text-[#2D579A]">
                 <tr>
                   <th className="px-4 py-2">No</th>
@@ -1010,7 +1072,7 @@ export default function StockInDetail() {
                 {formData.items.map((item, index) => (
                   <tr
                     key={item.item_id}
-                    className={`hover:bg-gray-100 cursor-pointer text-[#2D579A]${
+                    className={`hover:bg-gray-100 cursor-pointer text-[#2D579A] text-center${
                       formData.selectedItem?.item_id === item.item_id
                         ? "bg-gray-200"
                         : ""
@@ -1031,9 +1093,9 @@ export default function StockInDetail() {
                     </td>
                     <td>
                     <button
-                    className="px-2 py-1 bg-red-600 rounded-lg text-white text-[15px]"
+                    className="w-[70px] h-[25px] bg-red-600 rounded-md text-white text-[10px] font-bold cursor-pointer"
                     onClick={() => handleDeleteItem(item.item_id)}>
-                      Delete Item
+                      Delete
                     </button>
                     </td>
                   </tr>
@@ -1043,8 +1105,9 @@ export default function StockInDetail() {
           </div>
         </div>
 
+        {/* Edit Item Section */}
         {selectedItem && (
-          <div className="mt-6">
+          <div className="mt-10">
             <p className="text-[#2D579A] font-bold text-[20px] mb-4">
               Edit Item
             </p>
@@ -1086,25 +1149,53 @@ export default function StockInDetail() {
                   className="w-full p-2 text-black border-gray-300 border focus:outline-none focus:ring-1 focus:ring-blue-500 rounded-lg"
                 />
               </div>
-              <div>
-                <label className="block mb-2 text-[#2D579A]">Expire Date</label>
-                <input
-                  type="date"
-                  name="expire_date"
-                  value={selectedItem.expire_date}
-                  onChange={handleSelectedItemChange}
-                  className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
+              
+              {/* Expire Date */}
+          <div className="relative">
+  <label className="block text-[#2D579A] mb-2">Expire Date</label>
+  <div className="relative">
+    {/* Main date input */}
+    <input
+      type="date"
+      name="expire_date"
+      value={selectedItem.expire_date}
+      onChange={handleSelectedItemChange}
+      className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0"
+    />
+
+    {/* Custom calendar icon */}
+    <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+      <svg
+        className="w-5 h-5 text-gray-500"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+        />
+      </svg>
+    </div>
+
+    {/* Transparent clickable input to trigger calendar, bound to same state */}
+    <input
+      type="date"
+      name="expire_date"
+      value={selectedItem.expire_date}
+      onChange={handleSelectedItemChange}
+      className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
+    />
+  </div>
+</div>
+
             </div>
 
             <div className="flex justify-end gap-4 mt-4">
               <Button label="Cancel" onClick={handleCancelItemEdit} />
-              <Button
-                label="Update Item"
-                onClick={handleUpdateItem}
-                variant="update"
-              />
+              <Button label="Update" onClick={handleUpdateItem} variant="update" />
             </div>
           </div>
         )}
@@ -1114,6 +1205,5 @@ export default function StockInDetail() {
           <Button label="Update Invoice" onClick={handleUpdate} variant="update" />
         </div> */}
       </div>
-    </div>
   );
 }

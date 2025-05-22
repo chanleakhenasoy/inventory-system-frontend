@@ -115,7 +115,7 @@ export default function Product() {
               ref={searchInputRef}
               type="text"
               className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
-              placeholder="Search..."
+              placeholder="Name En..."
               defaultValue={searchTerm}
             />
           </div>
@@ -167,7 +167,7 @@ export default function Product() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={9} className="py-4 text-center">
+                  <td colSpan={9} className="py-4 text-center text-gray-500">
                     No products found.
                   </td>
                 </tr>
