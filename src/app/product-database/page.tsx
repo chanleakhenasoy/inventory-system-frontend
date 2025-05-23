@@ -10,7 +10,7 @@ interface Product {
   totalStockout: number;
   quantity_in_hand: number;
   unit_avg_cost: number;
-  stock_amount: number;
+  available_amount: number;
   minimum_stock: number;
   stock_checking: number;
 }
@@ -223,6 +223,55 @@ export default function ProductDatabase() {
         ]);
       }
     };
+    const fetchAvailableAmount = async () => {
+      const token = localStorage.getItem("token");
+    
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/available-stock-amount`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+    
+        if (response.ok) {
+          const result = await response.json();
+          const avgCostData = result.data || [];
+          console.log(avgCostData);
+    
+          // Update products with quantity_in_hand, unit_avg_cost, and available_amount
+          setProducts((prevProducts) =>
+            prevProducts.map((product) => {
+              const match = avgCostData.find(
+                (item: any) => item.product_id === product.id
+              );
+              return {
+                ...product,
+                quantity_in_hand: match ? match.quantity_in_hand : 0,
+                unit_avg_cost: match ? match.unit_avg_cost : 0,
+                available_amount: match ? match.available_amount : 0,
+              };
+            })
+          );
+        } else {
+          const errorData = await response.json();
+          setError((prev) => [
+            ...prev,
+            errorData.message || "Failed to fetch available stock amount.",
+          ]);
+        }
+      } catch (err) {
+        setError((prev) => [
+          ...prev,
+          "Network error while fetching available stock amount.",
+        ]);
+      }
+    };
+    fetchAvailableAmount();
     fetchTotalUnitAvgCost();
     fetchTotalQuantityInhand();
     fetchTotalStockout();
@@ -315,7 +364,7 @@ export default function ProductDatabase() {
                       {product.unit_avg_cost}
                     </td>
                     <td className="px-8 py-3 text-[16px]">
-                      {product.stock_amount}
+                      {product.available_amount}
                     </td>
                     <td className="px-8 py-3 text-[16px]">
                       {product.minimum_stock}
