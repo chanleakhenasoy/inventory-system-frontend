@@ -15,7 +15,7 @@ interface Product {
   stock_checking: number;
 }
 
-interface StockCount {
+interface StockInCount {
   name_en: string;
   total_quantity: number;
 }
@@ -30,20 +30,18 @@ interface CombinedProduct extends Product {
 }
 
 export default function ProductDatabase() {
-  const [totalStockinItem, setTotalStockinItem] = useState<StockCount[]>([]);
-  const [totalStockoutItem, setTotalStockoutItem] = useState<StockOutCount[]>([]);
+  const [totalStockinItem, setTotalStockinItem] = useState<StockInCount[]>([]);
+  const [totalStockoutItem, setTotalStockoutItem] = useState<StockOutCount[]>(
+    []
+  );
   const [products, setProducts] = useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState<string[]>([]); // Store multiple errors
-  const [loadingProducts, setLoadingProducts] = useState(false);
-  const [loadingStockIn, setLoadingStockIn] = useState(false);
-  const [loadingStockOut, setLoadingStockOut] = useState(false);
   const productsPerPage = 10;
 
   useEffect(() => {
     const fetchProducts = async () => {
       const token = localStorage.getItem("token");
-      setLoadingProducts(true);
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll`,
@@ -62,18 +60,18 @@ export default function ProductDatabase() {
           setProducts(fetchedProducts);
         } else {
           const errorData = await response.json();
-          setError((prev) => [...prev, errorData.message || "Failed to fetch products."]);
+          setError((prev) => [
+            ...prev,
+            errorData.message || "Failed to fetch products.",
+          ]);
         }
       } catch (err) {
         setError((prev) => [...prev, "Network error while fetching products."]);
-      } finally {
-        setLoadingProducts(false);
       }
     };
 
     const fetchTotalStockInItem = async () => {
       const token = localStorage.getItem("token");
-      setLoadingStockIn(true);
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/item/total`,
@@ -92,18 +90,18 @@ export default function ProductDatabase() {
           setTotalStockinItem(fetchedStockin);
         } else {
           const errorData = await response.json();
-          setError((prev) => [...prev, errorData.message || "Failed to fetch stockin."]);
+          setError((prev) => [
+            ...prev,
+            errorData.message || "Failed to fetch stockin.",
+          ]);
         }
       } catch (err) {
         setError((prev) => [...prev, "Network error while fetching stockin."]);
-      } finally {
-        setLoadingStockIn(false);
-      }
+      } 
     };
 
     const fetchTotalStockout = async () => {
       const token = localStorage.getItem("token");
-      setLoadingStockOut(true);
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/item/total`,
@@ -122,18 +120,18 @@ export default function ProductDatabase() {
           setTotalStockoutItem(fetchedStockout);
         } else {
           const errorData = await response.json();
-          setError((prev) => [...prev, errorData.message || "Failed to fetch stockout."]);
+          setError((prev) => [
+            ...prev,
+            errorData.message || "Failed to fetch stockout.",
+          ]);
         }
       } catch (err) {
         setError((prev) => [...prev, "Network error while fetching stockout."]);
-      } finally {
-        setLoadingStockOut(false);
-      }
+      } 
     };
 
     const fetchTotalQuantityInhand = async () => {
       const token = localStorage.getItem("token");
-      setLoadingStockOut(true);
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/quantity-in-hand`,
@@ -145,38 +143,91 @@ export default function ProductDatabase() {
             },
           }
         );
-    
+
         if (response.ok) {
           const result = await response.json();
           const quantityData = result.data || [];
-    
-          // Update products with quantity_in_hand from API
+
+
           setProducts((prevProducts) =>
             prevProducts.map((product) => {
-              const match = quantityData.find((item: any) => item.name_en === product.name_en);
+              const match = quantityData.find(
+                (item: any) => item.name_en === product.name_en
+              );
               return {
                 ...product,
-                quantity_in_hand: match ? match.quantity_in_hand : product.quantity_in_hand,
+                quantity_in_hand: match
+                  ? match.quantity_in_hand
+                  : product.quantity_in_hand,
               };
             })
           );
         } else {
           const errorData = await response.json();
-          setError((prev) => [...prev, errorData.message || "Failed to fetch quantity in hand."]);
+          setError((prev) => [
+            ...prev,
+            errorData.message || "Failed to fetch quantity in hand.",
+          ]);
         }
       } catch (err) {
-        setError((prev) => [...prev, "Network error while fetching quantity in hand."]);
-      } finally {
-        setLoadingStockOut(false);
+        setError((prev) => [
+          ...prev,
+          "Network error while fetching quantity in hand.",
+        ]);
+      } 
+    };
+
+    const fetchTotalUnitAvgCost = async () => {
+      const token = localStorage.getItem("token");
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/unit-avg-cost`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          const avgCostData = result.data || [];
+          console.log(avgCostData)
+
+          // Update products with calculated_quantity from API
+          setProducts((prevProducts) =>
+            prevProducts.map((product) => {
+              const match = avgCostData.find(
+                (item: any) => item.product_id === product.id
+              );
+              return {
+                ...product,
+                unit_avg_cost: match ? match.calculated_quantity : null,
+              };
+            })
+          );
+        } else {
+          const errorData = await response.json();
+          setError((prev) => [
+            ...prev,
+            errorData.message || "Failed to fetch unit average cost.",
+          ]);
+        }
+      } catch (err) {
+        setError((prev) => [
+          ...prev,
+          "Network error while fetching unit average cost.",
+        ]);
       }
     };
-    
-
+    fetchTotalUnitAvgCost();
     fetchTotalQuantityInhand();
     fetchTotalStockout();
     fetchTotalStockInItem();
     fetchProducts();
-    
   }, []);
 
   const handlePageChange = (page: number) => {
@@ -185,8 +236,12 @@ export default function ProductDatabase() {
 
   // Combine products with their totalStockin and totalStockout values
   const combinedProducts: CombinedProduct[] = products.map((product) => {
-    const stockIn = totalStockinItem.find((stock) => stock.name_en === product.name_en);
-    const stockOut = totalStockoutItem.find((stock) => stock.name_en === product.name_en);
+    const stockIn = totalStockinItem.find(
+      (stock) => stock.name_en === product.name_en
+    );
+    const stockOut = totalStockoutItem.find(
+      (stock) => stock.name_en === product.name_en
+    );
     return {
       ...product,
       totalStockin: stockIn ? stockIn.total_quantity : 0,
@@ -197,7 +252,10 @@ export default function ProductDatabase() {
   // Pagination logic
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = combinedProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = combinedProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
   const totalPages = Math.ceil(combinedProducts.length / productsPerPage);
 
   return (
@@ -209,21 +267,6 @@ export default function ProductDatabase() {
           </h1>
         </div>
 
-        {/* Error Messages */}
-        {error.length > 0 && (
-          <div className="text-red-500 mb-4">
-            {error.map((err, index) => (
-              <p key={index}>{err}</p>
-            ))}
-          </div>
-        )}
-
-        {/* Loading State */}
-        {(loadingProducts || loadingStockIn || loadingStockOut) ? (
-          <p className="text-[#2D579A]">Loading...</p>
-        ) : combinedProducts.length === 0 ? (
-          <p className="text-[#2D579A]">No products available.</p>
-        ) : (
           <div className="bg-white rounded-md mt-5">
             <table className="min-w-full text-center">
               <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
@@ -231,12 +274,16 @@ export default function ProductDatabase() {
                   <th className="px-8 py-3 font-semibold">No</th>
                   <th className="px-8 py-3 font-semibold">Name En</th>
                   <th className="px-8 py-3 font-semibold">Name Kh</th>
-                  <th className="px-8 py-3 font-semibold">Beginning Quantity</th>
+                  <th className="px-8 py-3 font-semibold">
+                    Beginning Quantity
+                  </th>
                   <th className="px-8 py-3 font-semibold">Stock In</th>
                   <th className="px-8 py-3 font-semibold">Stock Out</th>
                   <th className="px-8 py-3 font-semibold">Quantity In Hand</th>
                   <th className="px-8 py-3 font-semibold">Unit Avg Cost</th>
-                  <th className="px-8 py-3 font-semibold">Available Stock Amount</th>
+                  <th className="px-8 py-3 font-semibold">
+                    Available Stock Amount
+                  </th>
                   <th className="px-8 py-3 font-semibold">Minimum Stock</th>
                   <th className="px-8 py-3 font-semibold">Stock Checking</th>
                 </tr>
@@ -290,17 +337,21 @@ export default function ProductDatabase() {
               >
                 Previous
               </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`px-4 py-2 mx-1 rounded ${
-                    currentPage === page ? "bg-[#2D579A] text-white" : "bg-gray-200"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-4 py-2 mx-1 rounded ${
+                      currentPage === page
+                        ? "bg-[#2D579A] text-white"
+                        : "bg-gray-200"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
@@ -310,7 +361,6 @@ export default function ProductDatabase() {
               </button>
             </div>
           </div>
-        )}
       </main>
     </div>
   );
