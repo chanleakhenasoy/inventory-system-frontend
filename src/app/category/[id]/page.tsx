@@ -131,7 +131,7 @@ export default function CategoryDetail() {
               <label className="block text-[#2D579A] mb-2">Category Name</label>
               <input
                 type="text"
-                name="categoryName"
+                name="category_name"
                 value={formData.category_name}
                 onChange={handleChange}
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
