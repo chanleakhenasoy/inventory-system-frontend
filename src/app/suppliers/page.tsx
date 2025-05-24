@@ -1,8 +1,6 @@
-//frontend/src/app/suppliers/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
-import SearchBar from "@/app/components/search"; // if you want to use it later
 import { useRouter } from "next/navigation";
 import Button from "../components/button";
 import Pagination from "@/app/components/pagination";
@@ -11,27 +9,25 @@ export default function Supplier() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [suppliers, setSuppliers] = useState<any[]>([]);
+  const [totalPages, setTotalPages] = useState(1); // New state for total pages
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
   const itemsPerPage = 10;
 
+  // Fetch suppliers when page or searchTerm changes
   useEffect(() => {
-    fetchSuppliers(1);
-  }, []);
+    fetchSuppliers(currentPage, searchTerm);
+  }, [currentPage, searchTerm]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [suppliers]);
-
-  const fetchSuppliers = async (page: number) => {
+  const fetchSuppliers = async (page: number, search = "") => {
     const token = localStorage.getItem("token");
     setError("");
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/getAll?page=${page}&limit=${itemsPerPage}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
         {
           method: "GET",
           headers: {
@@ -44,24 +40,25 @@ export default function Supplier() {
       const result = await response.json();
 
       if (response.ok) {
-        setSuppliers(result.data || []); // Always update the suppliers, even if empty
-        setCurrentPage(page);
-        if ((result.data || []).length === 0) {
-        }
+        setSuppliers(result.data || []);
+        // Assuming the API returns total count or total pages
+        setTotalPages(Math.ceil((result.total || result.data.length) / itemsPerPage));
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to fetch suppliers.");
+        setError(result.message || "Failed to fetch suppliers.");
+        setSuppliers([]);
+        setTotalPages(1);
       }
     } catch (err) {
       setError("Network error. Please try again.");
+      setSuppliers([]);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
   };
 
   const handlePageChange = (page: number) => {
-    fetchSuppliers(page);
-    // setCurrentPage(page);
+    setCurrentPage(page);
   };
 
   const handleClickToSupplierCreate = () => {
@@ -71,25 +68,6 @@ export default function Supplier() {
   const handleClickToSupplierId = (id: string) => {
     router.push(`/suppliers/${id}`);
   };
-
-  // Filter supplier by searchTerm (case-insensitive)
-  const filteredSupplier = suppliers.filter((supplier) =>
-    supplier.supplier_name
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
-
-  const displayedSuppliers = filteredSupplier.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const totalPages = Math.ceil(filteredSupplier.length / itemsPerPage);
-  
-  // Reset to first page when searchTerm changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]); 
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
@@ -118,10 +96,7 @@ export default function Supplier() {
               className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
               placeholder="Supplier Name..."
               value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
@@ -175,22 +150,22 @@ export default function Supplier() {
                     <td className="px-5 py-3 text-[16px]">
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
-                    <td className="w-[300px]  py-3 text-[16px]">
+                    <td className="w-[300px] py-3 text-[16px]">
                       {supplier.supplier_name}
                     </td>
-                    <td className="w-[300px]  py-3 text-[16px]">
+                    <td className="w-[300px] py-3 text-[16px]">
                       {supplier.phone_number}
                     </td>
-                    <td className="w-[300px]  py-3 text-[16px]">
+                    <td className="w-[300px] py-3 text-[16px]">
                       {supplier.address}
                     </td>
-                    <td className="w-[300px]  py-3 text-[16px]">
+                    <td className="w-[300px] py-3 text-[16px]">
                       {supplier.company_name}
                     </td>
                     <td className="w-[300px] py-3 text-[16px]">
                       {new Date(supplier.created_at).toLocaleString()}
                     </td>
-                    <td className="w-[300px]  py-3 text-[16px]">
+                    <td className="w-[300px] py-3 text-[16px]">
                       {new Date(supplier.updated_at).toLocaleString()}
                     </td>
                   </tr>
@@ -198,7 +173,7 @@ export default function Supplier() {
               ) : (
                 <tr>
                   <td colSpan={7} className="text-center py-4 text-gray-500">
-                  This page data is empty.
+                    No suppliers found.
                   </td>
                 </tr>
               )}

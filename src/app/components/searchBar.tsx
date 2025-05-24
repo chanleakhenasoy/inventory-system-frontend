@@ -4,6 +4,7 @@
 import { usePathname } from "next/navigation"; // Use usePathname for App Router
 import { useState, useCallback, useImperativeHandle, forwardRef } from "react";
 import { debounce } from "lodash";
+import path from "path";
 
 type Props = {
   onResults: (data: any[], total: number) => void;
@@ -31,7 +32,12 @@ const SearchBar = forwardRef(({ onResults, perPage = 10, page = 1, setLoading, s
       endpoint = "/category/search";
     } else if (pathname === "/stockin") {
       endpoint = "/stock-in/search";
-    } else {
+    } else if (pathname === "supplier"){
+      endpoint = "/supplier/search"
+    }else if (pathname === "user"){
+      endpoint = "/user/search"
+    }
+    else {
       setError("Search is not supported on this page");
       setLoading(false);
       return;

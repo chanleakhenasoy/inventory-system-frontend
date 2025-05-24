@@ -12,25 +12,22 @@ export default function StockOut() {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const itemsPerPage = 10;
 
-  // Fetch data
+  // Fetch stockouts when page or searchTerm changes
   useEffect(() => {
-    fetchStockouts(1);
-  }, []);
+    fetchStockouts(currentPage, searchTerm);
+  }, [currentPage, searchTerm]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [stockouts]);
-
-  const fetchStockouts = async (page: number) => {
+  const fetchStockouts = async (page: number, search: string) => {
     const token = localStorage.getItem("token");
     setError("");
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/getAll?page=${page}&limit=${itemsPerPage}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
         {
           method: "GET",
           headers: {
@@ -43,45 +40,29 @@ export default function StockOut() {
       const result = await response.json();
 
       if (response.ok) {
-        setStockouts(result.data || []); // Always update the suppliers, even if empty
-        setCurrentPage(page);
-        if ((result.data || []).length === 0) {
-        }
+        setStockouts(result.data || []);
+        setTotalPages(Math.ceil((result.total || result.data.length) / itemsPerPage));
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to fetch stock out.");
+        setError(result.message || "Failed to fetch stock out.");
+        setStockouts([]);
+        setTotalPages(1);
       }
     } catch (err) {
       setError("Network error. Please try again.");
+      setStockouts([]);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
   };
 
-  // Filtered data based on search
-  const filteredStockouts = stockouts.filter((item) =>
-    item.name_en?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredStockouts.length / itemsPerPage);
-
-  const displayedStockouts = filteredStockouts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
   const handlePageChange = (page: number) => {
-    fetchStockouts(page);
-    // setCurrentPage(page);
+    setCurrentPage(page);
   };
 
   const handleClickToStockoutCreate = () => {
     router.push("/stockout/create");
   };
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [stockouts]);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
@@ -108,12 +89,9 @@ export default function StockOut() {
             <input
               type="text"
               className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
-              placeholder="Product Name..."
+              placeholder="Search by product or employee..."
               value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
@@ -126,7 +104,8 @@ export default function StockOut() {
           <Button onClick={handleClickToStockoutCreate} label="Create" />
         </div>
 
-        {/* Error Message */}
+        {/* Loading and Error */}
+        {loading && <p>Loading stockouts...</p>}
         {error && <p className="text-red-500">{error}</p>}
 
         {/* Table */}
@@ -173,7 +152,7 @@ export default function StockOut() {
               ) : (
                 <tr>
                   <td colSpan={5} className="text-center py-4 text-gray-500">
-                  This page data is empty.
+                    No stockouts found.
                   </td>
                 </tr>
               )}
