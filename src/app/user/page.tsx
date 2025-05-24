@@ -38,13 +38,11 @@ export default function AllUser() {
   }, []);
 
   const fetchUsers = async () => {
-    const token = localStorage.getItem("token")
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/getAll`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
       });
       if (!response.ok) throw new Error("Failed to fetch users");
@@ -73,6 +71,9 @@ export default function AllUser() {
           Authorization: `Bearer ${token}`,
         },
       });
+
+      const result = await response.json();
+
       if (!response.ok) {
         console.error("Failed to delete user");
       }
