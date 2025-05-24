@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Pagination from "@/app/components/pagination";
 import { useParams, useRouter } from "next/navigation";
 import BackButton from "@/app/components/backButton";
@@ -16,98 +16,86 @@ export default function AllUser() {
   const [currentPage, setCurrentPage] = useState(1);
   const [allUser, setAllUser] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const id = useParams();
   const [error, setError] = useState("");
+  const router = useRouter();
+  const { id } = useParams(); // Note: useParams() returns an object, so destructure it
 
   const itemsPerPage = 10;
 
-  // Attach listener to search input
-  const searchInputRef = useCallback((inputElement: HTMLInputElement) => {
-    if (inputElement) {
-      inputElement.addEventListener("input", (e) => {
-        const target = e.target as HTMLInputElement;
-        setSearchTerm(target.value);
-        setCurrentPage(1);
-      });
-    }
-  }, []);
-
+  // Fetch users when page or searchTerm changes
   useEffect(() => {
-    fetchUsers(1);
-  }, []);
+    fetchUsers(currentPage, searchTerm);
+  }, [currentPage, searchTerm]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [allUser]);
-
-  const fetchUsers = async (page: number) => {
+  const fetchUsers = async (page: number, search: string) => {
     const token = localStorage.getItem("token");
+    setLoading(true);
+    setError("");
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/getAll?page=${page}&limit=${itemsPerPage}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const result = await response.json();
 
-      if (!response.ok) throw new Error("Failed to fetch users");
-      setAllUser(result.data || []);
-      setCurrentPage(page);
-      if ((result.data || []).length === 0) {
+      if (response.ok) {
+        setAllUser(result.data || []);
+        setTotalPages(Math.ceil((result.total || result.data.length) / itemsPerPage));
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to fetch user.");
+        setError(result.message || "Failed to fetch users.");
+        setAllUser([]);
+        setTotalPages(1);
       }
     } catch (error) {
-      console.error(error);
+      setError("Network error. Please try again.");
+      setAllUser([]);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handlePageChange = (page: number) => {
-    fetchUsers(page);
-    // setCurrentPage(page);
+    setCurrentPage(page);
   };
 
   const handleDelete = async (index: number, userId?: string) => {
+    if (!userId) return; // Guard against undefined userId
     if (!window.confirm("Are you sure you want to disable this user?")) return;
-    const updatedUsers = [...allUser];
-    updatedUsers.splice(index, 1);
-    setAllUser(updatedUsers);
+
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/${userId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        console.error("Failed to delete user");
+      if (response.ok) {
+        // Optimistically update the UI
+        setAllUser((prev) => prev.filter((user) => user.id !== userId));
+      } else {
+        const result = await response.json();
+        setError(result.message || "Failed to delete user.");
       }
     } catch (error) {
-      console.error("Delete error:", error);
+      setError("Network error. Please try again.");
     }
   };
-
-  const filteredUser = allUser.filter((user) =>
-    user.user_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const displayedUsers = filteredUser.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const totalPages = Math.ceil(filteredUser.length / itemsPerPage);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
@@ -131,11 +119,11 @@ export default function AllUser() {
               </svg>
             </div>
             <input
-              ref={searchInputRef}
               type="text"
               className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5"
               placeholder="User Name..."
-              defaultValue={searchTerm}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
@@ -149,6 +137,10 @@ export default function AllUser() {
             All Users
           </h1>
         </div>
+
+        {/* Loading and Error */}
+        {loading && <p>Loading users...</p>}
+        {error && <p className="text-red-500">{error}</p>}
 
         {/* Table */}
         <div className="overflow-x-auto bg-white rounded-md mt-10">
@@ -192,7 +184,7 @@ export default function AllUser() {
               ) : (
                 <tr>
                   <td colSpan={5} className="text-center py-4 text-gray-500">
-                  This page data is empty.
+                    No users found.
                   </td>
                 </tr>
               )}
