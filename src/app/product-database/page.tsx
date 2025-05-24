@@ -227,6 +227,7 @@ export default function ProductDatabase() {
         ]);
       }
     };
+
     const fetchAvailableAmount = async () => {
       const token = localStorage.getItem("token");
 

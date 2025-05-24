@@ -19,6 +19,8 @@ export default function AllUser() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const id = useParams();
+  const [error, setError] = useState("");
+
   const itemsPerPage = 10;
 
   // Attach listener to search input
@@ -33,29 +35,42 @@ export default function AllUser() {
   }, []);
 
   useEffect(() => {
-    fetchUsers();
+    fetchUsers(1);
   }, []);
 
-  const fetchUsers = async () => {
-    const token = localStorage.getItem("token")
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [allUser]);
+
+  const fetchUsers = async (page: number) => {
+    const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/getAll`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/getAll?page=${page}&limit=${itemsPerPage}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) throw new Error("Failed to fetch users");
+
       const result = await response.json();
-      setAllUser(result.data);
+
+      if (!response.ok) throw new Error("Failed to fetch users");
+      setAllUser(result.data || []);
+      setCurrentPage(page);
+      if ((result.data || []).length === 0) {
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Failed to fetch user.");
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    fetchUsers(page);
+    // setCurrentPage(page);
   };
 
   const handleDelete = async (index: number, userId?: string) => {
@@ -72,6 +87,9 @@ export default function AllUser() {
           Authorization: `Bearer ${token}`,
         },
       });
+
+      const result = await response.json();
+
       if (!response.ok) {
         console.error("Failed to delete user");
       }
@@ -145,9 +163,9 @@ export default function AllUser() {
               </tr>
             </thead>
             <tbody className="text-[#2D579A]">
-              {displayedUsers.length > 0 ? (
-                displayedUsers.map((user, index) => (
-                  <tr key={index} className="hover:bg-[#F3F3F3] h-[55px]">
+              {allUser.length > 0 ? (
+                allUser.map((user, index) => (
+                  <tr key={user.id ?? index} className="hover:bg-[#F3F3F3] h-[55px]">
                     <td className="px-6 py-3 text-[16px]">
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
@@ -174,7 +192,7 @@ export default function AllUser() {
               ) : (
                 <tr>
                   <td colSpan={5} className="text-center py-4 text-gray-500">
-                    No users found.
+                  This page data is empty.
                   </td>
                 </tr>
               )}

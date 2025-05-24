@@ -12,27 +12,23 @@ export default function Product() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [searchTerm, setSearchTerm] = useState("") // New state for search term
-  const totalPages = 10
 
-  // Create a ref to access the search input value
-  const searchInputRef = useCallback((inputElement: HTMLInputElement) => {
-    if (inputElement) {
-      // Add event listener to the search input
-      inputElement.addEventListener("input", (e) => {
-        const target = e.target as HTMLInputElement
-        setSearchTerm(target.value)
-        setCurrentPage(1) // Reset to first page when searching
-      })
-    }
-  }, [])
+  const itemsPerPage = 10
 
   useEffect(() => {
-    const fetchcategories = async () => {
-      const token = localStorage.getItem("token")
+    fetchProducts(1)
+  }, []);
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [products]);
+
+    const fetchProducts = async (page: number) => {
+    const token = localStorage.getItem("token")
       setError("")
       setLoading(true)
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll?page=${page}&limit=${itemsPerPage}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -40,25 +36,27 @@ export default function Product() {
           },
         })
 
+        const result = await response.json()
+
         if (response.ok) {
-          const result = await response.json()
-          setProduct(result.data || []) // Adjust according to your API response structure
+          setProduct(result.data || []); // Always update the suppliers, even if empty
+          setCurrentPage(page);
+          if ((result.data || []).length === 0) {
+          }
         } else {
-          const errorData = await response.json()
-          setError(errorData.message || "Failed to fetch product.")
+          const errorData = await response.json();
+          setError(errorData.message || "Failed to fetch products.");
         }
       } catch (err) {
         setError("Network error. Please try again.")
       } finally {
         setLoading(false)
       }
-    }
-
-    fetchcategories()
-  }, [setCurrentPage])
+    };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page)
+    fetchProducts(page)
+    // setCurrentPage(page)
   }
 
   const handleClickToProductCreate = () => {
@@ -70,24 +68,25 @@ export default function Product() {
   };
   
 
-  // Filter products based on search term
-  const filteredProducts = Array.isArray(products)
-    ? products.filter((product) => {
-        if (!searchTerm) return true
+  // Filter product by searchTerm (case-insensitive)
+  const filteredproduct = products.filter((product) =>
+    product.name_en
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
 
-        const searchLower = searchTerm.toLowerCase()
-        return (
-          (product.name_en && product.name_en.toLowerCase().includes(searchLower))
-        )
-      })
-    : []
+  // Paginate filtered product
+  const displayedProducts = filteredproduct.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
-  const itemsPerPage = 10
-  // Use filtered products instead of all products
-  const displayedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-
-  // Calculate total pages based on filtered results
-  const calculatedTotalPages = Math.ceil(filteredProducts.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredproduct.length / itemsPerPage);
+   
+  // Reset to first page when searchTerm changes
+   useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]); 
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
@@ -112,7 +111,6 @@ export default function Product() {
               </svg>
             </div>
             <input
-              ref={searchInputRef}
               type="text"
               className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
               placeholder="Name En..."
@@ -144,10 +142,10 @@ export default function Product() {
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
-              {displayedProducts.length > 0 ? (
-                displayedProducts.map((product: any, index) => (
+              {products.length > 0 ? (
+                products.map((product: any, index) => (
                   <tr
-                    key={index}
+                    key={product.id ?? index}
                     className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
                     onClick={() => handleClickToProductId(product.id)} // still use product.id to route correctly
                   >
@@ -168,7 +166,7 @@ export default function Product() {
               ) : (
                 <tr>
                   <td colSpan={9} className="py-4 text-center text-gray-500">
-                    No products found.
+                  This page data is empty.
                   </td>
                 </tr>
               )}
@@ -179,7 +177,7 @@ export default function Product() {
         {/* Pagination */}
         <div className="flex justify-end items-center mt-4 space-x-2">
           <Pagination
-            totalPages={calculatedTotalPages || 1}
+            totalPages={totalPages}
             initialPage={currentPage}
             onPageChange={handlePageChange}
           />
