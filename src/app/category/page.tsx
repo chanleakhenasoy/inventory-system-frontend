@@ -17,7 +17,6 @@ export default function Category() {
 
   const itemsPerPage = 10;
 
-  // Fetch categories on mount only (or you can add dependencies if needed)
   useEffect(() => {
     fetchCategories(1);
   }, []);
@@ -44,13 +43,16 @@ export default function Category() {
 
       const result = await response.json();
 
-      if (response.ok && result.data.length > 0) {
-        setCategories(result.data || []);
+      if (response.ok) {
+        setCategories(result.data || []); // Always update the suppliers, even if empty
         setCurrentPage(page);
+        if ((result.data || []).length === 0) {
+        }
       } else {
         const errorData = await response.json();
-        setError(errorData.message || "Failed to fetch category.");
+        setError(errorData.message || "Failed to fetch categories.");
       }
+      
     } catch (err) {
       setError("Network error. Please try again.");
     } finally {
@@ -182,7 +184,7 @@ export default function Category() {
                 ) : (
                   <tr>
                     <td colSpan={5} className="text-center py-4 text-gray-500">
-                      No categories found.
+                    This page data is empty.
                     </td>
                   </tr>
                 )}

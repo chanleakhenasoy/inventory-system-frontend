@@ -30,7 +30,7 @@ export default function StockIn() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/getAll`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/getAll?page=${page}&limit=${itemsPerPage}`,
         {
           method: "GET",
           headers: {
@@ -42,9 +42,11 @@ export default function StockIn() {
 
       const result = await response.json();
 
-      if (response.ok && result.data.length > 0) {
-        setInvoice(result.data || []);
+      if (response.ok) {
+        setInvoice(result.data || []); // Always update the suppliers, even if empty
         setCurrentPage(page);
+        if ((result.data || []).length === 0) {
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to fetch stock in.");
@@ -69,13 +71,11 @@ export default function StockIn() {
     router.push(`/stockin/${id}`);
   };
 
-
-  const filteredStockIn = Array.isArray(invoice)
-    ? invoice.filter((stockin) => {
-        const referenceNumber = stockin?.reference_number || "";
-        return referenceNumber.toLowerCase().includes(searchTerm.toLowerCase());
-      })
-    : [];
+  const filteredStockIn = invoice.filter((invoice) =>
+    invoice.reference_number
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
 
   const totalPages = Math.ceil(filteredStockIn.length / itemsPerPage);
 
@@ -160,11 +160,10 @@ export default function StockIn() {
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
-              {Array.isArray(displayedStockIn) &&
-              invoice.length > 0 ? (
-                invoice.map((invoice, index) => (
+            {invoice.length > 0 ? (
+                invoice.map((invoice: any, index) => (
                   <tr
-                    key={invoice.id}
+                    key={invoice.id ?? index}
                     className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
                     onClick={() => handleClickToStockinId(invoice.id)}
                   >
@@ -187,7 +186,7 @@ export default function StockIn() {
               ) : (
                 <tr>
                   <td colSpan={6} className="text-center py-4 text-gray-500">
-                    No reference number found.
+                  This page data is empty.
                   </td>
                 </tr>
               )}
