@@ -12,7 +12,9 @@ export default function Product() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [searchTerm, setSearchTerm] = useState("") // New state for search term
-  const totalPages = 10
+
+  const itemsPerPage = 10
+  // const totalPages = 10
 
   // Create a ref to access the search input value
   const searchInputRef = useCallback((inputElement: HTMLInputElement) => {
@@ -27,8 +29,11 @@ export default function Product() {
   }, [])
 
   useEffect(() => {
-    const fetchcategories = async () => {
-      const token = localStorage.getItem("token")
+    fetchProducts(1)
+  }, []);
+
+    const fetchProducts = async (page: number) => {
+    const token = localStorage.getItem("token")
       setError("")
       setLoading(true)
       try {
@@ -40,8 +45,9 @@ export default function Product() {
           },
         })
 
-        if (response.ok) {
-          const result = await response.json()
+        const result = await response.json()
+
+        if (response.ok && result.data.length > 0) {
           setProduct(result.data || []) // Adjust according to your API response structure
         } else {
           const errorData = await response.json()
@@ -52,13 +58,11 @@ export default function Product() {
       } finally {
         setLoading(false)
       }
-    }
-
-    fetchcategories()
-  }, [setCurrentPage])
+    };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page)
+    fetchProducts(page)
+    // setCurrentPage(page)
   }
 
   const handleClickToProductCreate = () => {
@@ -70,24 +74,25 @@ export default function Product() {
   };
   
 
-  // Filter products based on search term
-  const filteredProducts = Array.isArray(products)
-    ? products.filter((product) => {
-        if (!searchTerm) return true
+  // Filter product by searchTerm (case-insensitive)
+  const filteredproduct = products.filter((product) =>
+    product.name_en
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
 
-        const searchLower = searchTerm.toLowerCase()
-        return (
-          (product.name_en && product.name_en.toLowerCase().includes(searchLower))
-        )
-      })
-    : []
+  // Paginate filtered product
+  const displayedProducts = filteredproduct.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
-  const itemsPerPage = 10
-  // Use filtered products instead of all products
-  const displayedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-
-  // Calculate total pages based on filtered results
-  const calculatedTotalPages = Math.ceil(filteredProducts.length / itemsPerPage)
+  const totalPages = Math.ceil(filteredproduct.length / itemsPerPage);
+   
+  // Reset to first page when searchTerm changes
+   useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]); 
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
@@ -179,7 +184,7 @@ export default function Product() {
         {/* Pagination */}
         <div className="flex justify-end items-center mt-4 space-x-2">
           <Pagination
-            totalPages={calculatedTotalPages || 1}
+            totalPages={totalPages}
             initialPage={currentPage}
             onPageChange={handlePageChange}
           />

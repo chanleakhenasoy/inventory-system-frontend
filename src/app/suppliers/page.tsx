@@ -123,7 +123,7 @@ export default function Supplier() {
         {error && <p className="text-red-500">{error}</p>}
 
         {/* Table */}
-        <div className="overflow-x-auto bg-white rounded-md mt-4">
+        <div className="overflow-x-auto bg-white rounded-md mt-10">
           <table className="min-w-full text-center">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
               <tr>
