@@ -526,9 +526,6 @@
 //   );
 // }
 
-
-
-
 "use client";
 
 import { Calendar } from "lucide-react";
@@ -554,6 +551,7 @@ interface StockInItem {
   quantity: number;
   unit_price: number;
   expire_date: string;
+  total_price: number;
 }
 
 interface FormData {
@@ -563,7 +561,6 @@ interface FormData {
   reference_number: string;
   purchase_date: string;
   due_date: string;
-  expire_date: string;
   items: StockInItem[];
   selectedItem?: {
     item_id: string;
@@ -571,6 +568,8 @@ interface FormData {
     product_name: string;
     quantity: number;
     unit_price: number;
+    expire_date: string;
+    total_price: number;
   };
 }
 
@@ -588,7 +587,6 @@ export default function StockInDetail() {
     reference_number: "",
     purchase_date: "",
     due_date: "",
-    expire_date: "",
     items: [],
   });
 
@@ -605,6 +603,7 @@ export default function StockInDetail() {
         quantity: number;
         unit_price: number;
         expire_date: string;
+        total_price: number;
       }
     | undefined
   >(undefined);
@@ -690,6 +689,16 @@ export default function StockInDetail() {
           const result = await response.json();
           const data = result.data;
           const supplier = suppliers.find((s) => s.id === data.supplier_id);
+          // Sanitize items to ensure unit_price and quantity are numbers
+          const sanitizedItems = (data.items || []).map((item: any) => ({
+            ...item,
+            unit_price: Number(item.unit_price) || 0,
+            quantity: Number(item.quantity) || 0,
+            total_price:
+              Number(item.total_price) ||
+              Number(item.quantity) * Number(item.unit_price) ||
+              0,
+          }));
           setFormData((prev) => ({
             ...prev,
             invoice_id: data.invoice_id || "",
@@ -698,7 +707,7 @@ export default function StockInDetail() {
             reference_number: data.reference_number || "",
             purchase_date: data.purchase_date || "",
             due_date: data.due_date || "",
-            items: data.items || [],
+            items: sanitizedItems,
           }));
         } else {
           const errorData = await response.json();
@@ -729,8 +738,9 @@ export default function StockInDetail() {
         item_id: item.item_id,
         selectedProductId: item.product_id,
         product_name: product?.name_en || "N/A",
-        quantity: item.quantity,
-        unit_price: item.unit_price,
+        quantity: Number(item.quantity),
+        unit_price: Number(item.unit_price),
+        total_price: Number(item.quantity) * Number(item.unit_price),
         expire_date: item.expire_date,
         purchase_date: formData.purchase_date,
         due_date: formData.due_date,
@@ -789,17 +799,35 @@ export default function StockInDetail() {
     if (!selectedItem) return;
 
     const updatedValue =
-      name === "quantity" || name === "unit_price" ? Number(value) : value;
-
-    setSelectedItem({
+      name === "quantity" || name === "unit_price" || name === "total_price"
+        ? Number(value) || 0
+        : value;
+    const updatedItem = {
       ...selectedItem,
       [name]: updatedValue,
       product_name:
         name === "selectedProductId"
           ? products.find((p) => p.id === value)?.name_en || "N/A"
           : selectedItem.product_name,
-    });
+      total_price:
+        name === "quantity" || name === "unit_price"
+          ? (name === "quantity" ? Number(value) : selectedItem.quantity) *
+            (name === "unit_price" ? Number(value) : selectedItem.unit_price)
+          : selectedItem.total_price,
+    };
+
+    setSelectedItem(updatedItem);
   };
+
+  //   setSelectedItem({
+  //     ...selectedItem,
+  //     [name]: updatedValue,
+  //     product_name:
+  //       name === "selectedProductId"
+  //         ? products.find((p) => p.id === value)?.name_en || "N/A"
+  //         : selectedItem.product_name,
+  //   });
+  // };
 
   const handleCancelItemEdit = () => setSelectedItem(undefined);
 
@@ -819,31 +847,33 @@ export default function StockInDetail() {
     try {
       setLoading(true);
 
+      const updateData = {
+        purchase_date: selectedItem.purchase_date,
+        due_date: selectedItem.due_date,
+        reference_number: selectedItem.reference_number,
+        supplier_id: selectedItem.supplier_id,
+        product_id: selectedItem.selectedProductId,
+        quantity: Number(selectedItem.quantity),
+        unit_price: Number(selectedItem.unit_price),
+        total_price: Number(selectedItem.total_price),
+        expire_date: selectedItem.expire_date,
+      };
+
       // Update invoice + item in DB
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/${selectedItem.item_id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/${formData.invoice_id}/${selectedItem.item_id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            product_id: selectedItem.selectedProductId,
-            quantity: selectedItem.quantity,
-            unit_price: selectedItem.unit_price,
-            expire_date: selectedItem.expire_date,
-            purchase_date: selectedItem.purchase_date,
-            due_date: selectedItem.due_date,
-            reference_number: selectedItem.reference_number,
-            supplier_id: selectedItem.supplier_id,
-          }),
+          body: JSON.stringify(updateData),
         }
       );
 
       if (!res.ok) throw new Error("Failed to update");
 
-      // ✅ Refresh updated invoice from API
       const updatedRes = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/${invoiceId}`,
         {
@@ -856,13 +886,11 @@ export default function StockInDetail() {
 
       const updatedData = await updatedRes.json();
 
-      // ✅ Update state with new invoice data
       setFormData((prev) => ({
         ...prev,
         ...updatedData.data,
       }));
 
-      // ✅ Clear selected item to return to list view
       // setSelectedItem(undefined);
     } catch (err) {
       setError("Failed to update item.");
@@ -878,7 +906,7 @@ export default function StockInDetail() {
     try {
       setLoading(true);
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/delete/${itemId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/${formData.invoice_id}/${itemId}`,
         {
           method: "DELETE",
           headers: {
@@ -913,7 +941,7 @@ export default function StockInDetail() {
       </div>
 
       {error && <div className="text-red-500 mb-4">{error}</div>}
-      {loading && <div className="text-[#2D579A] mb-4">Loading...</div>}
+      {/* {loading && <div className="text-[#2D579A] mb-4">Loading...</div>} */}
 
       <div className="bg-white rounded-lg p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -921,47 +949,47 @@ export default function StockInDetail() {
             <p className="text-[#2D579A] mb-4 font-bold text-[20px]">Invoice</p>
 
             {/* Purchase Date */}
-          <div className="relative">
-            <label className="block text-[#2D579A] mb-2">Purchase Date</label>
-
             <div className="relative">
-              {/* Main date input */}
-              <input
-                type="Date"
-                name="purchase_date"
-                value={formData.purchase_date}
-                onChange={handleChange}
-                className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
+              <label className="block text-[#2D579A] mb-2">Purchase Date</label>
+
+              <div className="relative">
+                {/* Main date input */}
+                <input
+                  type="Date"
+                  name="purchase_date"
+                  value={formData.purchase_date}
+                  onChange={handleChange}
+                  className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
         [&::-webkit-calendar-picker-indicator]:opacity-0"
-              />
+                />
 
-              {/* Custom calendar icon */}
-              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
+                {/* Custom calendar icon */}
+                <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                  <svg
+                    className="w-5 h-5 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+
+                {/* Transparent clickable input to trigger calendar, bound to same state */}
+                <input
+                  type="Date"
+                  name="purchase_date"
+                  value={formData.purchase_date}
+                  onChange={handleChange}
+                  className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
+                />
               </div>
-
-              {/* Transparent clickable input to trigger calendar, bound to same state */}
-              <input
-                type="Date"
-                name="purchase_date"
-                value={formData.purchase_date}
-                onChange={handleChange}
-                className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
-              />
             </div>
-          </div>
           </div>
 
           <div className="relative mt-11.5">
@@ -1050,160 +1078,163 @@ export default function StockInDetail() {
               />
             </div>
           </div>
-
-          </div>
         </div>
+      </div>
 
-        <div className="relative mt-8">
-          <p className="text-[#2D579A] mb-4 font-bold text-[20px]">Items</p>
-          <div className="overflow-x-auto">
-            <table className="min-w-full table-auto text-center border">
-              <thead className="bg-[#EEF1F7] text-[#2D579A]">
-                <tr>
-                  <th className="px-4 py-2">No</th>
-                  <th className="px-4 py-2">Product Name</th>
-                  <th className="px-4 py-2">Unit Price</th>
-                  <th className="px-4 py-2">Quantity</th>
-                  <th className="px-4 py-2">Expire Date</th>
-                  <th className="px-4 py-2">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {formData.items.map((item, index) => (
-                  <tr
-                    key={item.item_id}
-                    className={`hover:bg-gray-100 cursor-pointer text-[#2D579A] text-center${
-                      formData.selectedItem?.item_id === item.item_id
-                        ? "bg-gray-200"
-                        : ""
-                    }`}
-                    onClick={() => handleClickToStockinId(item.item_id)}
-                  >
-                    <td className="px-4 py-2">{index + 1}</td>
-                    <td className="px-4 py-2">
-                      {products.find((p) => p.id === item.product_id)
-                        ?.name_en || "N/A"}
-                    </td>
-                    <td className="px-4 py-2">${item.unit_price}</td>
-                    <td className="px-4 py-2">{item.quantity}</td>
-                    <td className="px-4 py-2">
-                      {item.expire_date
-                        ? new Date(item.expire_date).toLocaleDateString()
-                        : "N/A"}
-                    </td>
-                    <td>
+      <div className="relative mt-8">
+        <p className="text-[#2D579A] mb-4 font-bold text-[20px]">Items</p>
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto text-center border">
+            <thead className="bg-[#EEF1F7] text-[#2D579A]">
+              <tr>
+                <th className="px-4 py-2">No</th>
+                <th className="px-4 py-2">Product Name</th>
+                <th className="px-4 py-2">Unit Price</th>
+                <th className="px-4 py-2">Quantity</th>
+                <th className="px-4 py-2">Total Price</th>
+                <th className="px-4 py-2">Expire Date</th>
+                <th className="px-4 py-2">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {formData.items.map((item, index) => (
+                <tr
+                  key={item.item_id}
+                  className={`hover:bg-gray-100 cursor-pointer text-[#2D579A] text-center${
+                    formData.selectedItem?.item_id === item.item_id
+                      ? "bg-gray-200"
+                      : ""
+                  }`}
+                  onClick={() => handleClickToStockinId(item.item_id)}
+                >
+                  <td className="px-4 py-2">{index + 1}</td>
+                  <td className="px-4 py-2">
+                    {products.find((p) => p.id === item.product_id)?.name_en ||
+                      "N/A"}
+                  </td>
+                  <td className="px-4 py-2">${item.unit_price}</td>
+                  <td className="px-4 py-2">{item.quantity}</td>
+                  <td className="px-4 py-2">{item.total_price}</td>
+                  <td className="px-4 py-2">
+                    {item.expire_date
+                      ? new Date(item.expire_date).toLocaleDateString()
+                      : "N/A"}
+                  </td>
+                  <td>
                     <button
-                    className="w-[70px] h-[25px] bg-red-600 rounded-md text-white text-[10px] font-bold cursor-pointer"
-                    onClick={() => handleDeleteItem(item.item_id)}>
+                      className="w-[70px] h-[25px] bg-red-600 rounded-md text-white text-[10px] font-bold cursor-pointer"
+                      onClick={() => handleDeleteItem(item.item_id)}
+                    >
                       Delete
                     </button>
-                    </td>
-                  </tr>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Edit Item Section */}
+      {selectedItem && (
+        <div className="mt-10">
+          <p className="text-[#2D579A] font-bold text-[20px] mb-4">Edit Item</p>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block mb-2 text-[#2D579A]">Product</label>
+              <select
+                name="selectedProductId"
+                value={selectedItem.selectedProductId}
+                onChange={handleSelectedItemChange}
+                className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none cursor-pointer"
+              >
+                <option value="">Select product</option>
+                {products.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {product.name_en}{" "}
+                    {product.name_kh ? `(${product.name_kh}) ` : ""}
+                  </option>
                 ))}
-              </tbody>
-            </table>
+              </select>
+            </div>
+            <div>
+              <label className="block mb-2 text-[#2D579A]">Quantity</label>
+              <input
+                type="number"
+                name="quantity"
+                value={selectedItem.quantity}
+                onChange={handleSelectedItemChange}
+                className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block mb-2 text-[#2D579A]">Unit Price</label>
+              <input
+                type="number"
+                name="unit_price"
+                value={selectedItem.unit_price}
+                onChange={handleSelectedItemChange}
+                className="w-full p-2 text-black border-gray-300 border focus:outline-none focus:ring-1 focus:ring-blue-500 rounded-lg"
+              />
+            </div>
+
+            <div>
+              <label className="text-[#2D579A] relative">Expire Date</label>
+              <div className="relative">
+              <input
+                type="Date"
+                name="expire_date"
+                value={selectedItem.expire_date}
+                onChange={handleSelectedItemChange}
+                className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
+        [&::-webkit-calendar-picker-indicator]:opacity-0"
+              />
+              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                <svg
+                  className="w-5 h-5 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <input
+                type="Date"
+                name="expire_date"
+                value={selectedItem.expire_date}
+                onChange={handleSelectedItemChange}
+                className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
+              />
+              
+            </div>
+            </div>
+            <div>
+              <label className="block mb-2 text-[#2D579A]">Total Price</label>
+              <input
+                type="text"
+                name="total_price"
+                value={selectedItem.total_price}
+                onChange={handleSelectedItemChange}
+                className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex justify-end gap-4 mt-8 h-7">
+            <Button label="Cancel" onClick={handleCancelItemEdit} />
+            <Button
+              label="Update"
+              onClick={handleUpdateItem}
+              variant="update"
+            />
+          </div>
           </div>
         </div>
-
-        {/* Edit Item Section */}
-        {selectedItem && (
-          <div className="mt-10">
-            <p className="text-[#2D579A] font-bold text-[20px] mb-4">
-              Edit Item
-            </p>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <label className="block mb-2 text-[#2D579A]">Product</label>
-                <select
-                  name="selectedProductId"
-                  value={selectedItem.selectedProductId}
-                  onChange={handleSelectedItemChange}
-                  className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none cursor-pointer"
-                >
-                  <option value="">Select product</option>
-                  {products.map((product) => (
-                    <option key={product.id} value={product.id}>
-                      {product.name_en} {product.name_kh ? `(${product.name_kh}) `: ""}
-                    </option>
-                  ))}
-                </select>
-                
-              </div>
-              <div>
-                <label className="block mb-2 text-[#2D579A]">Quantity</label>
-                <input
-                  type="number"
-                  name="quantity"
-                  value={selectedItem.quantity}
-                  onChange={handleSelectedItemChange}
-                  className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block mb-2 text-[#2D579A]">Unit Price</label>
-                <input
-                  type="number"
-                  name="unit_price"
-                  value={selectedItem.unit_price}
-                  onChange={handleSelectedItemChange}
-                  className="w-full p-2 text-black border-gray-300 border focus:outline-none focus:ring-1 focus:ring-blue-500 rounded-lg"
-                />
-              </div>
-              
-              {/* Expire Date */}
-          <div className="relative">
-  <label className="block text-[#2D579A] mb-2">Expire Date</label>
-  <div className="relative">
-    {/* Main date input */}
-    <input
-      type="date"
-      name="expire_date"
-      value={selectedItem.expire_date}
-      onChange={handleSelectedItemChange}
-      className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0"
-    />
-
-    {/* Custom calendar icon */}
-    <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-      <svg
-        className="w-5 h-5 text-gray-500"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-        />
-      </svg>
+      )}
     </div>
-
-    {/* Transparent clickable input to trigger calendar, bound to same state */}
-    <input
-      type="date"
-      name="expire_date"
-      value={selectedItem.expire_date}
-      onChange={handleSelectedItemChange}
-      className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
-    />
-  </div>
-</div>
-
-            </div>
-
-            <div className="flex justify-end gap-4 mt-4">
-              <Button label="Cancel" onClick={handleCancelItemEdit} />
-              <Button label="Update" onClick={handleUpdateItem} variant="update" />
-            </div>
-          </div>
-        )}
-
-        {/* <div className="flex justify-end space-x-4 mt-6">
-          <Button label="Delete Invoice" onClick={handleDelete} variant="delete" />
-          <Button label="Update Invoice" onClick={handleUpdate} variant="update" />
-        </div> */}
-      </div>
   );
 }
