@@ -1,6 +1,8 @@
+//frontend/src/app/suppliers/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
+import SearchBar from "@/app/components/search"; // if you want to use it later
 import { useRouter } from "next/navigation";
 import Button from "../components/button";
 import Pagination from "@/app/components/pagination";
@@ -12,6 +14,7 @@ export default function Supplier() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -28,7 +31,7 @@ export default function Supplier() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/getAll`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/getAll?page=${page}&limit=${itemsPerPage}`,
         {
           method: "GET",
           headers: {
@@ -40,9 +43,11 @@ export default function Supplier() {
 
       const result = await response.json();
 
-      if (response.ok && result.data.length > 0) {
-        setSuppliers(result.data || []); // Adjust according to your API response structure
+      if (response.ok) {
+        setSuppliers(result.data || []); // Always update the suppliers, even if empty
         setCurrentPage(page);
+        if ((result.data || []).length === 0) {
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to fetch suppliers.");
@@ -67,20 +72,20 @@ export default function Supplier() {
     router.push(`/suppliers/${id}`);
   };
 
-  // Filter categories by searchTerm (case-insensitive)
+  // Filter supplier by searchTerm (case-insensitive)
   const filteredSupplier = suppliers.filter((supplier) =>
     supplier.supplier_name
       ?.toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredSupplier.length / itemsPerPage);
-
   const displayedSuppliers = filteredSupplier.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
+  const totalPages = Math.ceil(filteredSupplier.length / itemsPerPage);
+  
   // Reset to first page when searchTerm changes
   useEffect(() => {
     setCurrentPage(1);
@@ -163,7 +168,7 @@ export default function Supplier() {
               {suppliers.length > 0 ? (
                 suppliers.map((supplier: any, index) => (
                   <tr
-                    key={index}
+                    key={supplier.id ?? index}
                     className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
                     onClick={() => handleClickToSupplierId(supplier.id)}
                   >
@@ -193,7 +198,7 @@ export default function Supplier() {
               ) : (
                 <tr>
                   <td colSpan={7} className="text-center py-4 text-gray-500">
-                    No suppliers found.
+                  This page data is empty.
                   </td>
                 </tr>
               )}

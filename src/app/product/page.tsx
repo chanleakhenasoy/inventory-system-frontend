@@ -28,7 +28,7 @@ export default function Product() {
       setError("")
       setLoading(true)
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll?page=${page}&limit=${itemsPerPage}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -38,12 +38,14 @@ export default function Product() {
 
         const result = await response.json()
 
-        if (response.ok && result.data.length > 0) {
-          setProduct(result.data || []) // Adjust according to your API response structure
-          setCurrentPage(page)
+        if (response.ok) {
+          setProduct(result.data || []); // Always update the suppliers, even if empty
+          setCurrentPage(page);
+          if ((result.data || []).length === 0) {
+          }
         } else {
-          const errorData = await response.json()
-          setError(errorData.message || "Failed to fetch product.")
+          const errorData = await response.json();
+          setError(errorData.message || "Failed to fetch products.");
         }
       } catch (err) {
         setError("Network error. Please try again.")
@@ -143,7 +145,7 @@ export default function Product() {
               {products.length > 0 ? (
                 products.map((product: any, index) => (
                   <tr
-                    key={index}
+                    key={product.id ?? index}
                     className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
                     onClick={() => handleClickToProductId(product.id)} // still use product.id to route correctly
                   >
@@ -164,7 +166,7 @@ export default function Product() {
               ) : (
                 <tr>
                   <td colSpan={9} className="py-4 text-center text-gray-500">
-                    No products found.
+                  This page data is empty.
                   </td>
                 </tr>
               )}

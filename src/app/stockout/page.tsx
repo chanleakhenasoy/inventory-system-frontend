@@ -30,7 +30,7 @@ export default function StockOut() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/getAll`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/getAll?page=${page}&limit=${itemsPerPage}`,
         {
           method: "GET",
           headers: {
@@ -42,11 +42,14 @@ export default function StockOut() {
 
       const result = await response.json();
 
-      if (response.ok && result.data.length > 0) {
-        setStockouts(result.data || []);
+      if (response.ok) {
+        setStockouts(result.data || []); // Always update the suppliers, even if empty
+        setCurrentPage(page);
+        if ((result.data || []).length === 0) {
+        }
       } else {
         const errorData = await response.json();
-        setError(errorData.message || "Failed to fetch stockouts.");
+        setError(errorData.message || "Failed to fetch stock out.");
       }
     } catch (err) {
       setError("Network error. Please try again.");
@@ -68,7 +71,8 @@ export default function StockOut() {
   );
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    fetchStockouts(page);
+    // setCurrentPage(page);
   };
 
   const handleClickToStockoutCreate = () => {
@@ -148,7 +152,7 @@ export default function StockOut() {
             <tbody className="text-[#2B5190]">
               {stockouts.length > 0 ? (
                 stockouts.map((stockout: any, index) => (
-                  <tr key={index} className="hover:bg-[#F3F3F3] h-[55px]">
+                  <tr key={stockout.id ?? index} className="hover:bg-[#F3F3F3] h-[55px]">
                     <td className="px-6 py-3 text-[16px]">
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
@@ -169,7 +173,7 @@ export default function StockOut() {
               ) : (
                 <tr>
                   <td colSpan={5} className="text-center py-4 text-gray-500">
-                    No stock outs found.
+                  This page data is empty.
                   </td>
                 </tr>
               )}

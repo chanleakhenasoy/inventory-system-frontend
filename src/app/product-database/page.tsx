@@ -23,6 +23,7 @@ export default function ProductDatabase() {
   const [ProductDatabase, setProductDatabase] = useState<Product[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 10;
 
@@ -92,6 +93,37 @@ export default function ProductDatabase() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
       <main className="flex-1 overflow-y-auto p-6">
+        {/* Search */}
+        <div className="mb-4 w-full sm:w-[50%]">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <input
+              type="text"
+              className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
+              placeholder="Product Name..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+            />
+          </div>
+        </div>
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
             Product Database
@@ -161,6 +193,14 @@ export default function ProductDatabase() {
             </table>
           </div>
         )}
+        {/* Pagination */}
+        <div className="flex justify-end items-center mt-4 space-x-2">
+                    <Pagination
+                      totalPages={totalPages}
+                      initialPage={currentPage}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
       </main>
     </div>
   );
