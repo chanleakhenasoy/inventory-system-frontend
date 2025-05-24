@@ -147,6 +147,7 @@ export default function AddNewStock() {
               quantity: Number(item.quantity),
               unit_price: Number(item.total_price) / Number(item.quantity),
               expire_date: item.expire_date,
+              total_price: Number(item.total_price),
             })),
           }),
         }
