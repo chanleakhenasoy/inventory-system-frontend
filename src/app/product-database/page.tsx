@@ -49,12 +49,12 @@ export default function ProductDatabase() {
       const token = localStorage.getItem("token");
       try {
         const response = await fetch(
-          ${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: Bearer ${token},
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -79,12 +79,12 @@ export default function ProductDatabase() {
       const token = localStorage.getItem("token");
       try {
         const response = await fetch(
-          ${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/item/total,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/item/total`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: Bearer ${token},
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -105,16 +105,16 @@ export default function ProductDatabase() {
       }
     };
 
-const fetchTotalStockout = async () => {
+    const fetchTotalStockout = async () => {
       const token = localStorage.getItem("token");
       try {
         const response = await fetch(
-          ${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/item/total,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/item/total`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: Bearer ${token},
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -139,12 +139,12 @@ const fetchTotalStockout = async () => {
       const token = localStorage.getItem("token");
       try {
         const response = await fetch(
-          ${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/quantity-in-hand,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/quantity-in-hand`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: Bearer ${token},
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -186,12 +186,12 @@ const fetchTotalStockout = async () => {
 
       try {
         const response = await fetch(
-          ${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/unit-avg-cost,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/unit-avg-cost`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: Bearer ${token},
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -228,17 +228,17 @@ const fetchTotalStockout = async () => {
       }
     };
 
-const fetchAvailableAmount = async () => {
+    const fetchAvailableAmount = async () => {
       const token = localStorage.getItem("token");
 
       try {
         const response = await fetch(
-          ${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/available-stock-amount,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/available-stock-amount`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: Bearer ${token},
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -329,7 +329,7 @@ const fetchAvailableAmount = async () => {
   );
   const totalPages = Math.ceil(combinedProducts.length / productsPerPage);
 
-return (
+  return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
       <main className="flex-1 overflow-y-auto p-6">
         <div className="flex items-center justify-between mb-4">
