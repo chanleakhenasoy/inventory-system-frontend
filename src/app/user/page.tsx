@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import SearchBar from "@/app/components/search";
 import Pagination from "@/app/components/pagination";
 import { useParams, useRouter } from "next/navigation";
 import BackButton from "@/app/components/backButton";

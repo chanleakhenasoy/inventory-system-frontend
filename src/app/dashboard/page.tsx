@@ -202,7 +202,7 @@ import ChartCard from "../components/ChartCard";
 export default function Dashboard() {
   const [totalProduct, setProduct] = useState<number>(0);
   const [totalCategory, setCategory] = useState<number>(0);
-  const [lowStock, setLowStock] = useState<number>(0);
+  const [totalStockin, setTotalStockin] = useState<number>(0);
   const [outOfStock, setOutOfStock] = useState<number>(0);
   const [deliveryIn, setDeliveryIn] = useState<number>(0);
   const [error, setError] = useState("");
@@ -215,19 +215,19 @@ export default function Dashboard() {
         setError("No token found.");
         return;
       }
-
+  
       setLoading(true);
       setError("");
-
+  
+      const endpoints = [
+        { url: "/product/total", setter: setProduct },
+        { url: "/category/total", setter: setCategory },
+        { url: "/stockIn/item/total/quantity", setter: setTotalStockin },
+        { url: "/product/out-of-stock", setter: setOutOfStock },
+        { url: "/delivery/in", setter: setDeliveryIn },
+      ];
+  
       try {
-        const endpoints = [
-          { url: "/product/total", setter: setProduct },
-          { url: "/category/total", setter: setCategory },
-          { url: "/product/low-stock", setter: setLowStock },
-          { url: "/product/out-of-stock", setter: setOutOfStock },
-          { url: "/delivery/in", setter: setDeliveryIn },
-        ];
-
         await Promise.all(
           endpoints.map(async ({ url, setter }) => {
             const response = await fetch(
@@ -240,7 +240,7 @@ export default function Dashboard() {
                 },
               }
             );
-
+  
             if (response.ok) {
               const result = await response.json();
               console.log(`Response from ${url}:`, result);
@@ -258,11 +258,13 @@ export default function Dashboard() {
       } finally {
         setLoading(false);
       }
+    
+      
     };
-
+  
     fetchAllData();
   }, []);
-
+  
   return (
     <ProtectedRoute>
       <div className="flex h-screen mt-25">
@@ -290,27 +292,28 @@ export default function Dashboard() {
                   bgColor="bg-blue-50"
                   iconColor="text-blue-600"
                 />
-                <OverviewCard
-                  icon={<Store className="text-orange-500" size={45} />}
-                  title="Low Stock"
-                  value={typeof lowStock === "number" ? lowStock : 0}
-                  bgColor="bg-orange-50"
-                  iconColor="text-orange-500"
-                />
-                <OverviewCard
-                  icon={<PackageX className="text-green-500" size={45} />}
-                  title="Out Of Stock"
-                  value={typeof outOfStock === "number" ? outOfStock : 0}
-                  bgColor="bg-green-50"
-                  iconColor="text-green-500"
-                />
-                <OverviewCard
+                  <OverviewCard
                   icon={<Layers className="text-cyan-500" size={45} />}
-                  title="Total product category"
+                  title="Total category"
                   value={typeof totalCategory === "number" ? totalCategory : 0}
                   bgColor="bg-cyan-50"
                   iconColor="text-cyan-500"
                 />
+                <OverviewCard
+                  icon={<Store className="text-green-500" size={45} />}
+                  title="Total Stockin"
+                  value={totalStockin ? totalStockin : 0}
+                  bgColor="bg-green-50"
+                  iconColor="text-green-500"
+                />
+                <OverviewCard
+                  icon={<PackageX className=" text-orange-500" size={45} />}
+                  title="Low Stock"
+                  value={typeof outOfStock === "number" ? outOfStock : 0}
+                  bgColor="bg-orange-50"
+                  iconColor="text-orange-500"
+                />
+              
               </div>
             </div>
 
@@ -337,9 +340,10 @@ export default function Dashboard() {
               <ChartCard
                 data={{
                   totalProducts: totalProduct,
-                  lowStock: lowStock,
-                  outOfStock: outOfStock,
                   totalCategory: totalCategory,
+                  totalStockin: totalStockin,
+                  outOfStock: outOfStock,
+                 
                 }}
               />
             </div>
