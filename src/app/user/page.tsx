@@ -34,10 +34,14 @@ export default function AllUser() {
   }, []);
 
   useEffect(() => {
-    fetchUsers();
+    fetchUsers(1);
   }, []);
 
-  const fetchUsers = async () => {
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [allUser]);
+
+  const fetchUsers = async (page: number) => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/getAll`, {
         method: "GET",
@@ -48,13 +52,15 @@ export default function AllUser() {
       if (!response.ok) throw new Error("Failed to fetch users");
       const result = await response.json();
       setAllUser(result.data);
+      setCurrentPage(page);
     } catch (error) {
       console.error(error);
     }
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    fetchUsers(page);
+    // setCurrentPage(page);
   };
 
   const handleDelete = async (index: number, userId?: string) => {
@@ -71,7 +77,11 @@ export default function AllUser() {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
+
+      const result = await response.json();
+
+      if (!response.ok && result.data.length > 0) {
+        setAllUser(result.data || []);
         console.error("Failed to delete user");
       }
     } catch (error) {
@@ -144,8 +154,8 @@ export default function AllUser() {
               </tr>
             </thead>
             <tbody className="text-[#2D579A]">
-              {displayedUsers.length > 0 ? (
-                displayedUsers.map((user, index) => (
+              {allUser.length > 0 ? (
+                allUser.map((user, index) => (
                   <tr key={index} className="hover:bg-[#F3F3F3] h-[55px]">
                     <td className="px-6 py-3 text-[16px]">
                       {(currentPage - 1) * itemsPerPage + index + 1}

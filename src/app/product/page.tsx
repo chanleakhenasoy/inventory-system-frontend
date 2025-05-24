@@ -14,23 +14,14 @@ export default function Product() {
   const [searchTerm, setSearchTerm] = useState("") // New state for search term
 
   const itemsPerPage = 10
-  // const totalPages = 10
-
-  // Create a ref to access the search input value
-  const searchInputRef = useCallback((inputElement: HTMLInputElement) => {
-    if (inputElement) {
-      // Add event listener to the search input
-      inputElement.addEventListener("input", (e) => {
-        const target = e.target as HTMLInputElement
-        setSearchTerm(target.value)
-        setCurrentPage(1) // Reset to first page when searching
-      })
-    }
-  }, [])
 
   useEffect(() => {
     fetchProducts(1)
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [products]);
 
     const fetchProducts = async (page: number) => {
     const token = localStorage.getItem("token")
@@ -49,6 +40,7 @@ export default function Product() {
 
         if (response.ok && result.data.length > 0) {
           setProduct(result.data || []) // Adjust according to your API response structure
+          setCurrentPage(page)
         } else {
           const errorData = await response.json()
           setError(errorData.message || "Failed to fetch product.")
@@ -117,7 +109,6 @@ export default function Product() {
               </svg>
             </div>
             <input
-              ref={searchInputRef}
               type="text"
               className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
               placeholder="Name En..."
@@ -149,8 +140,8 @@ export default function Product() {
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
-              {displayedProducts.length > 0 ? (
-                displayedProducts.map((product: any, index) => (
+              {products.length > 0 ? (
+                products.map((product: any, index) => (
                   <tr
                     key={index}
                     className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"

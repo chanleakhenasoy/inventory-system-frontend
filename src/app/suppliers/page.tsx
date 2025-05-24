@@ -15,41 +15,48 @@ export default function Supplier() {
   const itemsPerPage = 10;
 
   useEffect(() => {
-    const fetchSuppliers = async () => {
-      const token = localStorage.getItem("token");
-      setError("");
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/getAll`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.ok) {
-          const result = await response.json();
-          setSuppliers(result.data);
-        } else {
-          const errorData = await response.json();
-          setError(errorData.message || "Failed to fetch suppliers.");
-        }
-      } catch (err) {
-        setError("Network error. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSuppliers();
+    fetchSuppliers(1);
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [suppliers]);
+
+  const fetchSuppliers = async (page: number) => {
+    const token = localStorage.getItem("token");
+    setError("");
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/getAll`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok && result.data.length > 0) {
+        setSuppliers(result.data || []); // Adjust according to your API response structure
+        setCurrentPage(page);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Failed to fetch suppliers.");
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    fetchSuppliers(page);
+    // setCurrentPage(page);
   };
 
   const handleClickToSupplierCreate = () => {
@@ -60,13 +67,12 @@ export default function Supplier() {
     router.push(`/suppliers/${id}`);
   };
 
-  // ✅ Correct filtering based on supplier_name
-  const filteredSupplier = Array.isArray(suppliers)
-    ? suppliers.filter((supplier) => {
-        const name = supplier?.supplier_name || "";
-        return name.toLowerCase().includes(searchTerm.toLowerCase());
-      })
-    : [];
+  // Filter categories by searchTerm (case-insensitive)
+  const filteredSupplier = suppliers.filter((supplier) =>
+    supplier.supplier_name
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
 
   const totalPages = Math.ceil(filteredSupplier.length / itemsPerPage);
 
@@ -74,6 +80,11 @@ export default function Supplier() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  // Reset to first page when searchTerm changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]); 
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
@@ -149,8 +160,8 @@ export default function Supplier() {
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
-              {displayedSuppliers.length > 0 ? (
-                displayedSuppliers.map((supplier: any, index) => (
+              {suppliers.length > 0 ? (
+                suppliers.map((supplier: any, index) => (
                   <tr
                     key={index}
                     className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"

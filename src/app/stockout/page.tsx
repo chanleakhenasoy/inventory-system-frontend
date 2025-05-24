@@ -17,38 +17,43 @@ export default function StockOut() {
 
   // Fetch data
   useEffect(() => {
-    const fetchStockouts = async () => {
-      const token = localStorage.getItem("token");
-      setError("");
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/getAll`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.ok) {
-          const result = await response.json();
-          setStockouts(result.data || []);
-        } else {
-          const errorData = await response.json();
-          setError(errorData.message || "Failed to fetch stockouts.");
-        }
-      } catch (err) {
-        setError("Network error. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStockouts();
+    fetchStockouts(1);
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [stockouts]);
+
+  const fetchStockouts = async (page: number) => {
+    const token = localStorage.getItem("token");
+    setError("");
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/getAll`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok && result.data.length > 0) {
+        setStockouts(result.data || []);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Failed to fetch stockouts.");
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Filtered data based on search
   const filteredStockouts = stockouts.filter((item) =>
@@ -69,6 +74,10 @@ export default function StockOut() {
   const handleClickToStockoutCreate = () => {
     router.push("/stockout/create");
   };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [stockouts]);
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
@@ -137,8 +146,8 @@ export default function StockOut() {
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
-              {displayedStockouts.length > 0 ? (
-                displayedStockouts.map((stockout: any, index) => (
+              {stockouts.length > 0 ? (
+                stockouts.map((stockout: any, index) => (
                   <tr key={index} className="hover:bg-[#F3F3F3] h-[55px]">
                     <td className="px-6 py-3 text-[16px]">
                       {(currentPage - 1) * itemsPerPage + index + 1}
