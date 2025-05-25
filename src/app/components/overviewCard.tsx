@@ -22,7 +22,7 @@ export function OverviewCard({
         {icon}
       </div>
       <div>
-        <div className="text-[30px] font-semibold text-black">{value}</div>
+        <div className="text-[35px] font-semibold text-black">{value}</div>
         <div className="text-[15px] text-gray-600">{title}</div>
       </div>
     </div>

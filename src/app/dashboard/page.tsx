@@ -192,12 +192,19 @@
 //   );
 // }
 
+// src/app/dashboard/page.tsx
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Package, Store, PackageX, Layers, Truck } from "lucide-react";
 import { OverviewCard } from "../components/overviewCard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import ChartCard from "../components/ChartCard";
+import { log } from "console";
+
+interface ApiResponse {
+  data?: number;
+  message?: string;
+}
 
 export default function Dashboard() {
   const [totalProduct, setProduct] = useState<number>(0);
@@ -205,75 +212,77 @@ export default function Dashboard() {
   const [totalStockin, setTotalStockin] = useState<number>(0);
   const [outOfStock, setOutOfStock] = useState<number>(0);
   const [deliveryIn, setDeliveryIn] = useState<number>(0);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  console.log("stock", outOfStock)
+
+  const fetchAllData = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("No token found. Please log in.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    const endpoints = [
+      { url: "/product/total", setter: setProduct },
+      { url: "/category/total", setter: setCategory },
+      { url: "/stockIn/item/total/quantity", setter: setTotalStockin },
+      { url: "/product/out-of-stock", setter: setOutOfStock },
+      { url: "/delivery/in", setter: setDeliveryIn },
+    ];
+
+    try {
+      await Promise.all(
+        endpoints.map(async ({ url, setter }) => {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (!response.ok) {
+            const errorData: ApiResponse = await response.json();
+            throw new Error(errorData.message || `Failed to fetch ${url}`);
+          }
+
+          const result: ApiResponse = await response.json();
+          setter(result.data ?? 0);
+        })
+      );
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Network error. Please try again.";
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchAllData = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("No token found.");
-        return;
-      }
-  
-      setLoading(true);
-      setError("");
-  
-      const endpoints = [
-        { url: "/product/total", setter: setProduct },
-        { url: "/category/total", setter: setCategory },
-        { url: "/stockIn/item/total/quantity", setter: setTotalStockin },
-        { url: "/product/out-of-stock", setter: setOutOfStock },
-        { url: "/delivery/in", setter: setDeliveryIn },
-      ];
-  
-      try {
-        await Promise.all(
-          endpoints.map(async ({ url, setter }) => {
-            const response = await fetch(
-              `${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`,
-              {
-                method: "GET",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            );
-  
-            if (response.ok) {
-              const result = await response.json();
-              console.log(`Response from ${url}:`, result);
-              setter(result.data ?? 0);
-            } else {
-              const errorData = await response.json();
-              console.error(`Error response from ${url}:`, errorData);
-              throw new Error(errorData.message || `Failed to fetch ${url}`);
-            }
-          })
-        );
-      } catch (err: any) {
-        console.error("Fetch error:", err);
-        setError(err.message || "Network error. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    
-      
-    };
-  
     fetchAllData();
-  }, []);
-  
+  }, [fetchAllData]);
+
+  const handleRetry = () => {
+    fetchAllData();
+  };
+
   return (
-    <ProtectedRoute>
-      <div className="flex h-screen mt-25">
+      <div className="flex h-screen mt-20">
         <div className="flex-1 flex flex-col overflow-hidden">
           <main className="flex-1 overflow-y-auto p-6">
             <div className="flex flex-col gap-6">
               <div className="w-full sm:w-[10%] md:w-[30%] lg:w-[50%]"></div>
               <div className="flex items-center justify-between mb-7">
-                <h1 className="text-[30px] font-bold text-[#2D579A] mb-9">
+                <h1 className="text-[30px] font-bold text-[#2D579A] mb-2">
                   Dashboard
                 </h1>
               </div>
@@ -284,36 +293,35 @@ export default function Dashboard() {
               <h2 className="text-[20px] font-semibold mb-4 text-[#2D579A]">
                 Over View
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <OverviewCard
-                  icon={<Package className="text-blue-600" size={45} />}
+                  icon={<Package className="text-orange-600" size={45} />}
                   title="Total Products"
-                  value={typeof totalProduct === "number" ? totalProduct : 0}
-                  bgColor="bg-blue-50"
-                  iconColor="text-blue-600"
+                  value={totalProduct}
+                  bgColor="bg-orange-50"
+                  iconColor="text-orange-600"
                 />
-                  <OverviewCard
-                  icon={<Layers className="text-cyan-500" size={45} />}
-                  title="Total category"
-                  value={typeof totalCategory === "number" ? totalCategory : 0}
-                  bgColor="bg-cyan-50"
-                  iconColor="text-cyan-500"
+                <OverviewCard
+                  icon={<Layers className="text-blue-600" size={45} />}
+                  title="Total Category"
+                  value={totalCategory}
+                  bgColor="bg-blue-50"
+                  iconColor="text-blue-500"
                 />
                 <OverviewCard
                   icon={<Store className="text-green-500" size={45} />}
-                  title="Total Stockin"
-                  value={totalStockin ? totalStockin : 0}
+                  title="Total Stock In"
+                  value={totalStockin}
                   bgColor="bg-green-50"
                   iconColor="text-green-500"
                 />
                 <OverviewCard
-                  icon={<PackageX className=" text-orange-500" size={45} />}
-                  title="Low Stock"
-                  value={typeof outOfStock === "number" ? outOfStock : 0}
-                  bgColor="bg-orange-50"
-                  iconColor="text-orange-500"
+                  icon={<PackageX className="text-cyan-500" size={45} />}
+                  title="Total Low Stock"
+                  value={outOfStock}
+                  bgColor="bg-cyan-50"
+                  iconColor="text-cyan-500"
                 />
-              
               </div>
             </div>
 
@@ -330,7 +338,7 @@ export default function Dashboard() {
                       <Truck size={60} className="text-gray-700" />
                     </div>
                     <div className="text-2xl font-bold text-black">
-                      {typeof deliveryIn === "number" ? deliveryIn : 0} Day
+                      {deliveryIn} Day{deliveryIn !== 1 ? "s" : ""}
                     </div>
                   </div>
                 </div>
@@ -343,7 +351,6 @@ export default function Dashboard() {
                   totalCategory: totalCategory,
                   totalStockin: totalStockin,
                   outOfStock: outOfStock,
-                 
                 }}
               />
             </div>
@@ -351,10 +358,14 @@ export default function Dashboard() {
             {loading && (
               <p className="text-center mt-4 text-gray-500">Loading data...</p>
             )}
-            {error && <p className="text-center mt-4 text-red-600">{error}</p>}
+            {/* {error && (
+              <div className="text-center mt-4">
+                <p className="text-red-600">{error}</p>
+                
+              </div>
+            )} */}
           </main>
         </div>
       </div>
-    </ProtectedRoute>
   );
 }
