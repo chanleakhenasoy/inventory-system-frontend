@@ -106,8 +106,8 @@ export default function Product() {
           <Button onClick={handleClickToProductCreate} label="Create" />
         </div>
 
-        {/* Loading and Error */}
-        {loading && <p>Loading products...</p>}
+      
+        {/* {loading && <p>Loading products...</p>} */}
         {error && <p className="text-red-500">{error}</p>}
 
         {/* Table */}

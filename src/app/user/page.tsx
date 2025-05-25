@@ -138,8 +138,7 @@ export default function AllUser() {
           </h1>
         </div>
 
-        {/* Loading and Error */}
-        {loading && <p>Loading users...</p>}
+        {/* {loading && <p>Loading users...</p>} */}
         {error && <p className="text-red-500">{error}</p>}
 
         {/* Table */}
