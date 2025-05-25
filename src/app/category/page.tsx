@@ -95,7 +95,7 @@ export default function Category() {
             <input
               type="text"
               className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5"
-              placeholder="Category Name..."
+              placeholder="Search by Category Name..."
               value={searchTerm}
               onChange={handleSearchChange}
             />

@@ -8,6 +8,7 @@ import React from "react";
 
 export default function StockIn() {
   const router = useRouter();
+  const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [invoice, setInvoice] = useState<any[]>([]);
   const [error, setError] = useState("");
@@ -17,20 +18,20 @@ export default function StockIn() {
   const itemsPerPage = 10;
 
   useEffect(() => {
-    fetchStockIn(1);
-  }, []);
+    fetchStockIn(currentPage, searchTerm);
+  }, [currentPage, searchTerm]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [invoice]);
+  // useEffect(() => {
+  //   setCurrentPage(1);
+  // }, [invoice]);
 
-  const fetchStockIn = async (page: number) => {
+  const fetchStockIn = async (page: number, search: string) => {
     const token = localStorage.getItem("token");
     setError("");
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/getAll?page=${page}&limit=${itemsPerPage}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
         {
           method: "GET",
           headers: {
@@ -43,24 +44,25 @@ export default function StockIn() {
       const result = await response.json();
 
       if (response.ok) {
-        setInvoice(result.data || []); // Always update the suppliers, even if empty
-        setCurrentPage(page);
-        if ((result.data || []).length === 0) {
-        }
+        setInvoice(result.data || []);
+        setTotalPages(Math.ceil((result.total || result.data.length) / itemsPerPage));
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Failed to fetch stock in.");
+        setError(result.message || "Failed to fetch stock out.");
+        setInvoice([]);
+        setTotalPages(1);
       }
     } catch (err) {
       setError("Network error. Please try again.");
+      setInvoice([]);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
   };
 
   const handlePageChange = (page: number) => {
-    fetchStockIn(page);
-    // setCurrentPage(page);
+    setCurrentPage(page);
+  
   };
 
   const handleClickToStockinCreate = () => {
@@ -71,20 +73,12 @@ export default function StockIn() {
     router.push(`/stockin/${id}`);
   };
 
-  const filteredStockIn = invoice.filter((invoice) =>
-    invoice.reference_number
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  // const filteredStockIn = invoice.filter((invoice) =>
+  //   invoice.reference_number
+  //     ?.toLowerCase()
+  //     .includes(searchTerm.toLowerCase())
+  // );
 
-  const totalPages = Math.ceil(filteredStockIn.length / itemsPerPage);
-
-  const displayedStockIn = filteredStockIn.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-    // Reset to first page when searchTerm changes
     useEffect(() => {
       setCurrentPage(1);
     }, [searchTerm]);
@@ -114,12 +108,9 @@ export default function StockIn() {
             <input
               type="text"
               className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
-              placeholder="Reference Number..."
+              placeholder="Search by Reference number & Supplier name..."
               value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
@@ -134,7 +125,7 @@ export default function StockIn() {
 
         {/* Error and Loading */}
         {error && <div className="text-red-500 mb-4">{error}</div>}
-        {loading && <div className="text-gray-500 mb-4">Loading...</div>}
+
 
         {/* Table */}
         <div className="overflow-x-auto bg-white rounded-md mt-10">
@@ -194,7 +185,7 @@ export default function StockIn() {
           </table>
         </div>
 
-        {/* Pagination */}
+
         <div className="flex justify-end items-center mt-4 space-x-2">
           <Pagination
             totalPages={totalPages}
