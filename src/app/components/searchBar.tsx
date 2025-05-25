@@ -23,15 +23,14 @@ const SearchBar = forwardRef(({ onResults, perPage = 10, page = 1, setLoading, s
     setLoading(true);
 
     const trimmedKeyword = keyword.trim();
-    // Allow empty search to fetch all categories
-
+  
     let endpoint = "";
     if (pathname === "/products") {
       endpoint = "/product/search";
     } else if (pathname === "/categories") {
       endpoint = "/category/search";
     } else if (pathname === "/stockin") {
-      endpoint = "/stock-in/search";
+      endpoint = "/stockIn/search";
     } else if (pathname === "supplier"){
       endpoint = "/supplier/search"
     }else if (pathname === "user"){
