@@ -1,209 +1,32 @@
-// 'use client';
-
-// import {
-//   Search,
-//   Bell,
-//   Package,
-//   Store,
-//   PackageX,
-//   Layers,
-//   Truck,
-// } from "lucide-react";
-// import PieChart from "@/app/components/chart";
-// import Navbar from "../components/navbar";
-// import { SidebarItem } from "../components/sidebarItem";
-// import { OverviewCard } from "../components/overviewCard";
-// import { ChartLegendItem } from "../components/chartLegendItem";
-// import { useEffect, useState } from "react";
-// import ProtectedRoute from "../components/ProtectedRoute";
-
-// export default function Dashboard() {
-//   const [totalProduct, setProduct] = useState<number>(0);
-//   const [totalCategory, setCategory] = useState<number>(0);
-//   const [error, setError] = useState("");
-//   const [loading, setLoading] = useState(false);
-
-//   useEffect(() => {
-//     const fetchTotalProduct = async () => {
-//       const token = localStorage.getItem("token");
-//       setLoading(true);
-//       setError("");
-  
-//       try {
-//         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/product/total`, {
-//           method: "GET",
-//           headers: {
-//             "Content-Type": "application/json",
-//             Authorization: `Bearer ${token}`,
-//           },
-//         });
-  
-//         if (response.ok) {
-//           const result = await response.json();
-//           setProduct(result.data || []);
-//         } else {
-//           const errorData = await response.json();
-//           setError(errorData.message || "Failed to fetch total products.");
-//         }
-//       } catch (err) {
-//         setError("Network error. Please try again.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     const fetchTotalCategory = async () => {
-//       const token = localStorage.getItem("token");
-//       setLoading(true);
-//       setError("");
-
-//       try {
-//         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/category/total`, {
-//           method: "GET",
-//           headers: {
-//             "Content-Type": "application/json",
-//             Authorization: `Bearer ${token}`,
-//           },
-//         });
-  
-//         if (response.ok) {
-//           const result = await response.json();
-//           setCategory(result.data || []);
-//         } else {
-//           const errorData = await response.json();
-//           setError(errorData.message || "Failed to fetch total category.");
-//         }
-//       } catch (err) {
-//         setError("Network error. Please try again.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-  
-//     fetchTotalProduct();
-//     fetchTotalCategory();
-//   }, []);
-  
-  
-//     return (
-//       <ProtectedRoute>
-//       <div className="flex h-screen mt-25">
-//         {/* Main Content */}
-//         <div className="flex-1 flex flex-col overflow-hidden">
-//           <main className="flex-1 overflow-y-auto p-6">
-//             <div className="flex flex-col gap-6">
-//               <div className="w-full sm:w-[10%] md:w-[30%] lg:w-[50%]">
-               
-//               </div>
-//               <div className="flex items-center justify-between mb-7">
-//                 <h1 className="text-[30px] font-bold text-[#2D579A] mb-9">
-//                   Dashboard
-//                 </h1>
-//               </div>
-//             </div>
-
-//             {/* Overview Cards */}
-//             <div className="bg-white h-[290px] rounded-lg shadow-sm p-6 mb-6">
-//               <h2 className="text-[20px] font-semibold mb-4 text-[#2D579A]">Over View</h2>
-//               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 ">
-//                 <OverviewCard
-//                   icon={<Package className="text-blue-600" size={45} />}
-//                   title="Total Products"
-//                   value= {totalProduct}
-//                   bgColor="bg-blue-50"
-//                   iconColor="text-blue-600"
-//                 />
-//                 <OverviewCard
-//                   icon={<Store className="text-orange-500" size={45} />}
-//                   title="Low Stock"
-//                   value="50"
-//                   bgColor="bg-orange-50"
-//                   iconColor="text-orange-500"
-//                 />
-//                 <OverviewCard
-//                   icon={<PackageX className="text-green-500" size={45} />}
-//                   title="Out Of Stock"
-//                   value="10"
-//                   bgColor="bg-green-50"
-//                   iconColor="text-green-500"
-//                 />
-//                 <OverviewCard
-//                   icon={<Layers className="text-cyan-500" size={45} />}
-//                   title="Total product category"
-//                   value={totalCategory}
-//                   bgColor="bg-cyan-50"
-//                   iconColor="text-cyan-500"
-//                 />
-//               </div>
-//             </div>
-
-//             {/* Lower Section */}
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//               {/* Upcoming Deliveries */}
-//               <div className="bg-white rounded-lg shadow-sm p-6">
-//                 <h2 className="text-lg mb-4 text-[#2D579A] text-[20px] font-semibold">
-//                   Upcoming Deliveries
-//                 </h2>
-//                 <div className="flex items-center justify-center p-6">
-//                   <div className="text-center">
-//                     <div className="flex justify-center mb-4">
-//                       <Truck size={60} className="text-gray-700" />
-//                     </div>
-//                     <div className="text-2xl font-bold text-black">20 Day</div>
-//                   </div>
-//                 </div>
-//               </div>
-
-//               {/* Chart */}
-//               <div className="bg-white rounded-lg shadow-sm p-6">
-//                 <div className="grid grid-cols-2 gap-4">
-//                   <div className="flex justify-center items-center">
-//                     <PieChart />
-//                   </div>
-//                   <div className="flex flex-col justify-center space-y-4">
-//                     <ChartLegendItem
-//                       icon={<Package className="text-blue-600" size={20} />}
-//                       text="Total Products"
-//                       color="bg-blue-500"
-//                     />
-//                     <ChartLegendItem
-//                       icon={<PackageX className="text-orange-500"  size={20} />}
-//                       text="Out of stock"
-//                       color="bg-green-500"
-//                     />
-//                     <ChartLegendItem
-//                       icon={<Store className="text-green-500" size={20} />}
-//                       text="Low Stock"
-//                       color="bg-orange-500"
-//                     />
-//                     <ChartLegendItem
-//                       icon={<Layers className="text-cyan-500" size={20} />}
-//                       text="Total product category"
-//                       color="bg-cyan-500"
-//                     />
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </main>
-//         </div>
-//       </div>
-//       </ProtectedRoute>
-//   );
-// }
-
-// src/app/dashboard/page.tsx
 "use client";
+
 import { useEffect, useState, useCallback } from "react";
 import { Package, Store, PackageX, Layers, Truck } from "lucide-react";
+import {
+  AreaChart,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Cell,
+  Area,
+} from "recharts";
 import { OverviewCard } from "../components/overviewCard";
 import ProtectedRoute from "../components/ProtectedRoute";
 import ChartCard from "../components/ChartCard";
-import { log } from "console";
 
 interface ApiResponse {
   data?: number;
   message?: string;
+}
+
+interface BarData {
+  name: string;
+  value: number;
 }
 
 export default function Dashboard() {
@@ -214,8 +37,6 @@ export default function Dashboard() {
   const [deliveryIn, setDeliveryIn] = useState<number>(0);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-
-  console.log("stock", outOfStock)
 
   const fetchAllData = useCallback(async () => {
     const token = localStorage.getItem("token");
@@ -271,27 +92,29 @@ export default function Dashboard() {
     fetchAllData();
   }, [fetchAllData]);
 
-  const handleRetry = () => {
-    fetchAllData();
-  };
+  // Sample bar chart data
+  const barChartData: BarData[] = [
+    { name: "Products", value: totalProduct },
+    { name: "Categories", value: totalCategory },
+    { name: "Stock In", value: totalStockin },
+    { name: "Out of Stock", value: outOfStock },
+  ];
 
   return (
+    <ProtectedRoute>
       <div className="flex h-screen mt-20">
         <div className="flex-1 flex flex-col overflow-hidden">
           <main className="flex-1 overflow-y-auto p-6">
-            <div className="flex flex-col gap-6">
-              <div className="w-full sm:w-[10%] md:w-[30%] lg:w-[50%]"></div>
-              <div className="flex items-center justify-between mb-7">
-                <h1 className="text-[30px] font-bold text-[#2D579A] mb-2">
-                  Dashboard
-                </h1>
-              </div>
+            <div className="flex items-center justify-between mb-7">
+              <h1 className="text-[30px] font-bold text-[#2D579A] mb-2">
+                Dashboard
+              </h1>
             </div>
 
             {/* Overview Cards */}
-            <div className="bg-white h-[290px] rounded-lg shadow-sm p-6 mb-6">
+            <div className="bg-white h-auto rounded-lg shadow-sm p-6 mb-6">
               <h2 className="text-[20px] font-semibold mb-4 text-[#2D579A]">
-                Over View
+                Overview
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <OverviewCard
@@ -327,24 +150,52 @@ export default function Dashboard() {
 
             {/* Lower Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Upcoming Deliveries */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-lg mb-4 text-[#2D579A] text-[20px] font-semibold text-center">
-                  Upcoming Deliveries
+              {/* Bar Chart */}
+              <div className="w-full h-[400px] bg-white rounded-md p-4 shadow">
+                <h2 className="text-xl font-semibold mb-4 text-[#2D579A]">
+                  Stock Overview
                 </h2>
-                <div className="flex items-center justify-center p-6">
-                  <div className="text-center">
-                    <div className="flex justify-center mb-4">
-                      <Truck size={60} className="text-gray-700" />
-                    </div>
-                    <div className="text-2xl font-bold text-black">
-                      {deliveryIn} Day{deliveryIn !== 1 ? "s" : ""}
-                    </div>
-                  </div>
-                </div>
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={barChartData}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient
+                        id="colorValue"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor="#4D96FF"
+                          stopOpacity={1}
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor="#4D96FF"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <Tooltip />
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#4D96FF"
+                      fillOpacity={1}
+                      fill="url(#colorValue)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
 
-              {/* Chart */}
+              {/* Pie Chart or Summary Card */}
               <ChartCard
                 data={{
                   totalProducts: totalProduct,
@@ -358,14 +209,21 @@ export default function Dashboard() {
             {loading && (
               <p className="text-center mt-4 text-gray-500">Loading data...</p>
             )}
-            {/* {error && (
+
+            {error && (
               <div className="text-center mt-4">
                 <p className="text-red-600">{error}</p>
-                
+                <button
+                  onClick={fetchAllData}
+                  className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Retry
+                </button>
               </div>
-            )} */}
+            )}
           </main>
         </div>
       </div>
+    </ProtectedRoute>
   );
 }

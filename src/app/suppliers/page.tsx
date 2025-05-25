@@ -109,8 +109,8 @@ export default function Supplier() {
           <Button onClick={handleClickToSupplierCreate} label="Create" />
         </div>
 
-        {/* Loading and Error */}
-        {loading && <p>Loading suppliers...</p>}
+       
+        {/* {loading && <p>Loading suppliers...</p>} */}
         {error && <p className="text-red-500">{error}</p>}
 
         {/* Table */}

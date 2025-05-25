@@ -27,7 +27,11 @@ export default function StockOut() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
+        `${
+          process.env.NEXT_PUBLIC_API_BASE_URL
+        }/stockout/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(
+          search
+        )}`,
         {
           method: "GET",
           headers: {
@@ -41,7 +45,9 @@ export default function StockOut() {
 
       if (response.ok) {
         setStockouts(result.data || []);
-        setTotalPages(Math.ceil((result.total || result.data.length) / itemsPerPage));
+        setTotalPages(
+          Math.ceil((result.total || result.data.length) / itemsPerPage)
+        );
       } else {
         setError(result.message || "Failed to fetch stock out.");
         setStockouts([]);
@@ -104,11 +110,8 @@ export default function StockOut() {
           <Button onClick={handleClickToStockoutCreate} label="Create" />
         </div>
 
-        {/* Loading and Error */}
-        {loading && <p>Loading stockouts...</p>}
         {error && <p className="text-red-500">{error}</p>}
 
-        {/* Table */}
         <div className="overflow-x-auto bg-white rounded-md mt-10">
           <table className="min-w-full text-center">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
@@ -131,7 +134,10 @@ export default function StockOut() {
             <tbody className="text-[#2B5190]">
               {stockouts.length > 0 ? (
                 stockouts.map((stockout: any, index) => (
-                  <tr key={stockout.id ?? index} className="hover:bg-[#F3F3F3] h-[55px]">
+                  <tr
+                    key={stockout.id ?? index}
+                    className="hover:bg-[#F3F3F3] h-[55px]"
+                  >
                     <td className="px-6 py-3 text-[16px]">
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
