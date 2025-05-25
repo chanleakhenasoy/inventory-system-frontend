@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Pagination from "@/app/components/pagination";
 
 interface Product {
   id: string;
@@ -41,8 +42,15 @@ export default function ProductDatabase() {
   );
   const [products, setProducts] = useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [error, setError] = useState<string[]>([]); // Store multiple errors
   const productsPerPage = 10;
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to first page on search
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -332,6 +340,32 @@ export default function ProductDatabase() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
       <main className="flex-1 overflow-y-auto p-6">
+      <div className="mb-4 w-full sm:w-[50%]">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <input
+              type="text"
+              className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5"
+              placeholder="Name En..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+          </div>
+        </div>
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
             Product Database
@@ -391,10 +425,8 @@ export default function ProductDatabase() {
                   </td>
                   <td className="px-8 py-3 text-[16px]">
                     <button
-                      className={`px-3 py-1 rounded text-white text-[10px] font-medium ${
-                        product.status === "Sufficient"
-                          ? "bg-green-600"
-                          : "bg-red-600"
+                      className={`px-3 py-1 rounded text-[13px] font-bold ${
+                        product.status === "Sufficient" ? "text-green-600"  : "text-red-600"
                       }`}
                     >
                       {product.status}
@@ -404,38 +436,14 @@ export default function ProductDatabase() {
               ))}
             </tbody>
           </table>
-
-          {/* Pagination Controls */}
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-4 py-2 mx-1 bg-[#2D579A] text-white rounded disabled:opacity-50"
-            >
-              Previous
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={`px-4 py-2 mx-1 rounded ${
-                  currentPage === page
-                    ? "bg-[#2D579A] text-white"
-                    : "bg-gray-200"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 mx-1 bg-[#2D579A] text-white rounded disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
         </div>
+        <div className="flex justify-end items-center mt-4 space-x-2">
+                  <Pagination
+                    totalPages={totalPages}
+                    initialPage={currentPage}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
       </main>
     </div>
   );

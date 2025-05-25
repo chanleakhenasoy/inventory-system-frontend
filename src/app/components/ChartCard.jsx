@@ -2,15 +2,19 @@
 'use client';
 import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
 
-const COLORS = ['#3366FF', '#FFA500', '#00C49F', '#00BFFF']; // Blue, Orange, Green, Cyan
+const COLORS = [ '#FFA500','#3366FF', '#00C49F', '#00BFFF']; // Blue, Orange, Green, Cyan
 
 export default function ChartCard({ data }) {
   const chartData = [
     { name: 'Total Products', value: data.totalProducts },
-    { name: 'Low Stock', value: data.lowStock },
-    { name: 'Out of Stock', value: data.outOfStock },
+    // { name: 'Low Stock', value: data.totalLowStock },
+    // { name: 'Out of Stock', value: data.totalOutOfStock },
     { name: 'Total Categories', value: data.totalCategory },
+    { name: 'Total stockin', value: parseInt(data.totalStockin) },
+    { name: 'Total lowstock', value: data.totalLowStock },
   ];
+
+  console.log(data)
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
