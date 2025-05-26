@@ -33,6 +33,7 @@ export default function ProductDatabase() {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
   };
+  
   useEffect(() => {
     const fetchProducts = async () => {
       const token = localStorage.getItem("token");
@@ -139,7 +140,49 @@ export default function ProductDatabase() {
         <h1 className="text-[30px] font-bold text-[#2D579A] mt-4 mb-2">
           Product Database
         </h1>
+      <div className="mb-4 w-full sm:w-[50%]">
+  <div className="flex items-center space-x-2">
+    {/* Input with icon */}
+    <div className="relative flex-1">
+      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+        <svg
+          className="w-5 h-5 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      </div>
+      <input
+        type="text"
+        className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5"
+        placeholder="Name En..."
+        value={searchTerm}
+        onChange={handleSearchChange}
+      />
+    </div>
 
+    {/* Search Button */}
+    <button
+      onClick={handleSearch}
+      className="bg-[#2D579A] text-white text-sm px-4 py-2 rounded-3xl hover:bg-[#6499EF] transition cursor-pointer"
+    >
+      Search
+    </button>
+  </div>
+</div>
+
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
+            Product Database
+          </h1>
+        </div>
         <div className="bg-white rounded-md mt-5">
           <table className="min-w-full text-center">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">

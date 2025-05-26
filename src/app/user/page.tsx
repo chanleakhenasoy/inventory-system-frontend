@@ -14,23 +14,30 @@ interface User {
 
 export default function AllUser() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [allUser, setAllUser] = useState<User[]>([]);
+  const [allUsers, setAllUsers] = useState<User[]>([]); // Store all users for local filtering
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]); // Display filtered results
   const [searchTerm, setSearchTerm] = useState("");
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState(""); // Trigger API search
   const router = useRouter();
-  const { id } = useParams(); // Note: useParams() returns an object, so destructure it
+  const { id } = useParams(); // Note: Currently unused in the component
 
   const itemsPerPage = 10;
 
-  // Fetch users when page or searchTerm changes
+  // Fetch users on initial load and when search is applied
   useEffect(() => {
-    fetchUsers(currentPage, searchTerm);
-  }, [currentPage, searchTerm]);
+    fetchUsers(currentPage, appliedSearchTerm);
+  }, [currentPage, appliedSearchTerm]);
 
   const fetchUsers = async (page: number, search: string) => {
     const token = localStorage.getItem("token");
+    if (!token) {
+      setError("No token found. Please log in.");
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError("");
     try {
@@ -48,20 +55,41 @@ export default function AllUser() {
       const result = await response.json();
 
       if (response.ok) {
-        setAllUser(result.data || []);
+        const newUsers = result.data || [];
+        setAllUsers((prev) => (page === 1 ? newUsers : [...prev, ...newUsers])); // Accumulate users
+        setFilteredUsers(newUsers); // Update filtered list
         setTotalPages(Math.ceil((result.total || result.data.length) / itemsPerPage));
       } else {
         setError(result.message || "Failed to fetch users.");
-        setAllUser([]);
+        setAllUsers([]);
+        setFilteredUsers([]);
         setTotalPages(1);
       }
     } catch (error) {
       setError("Network error. Please try again.");
-      setAllUser([]);
+      setAllUsers([]);
+      setFilteredUsers([]);
       setTotalPages(1);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle search input change for local filtering
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    // Filter locally based on allUsers using user_name
+    const filtered = allUsers.filter((user) =>
+      user.user_name.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  };
+
+  const handleSearch = () => {
+    setCurrentPage(1); // Reset to first page on search
+    setAppliedSearchTerm(searchTerm); // Trigger API search with full term
   };
 
   const handlePageChange = (page: number) => {
@@ -87,7 +115,8 @@ export default function AllUser() {
 
       if (response.ok) {
         // Optimistically update the UI
-        setAllUser((prev) => prev.filter((user) => user.id !== userId));
+        setAllUsers((prev) => prev.filter((user) => user.id !== userId));
+        setFilteredUsers((prev) => prev.filter((user) => user.id !== userId));
       } else {
         const result = await response.json();
         setError(result.message || "Failed to delete user.");
@@ -102,29 +131,41 @@ export default function AllUser() {
       <main className="flex-1 overflow-y-auto p-6">
         {/* Search bar */}
         <div className="mb-4 w-full sm:w-[50%]">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <svg
-                className="w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+          <div className="flex items-center space-x-2">
+            {/* Search input with icon */}
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg
+                  className="w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <input
+                type="text"
+                className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5"
+                placeholder="Search by Username..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
             </div>
-            <input
-              type="text"
-              className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5"
-              placeholder="Search by Username..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+
+            {/* Search Button */}
+            <button
+              onClick={handleSearch}
+              className="bg-[#2D579A] text-white text-sm px-4 py-2 rounded-3xl hover:bg-[#6499EF] transition cursor-pointer"
+            >
+              Search
+            </button>
           </div>
         </div>
 
@@ -138,7 +179,7 @@ export default function AllUser() {
           </h1>
         </div>
 
-        {/* {loading && <p>Loading users...</p>} */}
+        {loading && <p className="text-center mt-10">Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
 
         {/* Table */}
@@ -154,8 +195,8 @@ export default function AllUser() {
               </tr>
             </thead>
             <tbody className="text-[#2D579A]">
-              {allUser.length > 0 ? (
-                allUser.map((user, index) => (
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map((user, index) => (
                   <tr key={user.id ?? index} className="hover:bg-[#F3F3F3] h-[55px]">
                     <td className="px-6 py-3 text-[16px]">
                       {(currentPage - 1) * itemsPerPage + index + 1}
