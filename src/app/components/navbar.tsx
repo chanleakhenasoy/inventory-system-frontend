@@ -17,13 +17,6 @@ export default function Navbar() {
       </div>
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center">
-          <Link href="/notification">
-            <button className="p-2 text-[#2D579A] hover:text-[#6499EF] cursor-pointer">
-              <Bell size={32} />
-            </button>
-          </Link>
-        </div>
-        <div className="flex items-center">
           <Link href="/">
             <button className="p-2 text-red-600 hover:text-[#6499EF] cursor-pointer">
               <LogOut size={26} />

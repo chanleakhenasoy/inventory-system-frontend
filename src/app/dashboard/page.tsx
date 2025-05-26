@@ -33,7 +33,7 @@ export default function Dashboard() {
   const [totalProduct, setProduct] = useState<number>(0);
   const [totalCategory, setCategory] = useState<number>(0);
   const [totalStockin, setTotalStockin] = useState<number>(0);
-  const [outOfStock, setOutOfStock] = useState<number>(0);
+  const [totalStockout, setTotalStockout] = useState<number>(0);
   const [deliveryIn, setDeliveryIn] = useState<number>(0);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -52,8 +52,8 @@ export default function Dashboard() {
       { url: "/product/total", setter: setProduct },
       { url: "/category/total", setter: setCategory },
       { url: "/stockIn/item/total/quantity", setter: setTotalStockin },
-      { url: "/product/out-of-stock", setter: setOutOfStock },
-      { url: "/delivery/in", setter: setDeliveryIn },
+      { url: "/stockout/sum-all", setter: setTotalStockout },
+      // { url: "/delivery/in", setter: setDeliveryIn },
     ];
 
     try {
@@ -76,7 +76,23 @@ export default function Dashboard() {
           }
 
           const result: ApiResponse = await response.json();
-          setter(result.data ?? 0);
+
+          switch (url) {
+            case "/stockout/sum-all":
+              // parse total_quantity as number safely
+              const totalQuantity =
+                typeof result.data === "object" &&
+                result.data !== null &&
+                "total_quantity" in result.data
+                  ? Number((result.data as any).total_quantity) || 0
+                  : 0;
+              setter(totalQuantity);
+              break;
+
+            default:
+              setter(result.data ?? 0);
+              break;
+          }
         })
       );
     } catch (err: unknown) {
@@ -97,12 +113,12 @@ export default function Dashboard() {
     { name: "Products", value: totalProduct },
     { name: "Categories", value: totalCategory },
     { name: "Stock In", value: totalStockin },
-    { name: "Out of Stock", value: outOfStock },
+    { name: "Stock Out", value: totalStockout },
   ];
 
   return (
     <ProtectedRoute>
-      <div className="flex h-screen mt-20">
+      <div className="flex h-screen mt-25">
         <div className="flex-1 flex flex-col overflow-hidden">
           <main className="flex-1 overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-7">
@@ -140,8 +156,8 @@ export default function Dashboard() {
                 />
                 <OverviewCard
                   icon={<PackageX className="text-cyan-500" size={45} />}
-                  title="Total Low Stock"
-                  value={outOfStock}
+                  title="Total Stock Out"
+                  value={totalStockout}
                   bgColor="bg-cyan-50"
                   iconColor="text-cyan-500"
                 />
@@ -152,7 +168,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Bar Chart */}
               <div className="w-full h-[400px] bg-white rounded-md p-4 shadow">
-                <h2 className="text-xl font-semibold mb-4 text-[#2D579A]">
+                <h2 className="text-xl font-semibold mb-4 text-[#2D579A] mt-2">
                   Stock Overview
                 </h2>
                 <ResponsiveContainer width="100%" height="100%">
@@ -168,11 +184,7 @@ export default function Dashboard() {
                         x2="0"
                         y2="1"
                       >
-                        <stop
-                          offset="0%"
-                          stopColor="#4D96FF"
-                          stopOpacity={1}
-                        />
+                        <stop offset="0%" stopColor="#4D96FF" stopOpacity={1} />
                         <stop
                           offset="100%"
                           stopColor="#4D96FF"
@@ -201,25 +213,13 @@ export default function Dashboard() {
                   totalProducts: totalProduct,
                   totalCategory: totalCategory,
                   totalStockin: totalStockin,
-                  outOfStock: outOfStock,
+                  totalStockout: totalStockout,
                 }}
               />
             </div>
 
             {loading && (
               <p className="text-center mt-4 text-gray-500">Loading data...</p>
-            )}
-
-            {error && (
-              <div className="text-center mt-4">
-                <p className="text-red-600">{error}</p>
-                <button
-                  onClick={fetchAllData}
-                  className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Retry
-                </button>
-              </div>
             )}
           </main>
         </div>
