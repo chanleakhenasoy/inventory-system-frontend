@@ -176,12 +176,24 @@ console.log(formData)
     }
   };
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "selectedCategoryId") {
+      const selectedCategory = categories.find((cat) => cat.id === value);
+      setFormData((prev) => ({
+        ...prev,
+        selectedCategoryId: value, // Update the dropdown value
+        category_id: value, // Map to category_id for backend
+        category_name: selectedCategory?.category_name || "", // Update display name
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
-
 
   return (
     <div className="p-6 mt-25">
@@ -198,33 +210,19 @@ console.log(formData)
         <div className="space-y-6">
           <label className="block text-[#2D579A] mb-2">Category Name</label>
           <div className="relative">
-            <select
+          <select
               name="selectedCategoryId"
               value={formData.selectedCategoryId}
-              onChange={(e) => {
-                const selectedCategory = categories.find(
-                  (p) => p.id === e.target.value
-                );
-                setFormData((prev) => ({
-                  ...prev,
-                  category_name: selectedCategory
-                    ? selectedCategory.category_name
-                    : "",
-                  selectedCategoryId: selectedCategory
-                    ? selectedCategory.id
-                    : "",
-                }));
-              }}
+              onChange={handleChange}
               className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none cursor-pointer"
             >
               <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.category_name}
+              {categories.map((categories) => (
+                <option key={categories.id} value={categories.id}>
+                  {categories.category_name}
                 </option>
               ))}
             </select>
-
             {/* Arrow icon inside the select box */}
             <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
               <svg
