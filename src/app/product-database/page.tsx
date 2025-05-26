@@ -33,6 +33,9 @@ export default function ProductDatabase() {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
   };
+   const handleSearch = () => {
+    setCurrentPage(1);
+  };
   
   useEffect(() => {
     const fetchProducts = async () => {
@@ -106,6 +109,7 @@ export default function ProductDatabase() {
   );
 
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">

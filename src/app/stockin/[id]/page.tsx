@@ -555,6 +555,7 @@ interface StockInItem {
 }
 
 interface FormData {
+  invoices?: { invoice_id: string }[];
   invoice_id: string;
   selectedSupplierId: string;
   supplier_name: string;
@@ -581,6 +582,7 @@ export default function StockInDetail() {
   const [products, setProducts] = useState<Product[]>([]);
   const [invoiceList, setInvoiceList] = useState([]);
   const [formData, setFormData] = useState<FormData>({
+    invoices: [],
     invoice_id: "",
     selectedSupplierId: "",
     supplier_name: "",
@@ -929,6 +931,45 @@ export default function StockInDetail() {
     }
   };
 
+  const handleDeleteInvoice = async (invoiceId: string) => {
+  const token = localStorage.getItem("token");
+
+  if (!window.confirm("Are you sure you want to delete this invoice and its items?")) return;
+
+  try {
+    setLoading(true);
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/delete/${invoiceId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || "Failed to delete invoice");
+    }
+
+    // Update local state (optional, if you're displaying invoice data in formData)
+    setFormData((prev) => ({
+      ...prev,
+      invoices: prev.invoices?.filter((i: { invoice_id: string; }) => i.invoice_id !== invoiceId) || [],
+    }));
+  router.push("/stockin"); // Redirect to stock-in list after deletion
+  } catch (err) {
+    console.error(err);
+    setError("Failed to delete invoice.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
   return (
     <div className="flex-1 p-6">
       <div className="flex items-end mb-4 h-40">
@@ -1077,6 +1118,14 @@ export default function StockInDetail() {
                 className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
               />
             </div>
+            <div className="flex justify-end space-x-4">
+            <button
+              className="w-[95px] h-[30px] bg-red-600 rounded-md text-white text-[15px] font-bold mt-6  cursor-pointer"
+              onClick={() => handleDeleteInvoice(formData.invoice_id)}
+            >
+              Delete
+            </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1181,38 +1230,37 @@ export default function StockInDetail() {
             <div>
               <label className="text-[#2D579A] relative">Expire Date</label>
               <div className="relative">
-              <input
-                type="Date"
-                name="expire_date"
-                value={selectedItem.expire_date}
-                onChange={handleSelectedItemChange}
-                className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
+                <input
+                  type="Date"
+                  name="expire_date"
+                  value={selectedItem.expire_date}
+                  onChange={handleSelectedItemChange}
+                  className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
         [&::-webkit-calendar-picker-indicator]:opacity-0"
-              />
-              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
+                />
+                <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                  <svg
+                    className="w-5 h-5 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  type="Date"
+                  name="expire_date"
+                  value={selectedItem.expire_date}
+                  onChange={handleSelectedItemChange}
+                  className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
+                />
               </div>
-              <input
-                type="Date"
-                name="expire_date"
-                value={selectedItem.expire_date}
-                onChange={handleSelectedItemChange}
-                className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
-              />
-              
-            </div>
             </div>
             <div>
               <label className="block mb-2 text-[#2D579A]">Total Price</label>
@@ -1225,13 +1273,13 @@ export default function StockInDetail() {
               />
             </div>
             <div className="flex justify-end gap-4 mt-8 h-7">
-            <Button label="Cancel" onClick={handleCancelItemEdit} />
-            <Button
-              label="Update"
-              onClick={handleUpdateItem}
-              variant="update"
-            />
-          </div>
+              <Button label="Cancel" onClick={handleCancelItemEdit} />
+              <Button
+                label="Update"
+                onClick={handleUpdateItem}
+                variant="update"
+              />
+            </div>
           </div>
         </div>
       )}

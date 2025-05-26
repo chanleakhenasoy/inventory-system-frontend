@@ -1,7 +1,6 @@
 import Image from "next/image"
 import { Search, Bell, LogOut } from "lucide-react"
 import logo from "../images/logo.png"
-import Link from "next/link"
 import { useRouter } from "next/navigation";
 
 export default function Navbar() {

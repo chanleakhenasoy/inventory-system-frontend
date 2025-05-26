@@ -14,21 +14,20 @@ export default function LayoutWrapper({
 }) {
   const pathname = usePathname();
   const isLoginPage = pathname === "/";
-  const [role, setRole] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Load user role from localStorage (or API if necessary)
-    const storedRole = localStorage.getItem("userRole");
-    setRole(storedRole);
+    setIsClient(true);
   }, []);
   if (isLoginPage) {
     return <>{children}</>;
   }
 
+  const role = isClient ? localStorage.getItem("userRole") : null;
   return (
     <>
       <Navbar />
-      <div className="flex h-[850px]">
+      <div className="flex h-[965px]">
         {/* Sidebar */}
         <div className="w-80 bg-[#2D579A] text-white text-[20px] mt-[102.4px]">
           <nav>
