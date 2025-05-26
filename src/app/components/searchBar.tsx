@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"; // Use usePathname for App Router
 import { useState, useCallback, useImperativeHandle, forwardRef } from "react";
 import { debounce } from "lodash";
 import path from "path";
+import searchButton from "@/app/components/searchButton"
 
 type Props = {
   onResults: (data: any[], total: number) => void;

@@ -8,21 +8,29 @@ import Pagination from "@/app/components/pagination";
 export default function Supplier() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
-  const [suppliers, setSuppliers] = useState<any[]>([]);
-  const [totalPages, setTotalPages] = useState(1); // New state for total pages
+  const [allSuppliers, setAllSuppliers] = useState<any[]>([]); // Store all suppliers for local filtering
+  const [filteredSuppliers, setFilteredSuppliers] = useState<any[]>([]); // Display filtered results during typing
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState(""); // Trigger API search
 
   const itemsPerPage = 10;
 
-  // Fetch suppliers when page or searchTerm changes
+  // Fetch all suppliers on initial load and page changes
   useEffect(() => {
-    fetchSuppliers(currentPage, searchTerm);
-  }, [currentPage, searchTerm]);
+    fetchSuppliers(currentPage, appliedSearchTerm);
+  }, [currentPage, appliedSearchTerm]);
 
   const fetchSuppliers = async (page: number, search = "") => {
     const token = localStorage.getItem("token");
+    if (!token) {
+      setError("No token found. Please log in.");
+      setLoading(false);
+      return;
+    }
+
     setError("");
     setLoading(true);
     try {
@@ -40,21 +48,41 @@ export default function Supplier() {
       const result = await response.json();
 
       if (response.ok) {
-        setSuppliers(result.data || []);
-        // Assuming the API returns total count or total pages
+        const newSuppliers = result.data || [];
+        setAllSuppliers((prev) => (page === 1 ? newSuppliers : [...prev, ...newSuppliers])); // Accumulate suppliers
+        setFilteredSuppliers(newSuppliers); // Update filtered list
         setTotalPages(Math.ceil((result.total || result.data.length) / itemsPerPage));
       } else {
         setError(result.message || "Failed to fetch suppliers.");
-        setSuppliers([]);
+        setAllSuppliers([]);
+        setFilteredSuppliers([]);
         setTotalPages(1);
       }
     } catch (err) {
       setError("Network error. Please try again.");
-      setSuppliers([]);
+      setAllSuppliers([]);
+      setFilteredSuppliers([]);
       setTotalPages(1);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle search input change for local filtering
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    // Filter locally based on allSuppliers
+    const filtered = allSuppliers.filter((supplier) =>
+      supplier.supplier_name.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredSuppliers(filtered);
+  };
+
+  const handleClick = () => {
+    setCurrentPage(1); // Reset to page 1 on new search
+    setAppliedSearchTerm(searchTerm); // Trigger API search with full term
   };
 
   const handlePageChange = (page: number) => {
@@ -74,30 +102,40 @@ export default function Supplier() {
       <main className="flex-1 overflow-y-auto p-6">
         {/* Search */}
         <div className="mb-4 w-full sm:w-[50%]">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <svg
-                className="w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+          <div className="flex items-center space-x-2">
+            {/* Input Group with Icon */}
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg
+                  className="w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <input
+                type="text"
+                className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
+                placeholder="Search by Supplier Name..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
             </div>
-            <input
-              type="text"
-              className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
-              placeholder="Search by Supplier Name..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            {/* Search Button */}
+            <button
+              onClick={handleClick}
+              className="bg-[#2D579A] text-white text-sm px-4 py-2 rounded-3xl hover:bg-[#6499EF] transition cursor-pointer"
+            >
+              Search
+            </button>
           </div>
         </div>
 
@@ -109,8 +147,7 @@ export default function Supplier() {
           <Button onClick={handleClickToSupplierCreate} label="Create" />
         </div>
 
-       
-        {/* {loading && <p>Loading suppliers...</p>} */}
+        {loading && <p className="text-gray-500">Loading suppliers...</p>}
         {error && <p className="text-red-500">{error}</p>}
 
         {/* Table */}
@@ -140,8 +177,8 @@ export default function Supplier() {
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
-              {suppliers.length > 0 ? (
-                suppliers.map((supplier: any, index) => (
+              {filteredSuppliers.length > 0 ? (
+                filteredSuppliers.map((supplier: any, index) => (
                   <tr
                     key={supplier.id ?? index}
                     className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
