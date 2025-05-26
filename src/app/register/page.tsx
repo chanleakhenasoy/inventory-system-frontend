@@ -47,13 +47,15 @@ export default function CreateUser() {
     return "";
   };
 
-  const validateRole = (): string => {
-    const normalizedRole = role.trim().toLowerCase();
-    if (!normalizedRole) return "Role is required.";
-    if (normalizedRole !== "admin" && normalizedRole !== "user")
-      return "Role must be either 'admin' or 'user'.";
-    return "";
-  };
+ const validateRole = (): string => {
+  const normalizedRole = role.trim().toLowerCase();
+  if (!normalizedRole) return "Role is required.";
+  const validRoles = ["admin", "manager", "officer"];
+  if (!validRoles.includes(normalizedRole)) {
+    return "Role must be either 'admin', 'manager', or 'officer'.";
+  }
+  return "";
+};
 
   const validatePassword = (): string => {
     if (!password.trim()) return "Password is required.";
