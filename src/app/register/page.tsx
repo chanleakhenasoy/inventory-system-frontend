@@ -2,6 +2,7 @@
 import { User, Mail, Users, Key, LogIn, EyeOff, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 
 export default function CreateUser() {
   const router = useRouter();
@@ -88,16 +89,19 @@ export default function CreateUser() {
     };
 
     console.log("Request body:", payload);
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await response.json();
 
@@ -190,19 +194,33 @@ export default function CreateUser() {
 
         {/* Role Field */}
         <div className="relative">
-          <input
-            type="text"
+          <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            placeholder="Role (admin/user)"
-            className={`w-full border p-3 pr-12 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+            className={`w-full appearance-none border p-3 pr-12 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-400 ${
               roleError ? "border-red-500" : "border-gray-300"
             }`}
             required
-          />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
-            <Users size={20} />
+          >
+            <option value="" className="text-gray-500">
+              Select Role
+            </option>
+            <option value="Admin" className="text-gray-500">
+              Admin
+            </option>
+            <option value="Manager" className="text-gray-500">
+              Manager
+            </option>
+            <option value="Officer" className="text-gray-500">
+              Officer
+            </option>
+          </select>
+
+          {/* Dropdown icon */}
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
+            <ChevronDown size={25} />
           </div>
+
           {roleError && (
             <p className="mt-1 text-sm text-red-500">{roleError}</p>
           )}
@@ -210,21 +228,26 @@ export default function CreateUser() {
 
         {/* Password Field */}
         <div className="relative">
-      <input
-        type={showPassword ? "text" : "password"}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        className={`w-full border p-3 pr-12 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-          passwordError ? "border-red-500" : "border-gray-300"
-        }`}
-        required
-      />
-      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer" onClick={togglePasswordVisibility}>
-        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-      </div>
-      {passwordError && <p className="mt-1 text-sm text-red-500">{passwordError}</p>}
-    </div>
+          <input
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            className={`w-full border p-3 pr-12 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-400 ${
+              passwordError ? "border-red-500" : "border-gray-300"
+            }`}
+            required
+          />
+          <div
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+            onClick={togglePasswordVisibility}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </div>
+          {passwordError && (
+            <p className="mt-1 text-sm text-red-500">{passwordError}</p>
+          )}
+        </div>
         {/* Register Button */}
         <button
           type="submit"

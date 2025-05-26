@@ -10,8 +10,8 @@ export default function ChartCard({ data }) {
     // { name: 'Low Stock', value: data.totalLowStock },
     // { name: 'Out of Stock', value: data.totalOutOfStock },
     { name: 'Total Categories', value: data.totalCategory },
-    { name: 'Total stockin', value: parseInt(data.totalStockin) },
-    { name: 'Total lowstock', value: data.totalLowStock },
+    { name: 'Total stock In', value: parseInt(data.totalStockin) },
+    { name: 'Total Stock Out', value: data.totalStockout},
   ];
 
   console.log(data)
