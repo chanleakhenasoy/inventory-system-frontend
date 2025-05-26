@@ -34,47 +34,64 @@ export default function CreateUser() {
   }, [success]);
 
   const validateUsername = (): string => {
-    if (!username.trim()) return "Username is required.";
+    if (!username.trim()) return "Please enter your username.";
     if (username.trim().length < 3)
       return "Username must be at least 3 characters long.";
     return "";
   };
 
   const validateEmail = (): string => {
-    if (!email.trim()) return "Email is required.";
+    if (!email.trim()) return "Please enter your email.";
+    if (!email.trim().includes("@"))
+      return "Email must contain '@'.";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
       return "Please enter a valid email address.";
+    // Check if email belongs to pse.ngo or institute.pse.ngo
+    const emailDomainRegex = /^[\w.-]+@(institute\.)?pse\.ngo$/;
+    if (!emailDomainRegex.test(email.trim()))
+      return "Email must belong 'institute.pse.ngo' or 'pse.ngo'";
     return "";
   };
 
   const validateRole = (): string => {
+    if (!role.trim()) return "Please select your role.";
     const normalizedRole = role.trim().toLowerCase();
-    if (!normalizedRole) return "Role is required.";
-    if (normalizedRole !== "admin" && normalizedRole !== "user")
-      return "Role must be either 'admin' or 'user'.";
+    if (normalizedRole !== "user" && normalizedRole !== "admin")
+      return "Role must be either 'user' or 'admin'.";
     return "";
   };
 
   const validatePassword = (): string => {
-    if (!password.trim()) return "Password is required.";
-    if (password.trim().length < 6)
-      return "Password must be at least 6 characters long.";
+    if (!password.trim()) return "Please enter your password.";
+    if (password.trim().length < 8)
+      return "Password must be at least 8 characters long.";
+    if (!/[A-Z]/.test(password.trim()) && !/[#*]/.test(password.trim()))
+      return "Password should contain at least one capital letter or special character (# or *).";
     return "";
   };
 
   const validateForm = (): boolean => {
-    setUsernameError(validateUsername());
-    setEmailError(validateEmail());
-    setRoleError(validateRole());
-    setPasswordError(validatePassword());
+    const usernameErr = validateUsername();
+    const emailErr = validateEmail();
+    const roleErr = validateRole();
+    const passwordErr = validatePassword();
 
-    return !usernameError && !emailError && !roleError && !passwordError;
+    setUsernameError(usernameErr);
+    setEmailError(emailErr);
+    setRoleError(roleErr);
+    setPasswordError(passwordErr);
+
+    return !usernameErr && !emailErr && !roleErr && !passwordErr;
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setSuccess("");
+    setUsernameError("");
+    setEmailError("");
+    setRoleError("");
+    setPasswordError("");
 
     if (!validateForm()) {
       setLoading(false);
@@ -113,22 +130,25 @@ export default function CreateUser() {
         setPassword("");
         setTimeout(() => router.push("/user"), 1500);
       } else {
-        // Handle server errors more cleanly
-        handleErrorMessages(data.message);
+        // Handle server errors and specifically check for email already registered
+        if (data.message && data.message.toLowerCase().includes("already registered")) {
+          setEmailError("Email already registered.");
+        } else if (data.message && data.message.toLowerCase().includes("username")) {
+          setUsernameError(data.message);
+        } else if (data.message && data.message.toLowerCase().includes("role")) {
+          setRoleError(data.message);
+        } else if (data.message && data.message.toLowerCase().includes("password")) {
+          setPasswordError(data.message);
+        } else {
+          setEmailError(data.message || "An error occurred. Please try again.");
+        }
       }
     } catch (err) {
       console.error("Network error:", err);
-      setUsernameError("Network error. Please try again.");
+      setEmailError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleErrorMessages = (message: string) => {
-    if (message.includes("username")) setUsernameError(message);
-    else if (message.includes("email")) setEmailError(message);
-    else if (message.includes("role")) setRoleError(message);
-    else if (message.includes("password")) setPasswordError(message);
   };
 
   return (
@@ -151,7 +171,7 @@ export default function CreateUser() {
         </button>
       </div>
 
-      <form className="flex flex-col gap-6" onSubmit={handleRegister}>
+      <form className="flex flex-col gap-6" onSubmit={handleRegister} noValidate>
         {/* Username Field */}
         <div className="relative">
           <input
@@ -162,14 +182,15 @@ export default function CreateUser() {
             className={`w-full border p-3 pr-12 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-400 ${
               usernameError ? "border-red-500" : "border-gray-300"
             }`}
-            required
           />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+          <div className="absolute right-3 top-4 -translate-y-0.1 text-gray-500">
             <User size={20} />
           </div>
-          {usernameError && (
-            <p className="mt-1 text-sm text-red-500">{usernameError}</p>
-          )}
+          <div className="h-6 mt-1">
+            {usernameError && (
+              <p className="text-sm text-red-500">{usernameError}</p>
+            )}
+          </div>
         </div>
 
         {/* Email Field */}
@@ -182,14 +203,15 @@ export default function CreateUser() {
             className={`w-full border p-3 pr-12 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-400 ${
               emailError ? "border-red-500" : "border-gray-300"
             }`}
-            required
           />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+          <div className="absolute right-3 top-4 -translate-y-0.1 text-gray-500">
             <Mail size={20} />
           </div>
-          {emailError && (
-            <p className="mt-1 text-sm text-red-500">{emailError}</p>
-          )}
+          <div className="h-6 mt-1">
+            {emailError && (
+              <p className="text-sm text-red-500">{emailError}</p>
+            )}
+          </div>
         </div>
 
         {/* Role Field */}
@@ -200,30 +222,28 @@ export default function CreateUser() {
             className={`w-full appearance-none border p-3 pr-12 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-400 ${
               roleError ? "border-red-500" : "border-gray-300"
             }`}
-            required
           >
             <option value="" className="text-gray-500">
               Select Role
             </option>
-            <option value="Admin" className="text-gray-500">
+            <option value="admin" className="text-gray-500">
               Admin
             </option>
-            <option value="Manager" className="text-gray-500">
+            <option value="admin" className="text-gray-500">
               Manager
             </option>
-            <option value="Officer" className="text-gray-500">
+            <option value="admin" className="text-gray-500">
               Officer
             </option>
           </select>
-
-          {/* Dropdown icon */}
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
+          <div className="absolute right-2 top-4 -translate-y-0.1 text-gray-500 pointer-events-none">
             <ChevronDown size={25} />
           </div>
-
-          {roleError && (
-            <p className="mt-1 text-sm text-red-500">{roleError}</p>
-          )}
+          <div className="h-6 mt-1">
+            {roleError && (
+              <p className="text-sm text-red-500">{roleError}</p>
+            )}
+          </div>
         </div>
 
         {/* Password Field */}
@@ -236,18 +256,20 @@ export default function CreateUser() {
             className={`w-full border p-3 pr-12 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-400 ${
               passwordError ? "border-red-500" : "border-gray-300"
             }`}
-            required
           />
           <div
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+            className="absolute right-3 top-4 -translate-y-0.1 text-gray-500 cursor-pointer"
             onClick={togglePasswordVisibility}
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </div>
-          {passwordError && (
-            <p className="mt-1 text-sm text-red-500">{passwordError}</p>
-          )}
+          <div className="h-6 mt-1">
+            {passwordError && (
+              <p className="text-sm text-red-500">{passwordError}</p>
+            )}
+          </div>
         </div>
+
         {/* Register Button */}
         <button
           type="submit"
