@@ -7,23 +7,35 @@ import Button from "../components/button";
 
 export default function Category() {
   const router = useRouter();
-  const [categories, setCategories] = useState<any[]>([]);
+  const [allCategories, setAllCategories] = useState<any[]>([]); // Store all categories for local filtering
+  const [filteredCategories, setFilteredCategories] = useState<any[]>([]); // Display filtered results
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState("");
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState(""); // Trigger API search
 
   const itemsPerPage = 10;
 
+  // Fetch categories on initial load and when search is applied
+  useEffect(() => {
+    fetchCategories(currentPage, appliedSearchTerm);
+  }, [currentPage, appliedSearchTerm]);
+
   const fetchCategories = async (page: number, search = "") => {
     const token = localStorage.getItem("token");
+    if (!token) {
+      setError("No token found. Please log in.");
+      setLoading(false);
+      return;
+    }
+
     setError("");
     setLoading(true);
-
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/category/getAll?page=${page}&limit=${itemsPerPage}&search=${search}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/category/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
         {
           method: "GET",
           headers: {
@@ -32,30 +44,45 @@ export default function Category() {
           },
         }
       );
-      
+
       if (response.ok) {
         const result = await response.json();
-        setCategories(result.data || []);
+        const newCategories = result.data || [];
+        setAllCategories((prev) => (page === 1 ? newCategories : [...prev, ...newCategories])); // Accumulate categories
+        setFilteredCategories(newCategories); // Update filtered list
         setTotalItems(result.total || 0);
       } else {
         const errorData = await response.json();
         setError(errorData.message || "Failed to fetch categories.");
+        setAllCategories([]);
+        setFilteredCategories([]);
+        setTotalItems(0);
       }
     } catch (err) {
       setError("Network error. Please try again.");
+      setAllCategories([]);
+      setFilteredCategories([]);
+      setTotalItems(0);
     } finally {
       setLoading(false);
     }
   };
-  
-  useEffect(() => {
-    fetchCategories(currentPage, searchTerm);
-  }, [currentPage, searchTerm]);
 
-  // Use React onChange event on input instead of addEventListener for React way
+  // Handle search input change for local filtering
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    // Filter locally based on allCategories
+    const filtered = allCategories.filter((category) =>
+      category.category_name.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredCategories(filtered);
+  };
+
+  const handleSearch = () => {
     setCurrentPage(1); // Reset to first page on search
+    setAppliedSearchTerm(searchTerm); // Trigger API search with full term
   };
 
   const handlePageChange = (page: number) => {
@@ -75,30 +102,42 @@ export default function Category() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
       <main className="flex-1 overflow-y-auto p-6">
+        {/* Search */}
         <div className="mb-4 w-full sm:w-[50%]">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <svg
-                className="w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+          <div className="flex items-center space-x-2">
+            {/* Input wrapper */}
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg
+                  className="w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <input
+                type="text"
+                className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5"
+                placeholder="Search by Category Name..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
             </div>
-            <input
-              type="text"
-              className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5"
-              placeholder="Search by Category Name..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
+
+            {/* Search Button */}
+            <button
+              onClick={handleSearch}
+              className="bg-[#2D579A] text-white text-sm px-4 py-2 rounded-3xl hover:bg-[#6499EF] transition cursor-pointer"
+            >
+              Search
+            </button>
           </div>
         </div>
 
@@ -134,8 +173,8 @@ export default function Category() {
                 </tr>
               </thead>
               <tbody className="text-[#2B5190]">
-                {categories.length > 0 ? (
-                  categories.map((category: any, index) => (
+                {filteredCategories.length > 0 ? (
+                  filteredCategories.map((category: any, index) => (
                     <tr
                       key={category.id}
                       className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
