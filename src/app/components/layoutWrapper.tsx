@@ -39,9 +39,10 @@ export default function LayoutWrapper({
             <SidebarItem icon={<Package size={20} />} text="Stock In" href="/stockin" />
             <SidebarItem icon={<PackageX size={20} />} text="Stock Out" href="/stockout" />
             <SidebarItem icon={<Database size={20} />} text="Product Database" href="/product-database" />
-                {role === "admin" && (
-              <SidebarItem icon={<User size={20} />} text="Create User" href="/register" />
+            {(role === "admin" || role === "manager") && (
+           <SidebarItem icon={<User size={20} />} text="Create User" href="/register" />
             )}
+
           </nav>
         </div>
 
