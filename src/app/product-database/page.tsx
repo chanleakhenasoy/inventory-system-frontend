@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Pagination from "@/app/components/pagination";
 
 interface Product {
@@ -16,7 +16,6 @@ interface Product {
 
 interface CombinedProduct extends Product {
   quantity_in_hand: number;
-
   available_amount: number;
   status: "Sufficient" | "Insufficient";
 }
@@ -26,122 +25,174 @@ export default function ProductDatabase() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [filteredProducts, setFilteredProducts] = useState<CombinedProduct[]>(
+    []
+  );
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
 
   const productsPerPage = 10;
+  const isInitialMount = useRef(true); 
+  const debouncedSearch = useCallback((term: string) => {
+    setCurrentPage(1);
+    setAppliedSearchTerm(term);
+  }, []);
 
+  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
-   const handleSearch = () => {
-    setCurrentPage(1);
-  };
-  
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const token = localStorage.getItem("token");
-
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/product-database`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData?.message || "Failed to fetch products.");
-        }
+    const value = e.target.value;
+    setSearchTerm(value);
 
         const data = await res.json();
         const stockSummary = data?.data?.stockSummary || [];
+    if (timeoutIdRef.current) {
+      clearTimeout(timeoutIdRef.current);
+    }
+    timeoutIdRef.current = setTimeout(() => {
 
-        const combined = stockSummary.map((item: any) => {
-          const status: "Sufficient" | "Insufficient" =
-            item.quantity_in_hand > 0 ? "Sufficient" : "Insufficient";
+      const filtered = products.filter(
+        (product) =>
+          product.name_en.toLowerCase().includes(value.toLowerCase()) ||
+          product.name_kh.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+      timeoutIdRef.current = null;
+    }, 300);
+  };
 
-          return {
-            ...item,
-            name_en: item.name_en ?? "N/A",
-            name_kh: item.name_kh ?? "N/A",
-            beginning_quantity: parseFloat(item.beginning_quantity ?? 0),
-            total_stockin: parseFloat(item.total_stockin ?? 0),
-            total_stockout: parseFloat(item.total_stockout ?? 0),
-            quantity_in_hand: parseFloat(item.quantity_in_hand ?? 0),
-            unit_avg_cost: parseFloat(item.unit_avg_cost ?? 0),
-            available_amount: parseFloat(item.available_amount ?? 0),
-            minimum_stock: item.minimum_stock ?? 0,
-            status,
-          };
-        });
+  useEffect(() => {
+    if (isInitialMount.current) {
+      fetchProducts(1, ""); // Initial fetch
+      isInitialMount.current = false;
+    } else {
+      fetchProducts(currentPage, appliedSearchTerm);
+    }
+  }, [currentPage, appliedSearchTerm]);
 
-        setProducts(combined);
-      } catch (err: any) {
-        console.error("Fetch error:", err);
-        setError((prev) => [
-          ...prev,
-          err.message || "An unknown error occurred",
-        ]);
+  const fetchProducts = async (page: number, search = "") => {
+    setLoading(true);
+    setError([]);
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch(
+        `${
+          process.env.NEXT_PUBLIC_API_BASE_URL
+        }/product/product-database?page=${page}&limit=${productsPerPage}&search=${encodeURIComponent(
+          search
+        )}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData?.message || "Failed to fetch products.");
       }
-    };
 
-    fetchProducts();
-  }, []);
+      const data = await res.json();
+      console.log("API Response:", data);
 
-  console.log("Products:", products);
+      const stockSummary = data?.data?.stockSummary || data.stockSummary || [];
+      const total = data?.pagination?.totalItems || data.total || 0;
 
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+      const combined = stockSummary.map((item: any) => {
+        const status: "Sufficient" | "Insufficient" =
+          item.quantity_in_hand > 0 ? "Sufficient" : "Insufficient";
 
-  const filteredProducts = products.filter((p) =>
-    p.name_en.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+        return {
+          ...item,
+          name_en: item.name_en ?? "N/A",
+          name_kh: item.name_kh ?? "N/A",
+          beginning_quantity: parseFloat(item.beginning_quantity ?? 0),
+          total_stockin: parseFloat(item.total_stockin ?? 0),
+          total_stockout: parseFloat(item.total_stockout ?? 0),
+          quantity_in_hand: parseFloat(item.quantity_in_hand ?? 0),
+          unit_avg_cost: parseFloat(item.unit_avg_cost ?? 0),
+          available_amount: parseFloat(item.available_amount ?? 0),
+          minimum_stock: item.minimum_stock ?? 0,
+          status,
+        };
+      });
 
-  const currentProducts = filteredProducts.slice(
-    indexOfFirstProduct,
-    indexOfLastProduct
-  );
+      setProducts(combined);
+      if (searchTerm) {
+        const filtered = combined.filter(
+          (product: CombinedProduct) =>
+            product.name_en.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.name_kh.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredProducts(filtered);
+      } else {
+        setFilteredProducts(combined);
+      }
+      setTotalItems(total);
+    } catch (err) {
+      setError(["Network error. Please try again."]);
+      setProducts([]);
+      setFilteredProducts([]);
+      setTotalItems(0);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
+  const totalPages = Math.ceil(totalItems / productsPerPage);
+
+  const displayProducts = searchTerm && !loading ? filteredProducts : products;
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
       <main className="flex-1 overflow-y-auto p-6">
         <div className="mb-4 w-full sm:w-[50%]">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <svg
-                className="w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+          <div className="flex items-center space-x-2">
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg
+                  className="w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <input
+                type="text"
+                className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5"
+                placeholder="Name En..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
             </div>
-            <input
-              type="text"
-              className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5"
-              placeholder="Name En..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
+            <button
+              onClick={() => debouncedSearch(searchTerm)}
+              className="bg-[#2D579A] text-white text-sm px-4 py-2 rounded-3xl hover:bg-[#6499EF] transition cursor-pointer"
+            >
+              Search
+            </button>
           </div>
         </div>
 
+        <div className="flex items-center justify-between mb-4">
         <h1 className="text-[30px] font-bold text-[#2D579A] mt-4 mb-2">
           Product Database
         </h1>
+
       <div className="mb-4 w-full sm:w-[50%]">
   <div className="flex items-center space-x-2">
     <div className="relative flex-1">
@@ -177,11 +228,10 @@ export default function ProductDatabase() {
   </div>
 </div>
 
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
-            Product Database
-          </h1>
         </div>
+
+        {loading && <p className="text-center mt-10">Loading...</p>}
+        {error && <p className="text-red-500">{error}</p>}
         <div className="bg-white rounded-md mt-5">
           <table className="min-w-full text-center">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
@@ -202,53 +252,60 @@ export default function ProductDatabase() {
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
-              {currentProducts.map((product, index) => (
-                <tr
-                  key={product.id}
-                  className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
-                >
-                  <td className="px-8 py-3 text-[16px]">
-                    {indexOfFirstProduct + index + 1}
-                  </td>
-                  <td className="px-8 py-3 text-[16px]">{product.name_en}</td>
-                  <td className="px-8 py-3 text-[16px]">{product.name_kh}</td>
-                  <td className="px-8 py-3 text-[16px]">
-                    {product.beginning_quantity}
-                  </td>
-                  <td className="px-8 py-3 text-[16px]">
-                    {product.total_stockin}
-                  </td>
-                  <td className="px-8 py-3 text-[16px]">
-                    {product.total_stockout}
-                  </td>
-                  <td className="px-8 py-3 text-[16px]">
-                    {product.quantity_in_hand}
-                  </td>
-                  <td className="px-8 py-3 text-[16px]">
-                    {product.unit_avg_cost}
-                  </td>
-                  <td className="px-8 py-3 text-[16px]">
-                    {typeof product.available_amount === "number"
-                      ? product.available_amount.toFixed(2) + "$"
-                      : "0.00$"}
-                  </td>
-
-                  <td className="px-8 py-3 text-[16px]">
-                    {product.minimum_stock}
-                  </td>
-                  <td className="px-8 py-3 text-[16px]">
-                    <span
-                      className={`px-3 py-1 rounded text-[13px] font-bold ${
-                        product.status === "Sufficient"
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {product.status}
-                    </span>
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((product: any, index) => (
+                  <tr
+                    key={product.id}
+                    className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
+                  >
+                    <td className="px-8 py-3 text-[16px]">
+                      {(currentPage - 1) * productsPerPage + index + 1}
+                    </td>
+                    <td className="px-8 py-3 text-[16px]">{product.name_en}</td>
+                    <td className="px-8 py-3 text-[16px]">{product.name_kh}</td>
+                    <td className="px-8 py-3 text-[16px]">
+                      {product.beginning_quantity}
+                    </td>
+                    <td className="px-8 py-3 text-[16px]">
+                      {product.total_stockin}
+                    </td>
+                    <td className="px-8 py-3 text-[16px]">
+                      {product.total_stockout}
+                    </td>
+                    <td className="px-8 py-3 text-[16px]">
+                      {product.quantity_in_hand}
+                    </td>
+                    <td className="px-8 py-3 text-[16px]">
+                      {product.unit_avg_cost}
+                    </td>
+                    <td className="px-8 py-3 text-[16px]">
+                      {typeof product.available_amount === "number"
+                        ? `$${product.available_amount.toFixed(2)}`
+                        : "$0.00"}
+                    </td>
+                    <td className="px-8 py-3 text-[16px]">
+                      {product.minimum_stock}
+                    </td>
+                    <td className="px-8 py-3 text-[16px]">
+                      <span
+                        className={`px-3 py-1 rounded text-[13px] font-bold ${
+                          product.status === "Sufficient"
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
+                      >
+                        {product.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={11} className="text-center py-4 text-gray-500">
+                    No product database found.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
@@ -257,7 +314,7 @@ export default function ProductDatabase() {
           <Pagination
             totalPages={totalPages}
             initialPage={currentPage}
-            onPageChange={setCurrentPage}
+            onPageChange={handlePageChange}
           />
         </div>
       </main>
