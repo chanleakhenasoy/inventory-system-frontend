@@ -111,7 +111,8 @@ export default function CategoryDetail() {
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outl
+              ine-none focus:ring-1 focus:ring-blue-500"
             />
             {errors.description && (
               <p className="text-red-600 text-sm mt-1">{errors.description}</p>
