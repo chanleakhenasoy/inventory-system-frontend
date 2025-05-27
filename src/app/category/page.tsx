@@ -7,18 +7,17 @@ import Button from "../components/button";
 
 export default function Category() {
   const router = useRouter();
-  const [allCategories, setAllCategories] = useState<any[]>([]); // Store all categories for local filtering
-  const [filteredCategories, setFilteredCategories] = useState<any[]>([]); // Display filtered results
+  const [allCategories, setAllCategories] = useState<any[]>([]);
+  const [filteredCategories, setFilteredCategories] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState("");
-  const [appliedSearchTerm, setAppliedSearchTerm] = useState(""); // Trigger API search
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
 
   const itemsPerPage = 10;
 
-  // Fetch categories on initial load and when search is applied
   useEffect(() => {
     fetchCategories(currentPage, appliedSearchTerm);
   }, [currentPage, appliedSearchTerm]);
@@ -35,7 +34,11 @@ export default function Category() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/category/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
+        `${
+          process.env.NEXT_PUBLIC_API_BASE_URL
+        }/category/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(
+          search
+        )}`,
         {
           method: "GET",
           headers: {
@@ -48,8 +51,10 @@ export default function Category() {
       if (response.ok) {
         const result = await response.json();
         const newCategories = result.data || [];
-        setAllCategories((prev) => (page === 1 ? newCategories : [...prev, ...newCategories])); // Accumulate categories
-        setFilteredCategories(newCategories); // Update filtered list
+        setAllCategories((prev) =>
+          page === 1 ? newCategories : [...prev, ...newCategories]
+        ); 
+        setFilteredCategories(newCategories);
         setTotalItems(result.total || 0);
       } else {
         const errorData = await response.json();
@@ -67,13 +72,10 @@ export default function Category() {
       setLoading(false);
     }
   };
-
-  // Handle search input change for local filtering
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
 
-    // Filter locally based on allCategories
     const filtered = allCategories.filter((category) =>
       category.category_name.toLowerCase().includes(value.toLowerCase())
     );
@@ -81,8 +83,8 @@ export default function Category() {
   };
 
   const handleSearch = () => {
-    setCurrentPage(1); // Reset to first page on search
-    setAppliedSearchTerm(searchTerm); // Trigger API search with full term
+    setCurrentPage(1);
+    setAppliedSearchTerm(searchTerm);
   };
 
   const handlePageChange = (page: number) => {
@@ -102,10 +104,8 @@ export default function Category() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
       <main className="flex-1 overflow-y-auto p-6">
-        {/* Search */}
         <div className="mb-4 w-full sm:w-[50%]">
           <div className="flex items-center space-x-2">
-            {/* Input wrapper */}
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <svg
@@ -130,8 +130,6 @@ export default function Category() {
                 onChange={handleSearchChange}
               />
             </div>
-
-            {/* Search Button */}
             <button
               onClick={handleSearch}
               className="bg-[#2D579A] text-white text-sm px-4 py-2 rounded-3xl hover:bg-[#6499EF] transition cursor-pointer"

@@ -1,24 +1,24 @@
 // components/ChartCard.jsx
-'use client';
-import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
+"use client";
+import { PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
 
-const COLORS = [ '#FFA500','#3366FF', '#00C49F', '#00BFFF']; // Blue, Orange, Green, Cyan
+const COLORS = ["#FFA500", "#3366FF", "#00C49F", "#00BFFF"];
 
 export default function ChartCard({ data }) {
   const chartData = [
-    { name: 'Total Products', value: data.totalProducts },
-    // { name: 'Low Stock', value: data.totalLowStock },
-    // { name: 'Out of Stock', value: data.totalOutOfStock },
-    { name: 'Total Categories', value: data.totalCategory },
-    { name: 'Total stock In', value: parseInt(data.totalStockin) },
-    { name: 'Total Stock Out', value: data.totalStockout},
+    { name: "Total Products", value: data.totalProducts },
+    { name: "Total Categories", value: data.totalCategory },
+    { name: "Total stock In", value: parseInt(data.totalStockin) },
+    { name: "Total Stock Out", value: data.totalStockout },
   ];
 
-  console.log(data)
+  console.log(data);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-[20px] font-semibold text-blue-900 mb-4 text-center">Stock Distribution</h2>
+      <h2 className="text-[20px] font-semibold text-blue-900 mb-4 text-center">
+        Stock Distribution
+      </h2>
       <PieChart width={680} height={300}>
         <Pie
           data={chartData}
@@ -39,4 +39,4 @@ export default function ChartCard({ data }) {
       </PieChart>
     </div>
   );
-} 
+}

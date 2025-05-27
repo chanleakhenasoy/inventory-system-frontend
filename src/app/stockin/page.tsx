@@ -8,18 +8,16 @@ import React from "react";
 
 export default function StockIn() {
   const router = useRouter();
-  const [allInvoices, setAllInvoices] = useState<any[]>([]); // Store all invoices for local filtering
-  const [filteredInvoices, setFilteredInvoices] = useState<any[]>([]); // Display filtered results
+  const [allInvoices, setAllInvoices] = useState<any[]>([]);
+  const [filteredInvoices, setFilteredInvoices] = useState<any[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [appliedSearchTerm, setAppliedSearchTerm] = useState(""); // Trigger API search
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
 
   const itemsPerPage = 10;
-
-  // Fetch invoices on initial load and when search is applied
   useEffect(() => {
     fetchStockIn(currentPage, appliedSearchTerm);
   }, [currentPage, appliedSearchTerm]);
@@ -35,7 +33,11 @@ export default function StockIn() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
+        `${
+          process.env.NEXT_PUBLIC_API_BASE_URL
+        }/stockIn/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(
+          search
+        )}`,
         {
           method: "GET",
           headers: {
@@ -49,9 +51,13 @@ export default function StockIn() {
 
       if (response.ok) {
         const newInvoices = result.data || [];
-        setAllInvoices((prev) => (page === 1 ? newInvoices : [...prev, ...newInvoices])); // Accumulate invoices
+        setAllInvoices((prev) =>
+          page === 1 ? newInvoices : [...prev, ...newInvoices]
+        ); // Accumulate invoices
         setFilteredInvoices(newInvoices); // Update filtered list
-        setTotalPages(Math.ceil((result.total || result.data.length) / itemsPerPage));
+        setTotalPages(
+          Math.ceil((result.total || result.data.length) / itemsPerPage)
+        );
       } else {
         setError(result.message || "Failed to fetch stock in.");
         setAllInvoices([]);
@@ -68,22 +74,21 @@ export default function StockIn() {
     }
   };
 
-  // Handle search input change for local filtering
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
 
-    // Filter locally based on allInvoices (reference_number or supplier_name)
-    const filtered = allInvoices.filter((invoice) =>
-      (invoice.reference_number?.toLowerCase().includes(value.toLowerCase()) ||
-        invoice.supplier_name?.toLowerCase().includes(value.toLowerCase()))
+    const filtered = allInvoices.filter(
+      (invoice) =>
+        invoice.reference_number?.toLowerCase().includes(value.toLowerCase()) ||
+        invoice.supplier_name?.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredInvoices(filtered);
   };
 
   const handleSearch = () => {
-    setCurrentPage(1); // Reset to first page on search
-    setAppliedSearchTerm(searchTerm); // Trigger API search with full term
+    setCurrentPage(1);
+    setAppliedSearchTerm(searchTerm);
   };
 
   const handlePageChange = (page: number) => {
@@ -101,10 +106,8 @@ export default function StockIn() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
       <main className="flex-1 overflow-y-auto p-6">
-        {/* Search */}
         <div className="mb-4 w-full sm:w-[50%]">
           <div className="flex items-center space-x-2">
-            {/* Search Input with Icon */}
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <svg
@@ -130,8 +133,6 @@ export default function StockIn() {
                 onChange={handleSearchChange}
               />
             </div>
-
-            {/* Search Button */}
             <button
               onClick={handleSearch}
               className="bg-[#2D579A] text-white text-sm px-4 py-2 rounded-3xl hover:bg-[#6499EF] transition cursor-pointer"
@@ -140,20 +141,14 @@ export default function StockIn() {
             </button>
           </div>
         </div>
-
-        {/* Title and Create button */}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
             Stock In
           </h1>
           <Button onClick={handleClickToStockinCreate} label="Create" />
         </div>
-
-        {/* Error and Loading */}
-        {loading && <p className="text-center mt-10">Loading...</p>}
+        {loading && <p className="text-gray-500">Loading...</p>}
         {error && <div className="text-red-500 mb-4">{error}</div>}
-
-        {/* Table */}
         <div className="overflow-x-auto bg-white rounded-md mt-10">
           <table className="min-w-full text-center">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">

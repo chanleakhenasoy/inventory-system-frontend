@@ -8,17 +8,15 @@ import Pagination from "@/app/components/pagination";
 export default function Supplier() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
-  const [allSuppliers, setAllSuppliers] = useState<any[]>([]); // Store all suppliers for local filtering
-  const [filteredSuppliers, setFilteredSuppliers] = useState<any[]>([]); // Display filtered results during typing
+  const [allSuppliers, setAllSuppliers] = useState<any[]>([]); 
+  const [filteredSuppliers, setFilteredSuppliers] = useState<any[]>([]); 
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [appliedSearchTerm, setAppliedSearchTerm] = useState(""); // Trigger API search
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState(""); 
 
   const itemsPerPage = 10;
-
-  // Fetch all suppliers on initial load and page changes
   useEffect(() => {
     fetchSuppliers(currentPage, appliedSearchTerm);
   }, [currentPage, appliedSearchTerm]);
@@ -67,13 +65,10 @@ export default function Supplier() {
       setLoading(false);
     }
   };
-
-  // Handle search input change for local filtering
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
 
-    // Filter locally based on allSuppliers
     const filtered = allSuppliers.filter((supplier) =>
       supplier.supplier_name.toLowerCase().includes(value.toLowerCase())
     );
@@ -81,8 +76,8 @@ export default function Supplier() {
   };
 
   const handleClick = () => {
-    setCurrentPage(1); // Reset to page 1 on new search
-    setAppliedSearchTerm(searchTerm); // Trigger API search with full term
+    setCurrentPage(1); 
+    setAppliedSearchTerm(searchTerm); 
   };
 
   const handlePageChange = (page: number) => {
@@ -100,10 +95,8 @@ export default function Supplier() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
       <main className="flex-1 overflow-y-auto p-6">
-        {/* Search */}
         <div className="mb-4 w-full sm:w-[50%]">
           <div className="flex items-center space-x-2">
-            {/* Input Group with Icon */}
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <svg
@@ -129,7 +122,6 @@ export default function Supplier() {
                 onChange={handleSearchChange}
               />
             </div>
-            {/* Search Button */}
             <button
               onClick={handleClick}
               className="bg-[#2D579A] text-white text-sm px-4 py-2 rounded-3xl hover:bg-[#6499EF] transition cursor-pointer"
@@ -138,8 +130,6 @@ export default function Supplier() {
             </button>
           </div>
         </div>
-
-        {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
             Supplier
@@ -147,10 +137,8 @@ export default function Supplier() {
           <Button onClick={handleClickToSupplierCreate} label="Create" />
         </div>
 
-        {loading && <p className="text-gray-500">Loading suppliers...</p>}
+        {loading && <p className="text-gray-500">Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
-
-        {/* Table */}
         <div className="overflow-x-auto bg-white rounded-md mt-10">
           <table className="min-w-full text-center">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
@@ -217,8 +205,6 @@ export default function Supplier() {
             </tbody>
           </table>
         </div>
-
-        {/* Pagination */}
         <div className="flex justify-end items-center mt-4 space-x-2">
           <Pagination
             totalPages={totalPages}

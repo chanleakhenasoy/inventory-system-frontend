@@ -46,8 +46,6 @@ export default function AddNewStock() {
     supplier_name: "",
   });
 
-  console.log(formData.selectedSupplierId, formData.selectedProductId);
-
   useEffect(() => {
     const fetchSuppliers = async () => {
       const token = localStorage.getItem("token");
@@ -195,7 +193,6 @@ export default function AddNewStock() {
       ];
 
       setItems(newItems);
-      console.log(newItems);
     }
 
     setFormData((prev) => ({
@@ -226,7 +223,6 @@ export default function AddNewStock() {
             <label className="block text-[#2D579A] mb-2">Purchase Date</label>
 
             <div className="relative">
-              {/* Main date input */}
               <input
                 type="Date"
                 name="purchase_date"
@@ -235,8 +231,6 @@ export default function AddNewStock() {
                 className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
                [&::-webkit-calendar-picker-indicator]:opacity-0"
               />
-
-              {/* Custom calendar icon */}
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
                 <svg
                   className="w-5 h-5 text-gray-500"
@@ -252,8 +246,6 @@ export default function AddNewStock() {
                   />
                 </svg>
               </div>
-
-              {/* Transparent clickable input to trigger calendar, bound to same state */}
               <input
                 type="Date"
                 name="purchase_date"
@@ -263,8 +255,6 @@ export default function AddNewStock() {
               />
             </div>
           </div>
-
-          {/* Supplier */}
           <div className="relative mt-11.5">
             <label className="block text-[#2D579A] mb-2">Supplier</label>
 
@@ -310,8 +300,6 @@ export default function AddNewStock() {
               </svg>
             </div>
           </div>
-
-          {/* Reference number */}
           <div>
             <label className="block text-[#2D579A] mb-2">
               Reference Number
@@ -324,13 +312,10 @@ export default function AddNewStock() {
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
-
-          {/* Due Date */}
           <div className="relative">
             <label className="block text-[#2D579A] mb-2">Due Date</label>
 
             <div className="relative">
-              {/* Main date input */}
               <input
                 type="Date"
                 name="due_date"
@@ -339,8 +324,6 @@ export default function AddNewStock() {
                 className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
         [&::-webkit-calendar-picker-indicator]:opacity-0 cursor-pointer"
               />
-
-              {/* Custom calendar icon */}
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
                 <svg
                   className="w-5 h-5 text-gray-500"
@@ -356,8 +339,6 @@ export default function AddNewStock() {
                   />
                 </svg>
               </div>
-
-              {/* Transparent clickable input to trigger calendar, bound to same state */}
               <input
                 type="Date"
                 name="due_date"
@@ -367,8 +348,6 @@ export default function AddNewStock() {
               />
             </div>
           </div>
-
-          {/* Select Items */}
           <div className="relative mt-8">
             <p className="text-[#2D579A] mb-4 font-bold text-[20px]">Item</p>
             <label className="block text-[#2D579A] mb-2">Product</label>
@@ -395,8 +374,6 @@ export default function AddNewStock() {
                 </option>
               ))}
             </select>
-
-            {/* Custom dropdown icon */}
             <div className="pointer-events-none absolute inset-y-0 right-3 mt-19 flex items-center">
               <svg
                 className="w-5 h-5 text-gray-500"
@@ -413,8 +390,6 @@ export default function AddNewStock() {
               </svg>
             </div>
           </div>
-
-          {/* Quantity */}
           <div className="mt-19.5">
             <label className="block text-[#2D579A] mb-2">Quantity</label>
             <input
@@ -425,8 +400,6 @@ export default function AddNewStock() {
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
             />
           </div>
-
-          {/* Unit Price */}
           <div className="">
             <label className="block text-[#2D579A] mb-2">Unit Price</label>
             <input
@@ -438,13 +411,10 @@ export default function AddNewStock() {
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
-
-          {/* Expire Date */}
           <div className="relative">
             <label className="block text-[#2D579A] mb-2">Expire Date</label>
 
             <div className="relative">
-              {/* Main date input */}
               <input
                 type="Date"
                 name="expire_date"
@@ -454,7 +424,6 @@ export default function AddNewStock() {
         [&::-webkit-calendar-picker-indicator]:opacity-0"
               />
 
-              {/* Custom calendar icon */}
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
                 <svg
                   className="w-5 h-5 text-gray-500"
@@ -470,8 +439,6 @@ export default function AddNewStock() {
                   />
                 </svg>
               </div>
-
-              {/* Transparent clickable input to trigger calendar, bound to same state */}
               <input
                 type="Date"
                 name="expire_date"
@@ -482,7 +449,6 @@ export default function AddNewStock() {
             </div>
           </div>
         </div>
-        {/* Add Button */}
         <div className="flex justify-end mb-6">
           <button
             type="button"
@@ -492,8 +458,6 @@ export default function AddNewStock() {
             <Plus size={18} className="mr-1" /> Add
           </button>
         </div>
-
-        {/* Items Table */}
         <div className="bg-white rounded-lg p-6">
           <table className="w-full text-black border border-gray-300 rounded-lg mb-6 mt-16 table-auto">
             <thead className="bg-gray-50 text-[#2D579A]">
@@ -532,7 +496,6 @@ export default function AddNewStock() {
             </tbody>
           </table>
         </div>
-        {/* Save Button */}
         <div className="flex justify-end">
           <Button onClick={createStockin} label="Create" variant="create" />
         </div>

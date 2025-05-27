@@ -7,18 +7,16 @@ import { useRouter } from "next/navigation";
 
 export default function StockOut() {
   const router = useRouter();
-  const [allStockouts, setAllStockouts] = useState<any[]>([]); // Store all stockouts for local filtering
-  const [filteredStockouts, setFilteredStockouts] = useState<any[]>([]); // Display filtered results
+  const [allStockouts, setAllStockouts] = useState<any[]>([]);
+  const [filteredStockouts, setFilteredStockouts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [appliedSearchTerm, setAppliedSearchTerm] = useState(""); // Trigger API search
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
 
   const itemsPerPage = 10;
-
-  // Fetch stockouts on initial load and when search is applied
   useEffect(() => {
     fetchStockouts(currentPage, appliedSearchTerm);
   }, [currentPage, appliedSearchTerm]);
@@ -48,8 +46,8 @@ export default function StockOut() {
 
       if (response.ok) {
         const newStockouts = result.data || [];
-        setAllStockouts((prev) => (page === 1 ? newStockouts : [...prev, ...newStockouts])); // Accumulate stockouts
-        setFilteredStockouts(newStockouts); // Update filtered list
+        setAllStockouts((prev) => (page === 1 ? newStockouts : [...prev, ...newStockouts]));
+        setFilteredStockouts(newStockouts);
         setTotalPages(Math.ceil((result.total || result.data.length) / itemsPerPage));
       } else {
         setError(result.message || "Failed to fetch stock out.");
@@ -66,13 +64,10 @@ export default function StockOut() {
       setLoading(false);
     }
   };
-
-  // Handle search input change for local filtering
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
 
-    // Filter locally based on allStockouts using name_en
     const filtered = allStockouts.filter((stockout) =>
       stockout.name_en.toLowerCase().includes(value.toLowerCase())
     );
@@ -80,8 +75,8 @@ export default function StockOut() {
   };
 
   const handleSearch = () => {
-    setCurrentPage(1); // Reset to first page on search
-    setAppliedSearchTerm(searchTerm); // Trigger API search with full term
+    setCurrentPage(1); 
+    setAppliedSearchTerm(searchTerm);
   };
 
   const handlePageChange = (page: number) => {
@@ -95,10 +90,8 @@ export default function StockOut() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
       <main className="flex-1 overflow-y-auto p-6">
-        {/* Search */}
         <div className="mb-4 w-full sm:w-[50%]">
           <div className="flex items-center space-x-2">
-            {/* Search Input */}
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <svg
@@ -124,8 +117,6 @@ export default function StockOut() {
                 onChange={handleSearchChange}
               />
             </div>
-
-            {/* Search Button */}
             <button
               onClick={handleSearch}
               className="bg-[#2D579A] text-white text-sm px-4 py-2 rounded-3xl hover:bg-[#6499EF] transition cursor-pointer"
@@ -134,16 +125,13 @@ export default function StockOut() {
             </button>
           </div>
         </div>
-
-        {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
             Stock Out
           </h1>
           <Button onClick={handleClickToStockoutCreate} label="Create" />
         </div>
-
-        {loading && <p className="text-center mt-10">Loading...</p>}
+        {loading && <p className="text-gray-500">Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
 
         <div className="overflow-x-auto bg-white rounded-md mt-10">
@@ -199,8 +187,6 @@ export default function StockOut() {
             </tbody>
           </table>
         </div>
-
-        {/* Pagination */}
         <div className="flex justify-end items-center mt-4 space-x-2">
           <Pagination
             totalPages={totalPages}

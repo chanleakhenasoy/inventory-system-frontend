@@ -117,8 +117,7 @@ export default function CreateNewStockout() {
         }
       );
       if (response.ok) {
-        router.push("/stockout"); // Redirect to the supplier list
-      } else {
+        router.push("/stockout");
         const errorData = await response.json();
         alert(
           `Failed to create supplier: ${errorData.message || "Unknown error"}`
@@ -157,7 +156,6 @@ export default function CreateNewStockout() {
 
       <div className="bg-white rounded-lg p-6 shadow-sm">
         <div className="space-y-6">
-          {/* Category Name */}
           <div className="relative">
             <label className="block text-[#2D579A] mb-2">Product Name</label>
 
@@ -186,8 +184,6 @@ export default function CreateNewStockout() {
                   </option>
                 ))}
               </select>
-
-              {/* Custom dropdown icon */}
               <div className="pointer-events-none absolute inset-y-0 right-[16px] flex items-center">
                 <svg
                   className="w-4 h-4 text-gray-500"
@@ -205,8 +201,6 @@ export default function CreateNewStockout() {
               </div>
             </div>
           </div>
-
-          {/* Description */}
           <div>
             <label className="block text-[#2D579A] mb-2">Quantity</label>
             <input
@@ -244,8 +238,6 @@ export default function CreateNewStockout() {
                   </option>
                 ))}
               </select>
-
-              {/* Custom dropdown icon */}
               <div className="pointer-events-none absolute inset-y-0 right-[16px] flex items-center">
                 <svg
                   className="w-4 h-4 text-gray-500"
@@ -268,7 +260,6 @@ export default function CreateNewStockout() {
             <label className="block text-[#2D579A] mb-2">Stock Out Date</label>
 
             <div className="relative">
-              {/* Main date input */}
               <input
                 id="stockout_date"
                 type="date"
@@ -278,8 +269,6 @@ export default function CreateNewStockout() {
                 className="w-full p-2 pr-10 text-[#2D579A] border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none 
         [&::-webkit-calendar-picker-indicator]:opacity-0"
               />
-
-              {/* Custom calendar icon */}
               <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
                 <svg
                   className="w-5 h-5 text-gray-500"
@@ -295,8 +284,6 @@ export default function CreateNewStockout() {
                   />
                 </svg>
               </div>
-
-              {/* Transparent clickable input to trigger calendar, bound to same state */}
               <input
                 type="date"
                 name="stockout_date"
@@ -306,8 +293,6 @@ export default function CreateNewStockout() {
               />
             </div>
           </div>
-
-          {/* Action Buttons */}
           <div className="flex justify-end space-x-3 mt-6 cursor-pointer">
             <Button onClick={createStockout} label="Create" variant="create" />
           </div>
