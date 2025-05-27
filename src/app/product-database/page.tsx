@@ -27,7 +27,9 @@ export default function ProductDatabase() {
   const [error, setError] = useState<string[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [filteredProducts, setFilteredProducts] = useState<CombinedProduct[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<CombinedProduct[]>(
+    []
+  );
   const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
 
   const productsPerPage = 10;
@@ -82,7 +84,11 @@ export default function ProductDatabase() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/product-database?page=${page}&limit=${productsPerPage}&search=${encodeURIComponent(search)}`,
+        `${
+          process.env.NEXT_PUBLIC_API_BASE_URL
+        }/product/product-database?page=${page}&limit=${productsPerPage}&search=${encodeURIComponent(
+          search
+        )}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -191,39 +197,37 @@ export default function ProductDatabase() {
           </div>
         </div>
 
+        <div className="flex items-center justify-between mb-4">
         <h1 className="text-[30px] font-bold text-[#2D579A] mt-4 mb-2">
           Product Database
         </h1>
+        </div>
 
-        {error.length > 0 && (
-          <div className="text-red-600 mb-4">{error[0]}</div>
-        )}
-        {loading ? (
-          <div className="text-center py-4">Loading...</div>
-        ) : displayProducts.length === 0 ? (
-          <div className="text-center py-4 text-gray-500">
-            No products found.
-          </div>
-        ) : (
-          <div className="bg-white rounded-md mt-5">
-            <table className="min-w-full text-center">
-              <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
-                <tr>
-                  <th className="px-8 py-3 font-semibold">No</th>
-                  <th className="px-8 py-3 font-semibold">Name En</th>
-                  <th className="px-8 py-3 font-semibold">Name Kh</th>
-                  <th className="px-8 py-3 font-semibold">Beginning Quantity</th>
-                  <th className="px-8 py-3 font-semibold">Stock In</th>
-                  <th className="px-8 py-3 font-semibold">Stock Out</th>
-                  <th className="px-8 py-3 font-semibold">Quantity In Hand</th>
-                  <th className="px-8 py-3 font-semibold">Unit Avg Cost</th>
-                  <th className="px-8 py-3 font-semibold">Available Stock Amount</th>
-                  <th className="px-8 py-3 font-semibold">Minimum Stock</th>
-                  <th className="px-8 py-3 font-semibold">Stock Checking</th>
-                </tr>
-              </thead>
-              <tbody className="text-[#2B5190]">
-                {displayProducts.map((product, index) => (
+        {loading && <p className="text-center mt-10">Loading...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+
+        <div className="bg-white rounded-md mt-5">
+          <table className="min-w-full text-center">
+            <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
+              <tr>
+                <th className="px-8 py-3 font-semibold">No</th>
+                <th className="px-8 py-3 font-semibold">Name En</th>
+                <th className="px-8 py-3 font-semibold">Name Kh</th>
+                <th className="px-8 py-3 font-semibold">Beginning Quantity</th>
+                <th className="px-8 py-3 font-semibold">Stock In</th>
+                <th className="px-8 py-3 font-semibold">Stock Out</th>
+                <th className="px-8 py-3 font-semibold">Quantity In Hand</th>
+                <th className="px-8 py-3 font-semibold">Unit Avg Cost</th>
+                <th className="px-8 py-3 font-semibold">
+                  Available Stock Amount
+                </th>
+                <th className="px-8 py-3 font-semibold">Minimum Stock</th>
+                <th className="px-8 py-3 font-semibold">Stock Checking</th>
+              </tr>
+            </thead>
+            <tbody className="text-[#2B5190]">
+              {filteredProducts.length > 0 ? (
+                filteredProducts.map((product: any, index) => (
                   <tr
                     key={product.id}
                     className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
@@ -268,11 +272,17 @@ export default function ProductDatabase() {
                       </span>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={11} className="text-center py-4 text-gray-500">
+                    No product database found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
         <div className="flex justify-end items-center mt-4 space-x-2">
           <Pagination
