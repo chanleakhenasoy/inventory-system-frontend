@@ -19,4 +19,4 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.30.0.0/24  # Choose a unique one for each project
+        - subnet: 192.168.254.0/24  # Choose a unique one for each project
