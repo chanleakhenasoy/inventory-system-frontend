@@ -14,12 +14,19 @@ interface User {
   id: string;
   user_name: string;
 }
+
 export default function CreateNewStockout() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [employees, setEmployees] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [validationErrors, setValidationErrors] = useState<{
+    selectedProductId?: string;
+    quantity?: string;
+    selectedUserId?: string;
+    stockout_date?: string;
+  }>({});
   const [formData, setFormData] = useState({
     selectedProductId: "",
     selectedUserId: "",
@@ -94,12 +101,53 @@ export default function CreateNewStockout() {
     fetchUsers();
   }, []);
 
-  const createStockout = async () => {
-    const token = localStorage.getItem("token");
-    setError("");
-    setLoading(true);
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setValidationErrors((prev) => ({ ...prev, [name]: "" })); // Clear error for the field being edited
+  };
 
+  const createStockout = async () => {
+    setLoading(true);
+    setValidationErrors({}); // Clear previous errors
+    setError("");
+
+    // Step 1: Validate required fields
+    const newErrors: {
+      selectedProductId?: string;
+      quantity?: string;
+      selectedUserId?: string;
+      stockout_date?: string;
+    } = {};
+    if (!formData.selectedProductId) {
+      newErrors.selectedProductId = "Please select product name.";
+    }
+    if (!formData.quantity.trim()) {
+      newErrors.quantity = "Please enter quantity.";
+    }
+    if (!formData.selectedUserId) {
+      newErrors.selectedUserId = "Please select employee.";
+    }
+    if (!formData.stockout_date) {
+      newErrors.stockout_date = "Please select stock out date.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setValidationErrors(newErrors);
+      setLoading(false);
+      return;
+    }
+
+    // Step 2: Proceed with stockout creation if validations pass
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/create/${formData.selectedProductId}/${formData.selectedUserId}`,
         {
@@ -116,31 +164,19 @@ export default function CreateNewStockout() {
           }),
         }
       );
+
       if (response.ok) {
         router.push("/stockout");
+      } else {
         const errorData = await response.json();
-        alert(
-          `Failed to create supplier: ${errorData.message || "Unknown error"}`
-        );
+        setError(errorData.message || "Failed to create stockout.");
       }
     } catch (error) {
-      console.error("Error creating supplier:", error);
-      alert("An error occurred while creating the stockout.");
+      console.error("Error creating stockout:", error);
+      setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
   };
 
   return (
@@ -158,7 +194,6 @@ export default function CreateNewStockout() {
         <div className="space-y-6">
           <div className="relative">
             <label className="block text-[#2D579A] mb-2">Product Name</label>
-
             <div className="relative text-gray-600">
               <select
                 name="selectedProductId"
@@ -174,6 +209,10 @@ export default function CreateNewStockout() {
                       ? selectedProduct.id
                       : "",
                   }));
+                  setValidationErrors((prev) => ({
+                    ...prev,
+                    selectedProductId: "",
+                  })); // Clear error when selecting a product
                 }}
                 className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
               >
@@ -200,6 +239,11 @@ export default function CreateNewStockout() {
                 </svg>
               </div>
             </div>
+            {validationErrors.selectedProductId && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.selectedProductId}
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-[#2D579A] mb-2">Quantity</label>
@@ -210,11 +254,14 @@ export default function CreateNewStockout() {
               onChange={handleChange}
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
+            {validationErrors.quantity && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.quantity}
+              </p>
+            )}
           </div>
-
           <div className="relative">
             <label className="block text-[#2D579A] mb-2">Employee</label>
-
             <div className="relative">
               <select
                 name="selectedUserId"
@@ -228,6 +275,10 @@ export default function CreateNewStockout() {
                     user_name: selectedUser ? selectedUser.user_name : "",
                     selectedUserId: selectedUser ? selectedUser.id : "",
                   }));
+                  setValidationErrors((prev) => ({
+                    ...prev,
+                    selectedUserId: "",
+                  })); // Clear error when selecting an employee
                 }}
                 className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
               >
@@ -254,11 +305,14 @@ export default function CreateNewStockout() {
                 </svg>
               </div>
             </div>
+            {validationErrors.selectedUserId && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.selectedUserId}
+              </p>
+            )}
           </div>
-
           <div className="relative">
             <label className="block text-[#2D579A] mb-2">Stock Out Date</label>
-
             <div className="relative">
               <input
                 id="stockout_date"
@@ -292,7 +346,13 @@ export default function CreateNewStockout() {
                 className="absolute inset-y-0 right-3 w-5 opacity-0 cursor-pointer"
               />
             </div>
+            {validationErrors.stockout_date && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.stockout_date}
+              </p>
+            )}
           </div>
+          {error && <div className="text-red-500 mb-4">{error}</div>}
           <div className="flex justify-end space-x-3 mt-6 cursor-pointer">
             <Button onClick={createStockout} label="Create" variant="create" />
           </div>
