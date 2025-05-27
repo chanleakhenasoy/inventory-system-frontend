@@ -281,7 +281,6 @@ export default function CreateUser() {
             "Registering..."
           ) : (
             <>
-              <LogIn size={18} strokeWidth={3} />
               <span className="ml-2 font-bold">REGISTER</span>
             </>
           )}
