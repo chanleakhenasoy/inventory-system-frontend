@@ -80,7 +80,7 @@ export default function ProductDatabase() {
       const res = await fetch(
         `${
           process.env.NEXT_PUBLIC_API_BASE_URL
-        }/product/product-database?page=${page}&limit=${productsPerPage}&search=${encodeURIComponent(
+        }/api/product/product-database?page=${page}&limit=${productsPerPage}&search=${encodeURIComponent(
           search
         )}`,
         {

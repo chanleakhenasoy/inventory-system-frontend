@@ -33,7 +33,7 @@ export default function Supplier() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/supplier/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
         {
           method: "GET",
           headers: {
@@ -47,8 +47,8 @@ export default function Supplier() {
 
       if (response.ok) {
         const newSuppliers = result.data || [];
-        setAllSuppliers((prev) => (page === 1 ? newSuppliers : [...prev, ...newSuppliers])); // Accumulate suppliers
-        setFilteredSuppliers(newSuppliers); // Update filtered list
+        setAllSuppliers((prev) => (page === 1 ? newSuppliers : [...prev, ...newSuppliers])); 
+        setFilteredSuppliers(newSuppliers); 
         setTotalPages(Math.ceil((result.total || result.data.length) / itemsPerPage));
       } else {
         setError(result.message || "Failed to fetch suppliers.");

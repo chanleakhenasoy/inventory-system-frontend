@@ -35,7 +35,7 @@ export default function StockIn() {
       const response = await fetch(
         `${
           process.env.NEXT_PUBLIC_API_BASE_URL
-        }/stockIn/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(
+        }/api/stockIn/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(
           search
         )}`,
         {

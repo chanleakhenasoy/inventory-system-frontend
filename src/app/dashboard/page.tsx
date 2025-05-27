@@ -49,10 +49,10 @@ export default function Dashboard() {
     setError("");
 
     const endpoints = [
-      { url: "/product/total", setter: setProduct },
-      { url: "/category/total", setter: setCategory },
-      { url: "/stockIn/item/total/quantity", setter: setTotalStockin },
-      { url: "/stockout/sum-all", setter: setTotalStockout },
+      { url: "/api/product/total", setter: setProduct },
+      { url: "/api/category/total", setter: setCategory },
+      { url: "/api/stockIn/item/total/quantity", setter: setTotalStockin },
+      { url: "/api/stockout/sum-all", setter: setTotalStockout },
     ];
 
     try {
@@ -77,7 +77,7 @@ export default function Dashboard() {
           const result: ApiResponse = await response.json();
 
           switch (url) {
-            case "/stockout/sum-all":
+            case "/api/stockout/sum-all":
               const totalQuantity =
                 typeof result.data === "object" &&
                 result.data !== null &&

@@ -25,7 +25,7 @@ export default function CategoryDetail() {
       setLoading(true);
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/category/create`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/category/create`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

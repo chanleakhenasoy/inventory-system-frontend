@@ -32,7 +32,7 @@ export default function StockOut() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stockout/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
         {
           method: "GET",
           headers: {
