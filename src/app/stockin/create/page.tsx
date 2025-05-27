@@ -167,14 +167,17 @@ export default function AddNewStock() {
         setItems([]);
         route.push("/stockin");
       } else {
-        const errData = await response.json();
-        setError(errData.message || "Failed to create stock.");
+        const errorData = await response.json();
+        alert(
+          `Failed to create product: already exists or invalid data. ${errorData.message || ""}`
+        );
       }
     } catch (err) {
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
+    
   };
   const handleAddItem = (): void => {
     if (formData.selectedProductId && formData.quantity) {

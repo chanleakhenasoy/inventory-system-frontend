@@ -46,6 +46,7 @@ export default function CreateProduct() {
         if (response.ok) {
           const result = await response.json();
           setCategories(result.data);
+          
         } else {
           const errorData = await response.json();
           setError(errorData.message || "Failed to fetch category.");
