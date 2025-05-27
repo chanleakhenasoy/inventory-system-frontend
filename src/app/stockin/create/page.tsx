@@ -62,7 +62,7 @@ export default function AddNewStock() {
       setLoading(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/getAll`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/supplier/getAll`,
           {
             method: "GET",
             headers: {
@@ -92,7 +92,7 @@ export default function AddNewStock() {
       setLoading(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/product/getAll`,
           {
             method: "GET",
             headers: {
@@ -272,7 +272,7 @@ export default function AddNewStock() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/create/${formData.selectedSupplierId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stockIn/create/${formData.selectedSupplierId}`,
         {
           method: "POST",
           headers: {

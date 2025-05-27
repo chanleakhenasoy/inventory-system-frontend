@@ -36,7 +36,7 @@ export default function Category() {
       const response = await fetch(
         `${
           process.env.NEXT_PUBLIC_API_BASE_URL
-        }/category/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(
+        }/api/category/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(
           search
         )}`,
         {

@@ -39,7 +39,7 @@ export default function CreateProduct() {
       setLoading(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/category/getAll`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/category/getAll`,
           {
             method: "GET",
             headers: {
@@ -183,7 +183,7 @@ export default function CreateProduct() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/create/${formData.selectedCategoryId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/product/create/${formData.selectedCategoryId}`,
         {
           method: "POST",
           headers: {

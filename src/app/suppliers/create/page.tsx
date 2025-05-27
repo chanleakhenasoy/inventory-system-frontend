@@ -65,7 +65,7 @@ export default function CategoryDetail() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/create`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/supplier/create`,
         {
           method: "POST",
           headers: {
