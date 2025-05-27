@@ -37,7 +37,7 @@ export default function CreateNewStockout() {
       setLoading(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/product/getAll`,
           {
             method: "GET",
             headers: {
@@ -68,7 +68,7 @@ export default function CreateNewStockout() {
       setLoading(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/getAll`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/getAll`,
           {
             method: "GET",
             headers: {
@@ -101,7 +101,7 @@ export default function CreateNewStockout() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockout/create/${formData.selectedProductId}/${formData.selectedUserId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stockout/create/${formData.selectedProductId}/${formData.selectedUserId}`,
         {
           method: "POST",
           headers: {

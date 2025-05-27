@@ -90,7 +90,7 @@ export default function StockInDetail() {
       setLoading(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/getAll`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/supplier/getAll`,
           {
             method: "GET",
             headers: {
@@ -119,7 +119,7 @@ export default function StockInDetail() {
       setLoading(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/getAll`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/product/getAll`,
           {
             method: "GET",
             headers: {
@@ -148,7 +148,7 @@ export default function StockInDetail() {
       setLoading(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/${invoiceId}`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stockIn/${invoiceId}`,
           {
             method: "GET",
             headers: {
@@ -318,7 +318,7 @@ export default function StockInDetail() {
         expire_date: selectedItem.expire_date,
       };
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/${formData.invoice_id}/${selectedItem.item_id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stockIn/${formData.invoice_id}/${selectedItem.item_id}`,
         {
           method: "PUT",
           headers: {
@@ -332,7 +332,7 @@ export default function StockInDetail() {
       if (!res.ok) throw new Error("Failed to update");
 
       const updatedRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/${invoiceId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stockIn/${invoiceId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -361,7 +361,7 @@ export default function StockInDetail() {
     try {
       setLoading(true);
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/${formData.invoice_id}/${itemId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stockIn/${formData.invoice_id}/${itemId}`,
         {
           method: "DELETE",
           headers: {
@@ -396,7 +396,7 @@ export default function StockInDetail() {
       setLoading(true);
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/stockIn/delete/${invoiceId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stockIn/delete/${invoiceId}`,
         {
           method: "DELETE",
           headers: {

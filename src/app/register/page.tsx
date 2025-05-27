@@ -28,8 +28,8 @@ export default function CreateUser() {
 
   useEffect(() => {
     if (success) {
-      const timeout = setTimeout(() => setSuccess(""), 5000); // Hide after 5 seconds
-      return () => clearTimeout(timeout); // Cleanup timeout on component unmount
+      const timeout = setTimeout(() => setSuccess(""), 5000); 
+      return () => clearTimeout(timeout);
     }
   }, [success]);
 
@@ -108,7 +108,7 @@ export default function CreateUser() {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/register`,
         {
           method: "POST",
           headers: {
@@ -129,7 +129,7 @@ export default function CreateUser() {
         setPassword("");
         setTimeout(() => router.push("/user"), 1500);
       } else {
-        // Handle server errors and specifically check for email already registered
+      
         if (
           data.message &&
           data.message.toLowerCase().includes("already registered")
