@@ -34,23 +34,24 @@ export default function ProductDatabase() {
 
   const productsPerPage = 10;
   const isInitialMount = useRef(true); 
+
+
   const debouncedSearch = useCallback((term: string) => {
     setCurrentPage(1);
     setAppliedSearchTerm(term);
   }, []);
 
+  
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
 
-        const data = await res.json();
-        const stockSummary = data?.data?.stockSummary || [];
+
     if (timeoutIdRef.current) {
       clearTimeout(timeoutIdRef.current);
     }
     timeoutIdRef.current = setTimeout(() => {
-
       const filtered = products.filter(
         (product) =>
           product.name_en.toLowerCase().includes(value.toLowerCase()) ||
@@ -63,7 +64,7 @@ export default function ProductDatabase() {
 
   useEffect(() => {
     if (isInitialMount.current) {
-      fetchProducts(1, ""); // Initial fetch
+      fetchProducts(1, ""); 
       isInitialMount.current = false;
     } else {
       fetchProducts(currentPage, appliedSearchTerm);
@@ -121,6 +122,7 @@ export default function ProductDatabase() {
       });
 
       setProducts(combined);
+
       if (searchTerm) {
         const filtered = combined.filter(
           (product: CombinedProduct) =>
@@ -147,7 +149,6 @@ export default function ProductDatabase() {
   };
 
   const totalPages = Math.ceil(totalItems / productsPerPage);
-
   const displayProducts = searchTerm && !loading ? filteredProducts : products;
 
   return (
@@ -192,46 +193,11 @@ export default function ProductDatabase() {
         <h1 className="text-[30px] font-bold text-[#2D579A] mt-4 mb-2">
           Product Database
         </h1>
-
-      <div className="mb-4 w-full sm:w-[50%]">
-  <div className="flex items-center space-x-2">
-    <div className="relative flex-1">
-      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-        <svg
-          className="w-5 h-5 text-gray-400"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      </div>
-      <input
-        type="text"
-        className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5"
-        placeholder="Name En..."
-        value={searchTerm}
-        onChange={handleSearchChange}
-      />
-    </div>
-    <button
-      onClick={handleSearch}
-      className="bg-[#2D579A] text-white text-sm px-4 py-2 rounded-3xl hover:bg-[#6499EF] transition cursor-pointer"
-    >
-      Search
-    </button>
-  </div>
-</div>
-
         </div>
 
         {loading && <p className="text-center mt-10">Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
+
         <div className="bg-white rounded-md mt-5">
           <table className="min-w-full text-center">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
