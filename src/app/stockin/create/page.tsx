@@ -169,7 +169,7 @@ export default function AddNewStock() {
       } else {
         const errorData = await response.json();
         alert(
-          `Failed to create product: already exists or invalid data. ${errorData.message || ""}`
+          `Failed to create product: ${errorData.message || ""}`
         );
       }
     } catch (err) {
