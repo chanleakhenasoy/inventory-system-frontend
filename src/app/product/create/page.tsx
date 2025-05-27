@@ -22,12 +22,9 @@ export default function CreateProduct() {
     beginning_quantity: "",
     minimum_stock: "",
   });
-  console.log(formData);
-  console.log(categories);
 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
 
   useEffect(() => {
     const fetchcategories = async () => {
@@ -60,7 +57,7 @@ export default function CreateProduct() {
       }
     };
     fetchcategories();
-  },[]);
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -120,50 +117,52 @@ export default function CreateProduct() {
 
       <div className="bg-white rounded-lg p-6 shadow-sm">
         <div className="space-y-6">
-        <div className="relative">
-  <label className="block text-[#2D579A] mb-2">Category Name</label>
-  <div className="relative">
-    <select
-      name="selectedCategoryId"
-      value={formData.selectedCategoryId}
-      onChange={(e) => {
-        const selectedCategory = categories.find(
-          (p) => p.id === e.target.value
-        );
-        setFormData((prev) => ({
-          ...prev,
-          category_name: selectedCategory ? selectedCategory.category_name : "",
-          selectedCategoryId: selectedCategory ? selectedCategory.id : "",
-        }));
-      }}
-      className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
-    >
-      <option value="">Select a category</option>
-      {categories.map((category) => (
-        <option key={category.id} value={category.id}>
-          {category.category_name}
-        </option>
-      ))}
-    </select>
-
-    {/* Arrow icon inside the select box */}
-    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-      <svg
-        className="w-4 h-4 text-gray-500"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M19 9l-7 7-7-7"
-        />
-      </svg>
-    </div>
-  </div>
-</div>
+          <div className="relative">
+            <label className="block text-[#2D579A] mb-2">Category Name</label>
+            <div className="relative">
+              <select
+                name="selectedCategoryId"
+                value={formData.selectedCategoryId}
+                onChange={(e) => {
+                  const selectedCategory = categories.find(
+                    (p) => p.id === e.target.value
+                  );
+                  setFormData((prev) => ({
+                    ...prev,
+                    category_name: selectedCategory
+                      ? selectedCategory.category_name
+                      : "",
+                    selectedCategoryId: selectedCategory
+                      ? selectedCategory.id
+                      : "",
+                  }));
+                }}
+                className="w-full p-2 pr-10 text-[#2D579A] border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none"
+              >
+                <option value="">Select a category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.category_name}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                <svg
+                  className="w-4 h-4 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
 
           <div>
             <label className="block text-[#2D579A] mb-2">Product Code</label>
@@ -175,8 +174,6 @@ export default function CreateProduct() {
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
-
-          {/* Description */}
           <div>
             <label className="block text-[#2D579A] mb-2">Name En</label>
             <input
@@ -219,8 +216,6 @@ export default function CreateProduct() {
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
-
-          {/* Action Buttons */}
           <div className="flex justify-end space-x-3 mt-6">
             <Button onClick={handleSave} label="Save" variant="create" />
           </div>

@@ -53,7 +53,6 @@ export default function Dashboard() {
       { url: "/category/total", setter: setCategory },
       { url: "/stockIn/item/total/quantity", setter: setTotalStockin },
       { url: "/stockout/sum-all", setter: setTotalStockout },
-      // { url: "/delivery/in", setter: setDeliveryIn },
     ];
 
     try {
@@ -79,7 +78,6 @@ export default function Dashboard() {
 
           switch (url) {
             case "/stockout/sum-all":
-              // parse total_quantity as number safely
               const totalQuantity =
                 typeof result.data === "object" &&
                 result.data !== null &&
@@ -108,7 +106,6 @@ export default function Dashboard() {
     fetchAllData();
   }, [fetchAllData]);
 
-  // Sample bar chart data
   const barChartData: BarData[] = [
     { name: "Products", value: totalProduct },
     { name: "Categories", value: totalCategory },
@@ -126,8 +123,6 @@ export default function Dashboard() {
                 Dashboard
               </h1>
             </div>
-
-            {/* Overview Cards */}
             <div className="bg-white h-auto rounded-lg shadow-sm p-6 mb-6">
               <h2 className="text-[20px] font-semibold mb-4 text-[#2D579A]">
                 Overview
@@ -163,10 +158,7 @@ export default function Dashboard() {
                 />
               </div>
             </div>
-
-            {/* Lower Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Bar Chart */}
               <div className="w-full h-[400px] bg-white rounded-md p-4 shadow">
                 <h2 className="text-xl font-semibold mb-4 text-[#2D579A] mt-2">
                   Stock Overview
@@ -206,8 +198,6 @@ export default function Dashboard() {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
-
-              {/* Pie Chart or Summary Card */}
               <ChartCard
                 data={{
                   totalProducts: totalProduct,

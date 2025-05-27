@@ -58,8 +58,6 @@ export default function ProductDatabase() {
         }
 
         const data = await res.json();
-        console.log("============", data);
-
         const stockSummary = data?.data?.stockSummary || [];
 
         const combined = stockSummary.map((item: any) => {
@@ -146,7 +144,6 @@ export default function ProductDatabase() {
         </h1>
       <div className="mb-4 w-full sm:w-[50%]">
   <div className="flex items-center space-x-2">
-    {/* Input with icon */}
     <div className="relative flex-1">
       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
         <svg
@@ -171,8 +168,6 @@ export default function ProductDatabase() {
         onChange={handleSearchChange}
       />
     </div>
-
-    {/* Search Button */}
     <button
       onClick={handleSearch}
       className="bg-[#2D579A] text-white text-sm px-4 py-2 rounded-3xl hover:bg-[#6499EF] transition cursor-pointer"

@@ -1,9 +1,30 @@
-version: "3.9"
+# version: "3.9"
+
+# services:
+#   frontend:
+#     image: inventory-frontend
+#     container_name: inventory-frontend
+#     ports:
+#       - "3000:3000"  # match EXPOSE 3000 in Dockerfile
+#     restart: always
 
 services:
   frontend:
     image: inventory-frontend
     container_name: inventory-frontend
     ports:
-      - "3000:3000"  # match EXPOSE 3000 in Dockerfile
-    restart: always
+      - "3000:3000"  # Maps host port 3000 to container port 3000
+    environment:
+      - NODE_ENV=production  # Optimize for production
+      - NEXT_PUBLIC_API_URL=http://localhost:3000  # Adjust as needed
+    restart: unless-stopped  # Prevent unnecessary restarts
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - inventory-network
+    volumes:
+      - ./.next:/app/.next:ro  # Optional: Cache .next for faster rebuilds
+networks:
+  inventory-network:
+    driver: bridge

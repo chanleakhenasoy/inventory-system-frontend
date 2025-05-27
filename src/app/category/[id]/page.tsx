@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import Button from "@/app/components/button"
-import type React from "react"
-import BackButton from "@/app/components/backButton"
+import Button from "@/app/components/button";
+import type React from "react";
+import BackButton from "@/app/components/backButton";
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 
-
-
 export default function CategoryDetail() {
   const router = useRouter();
-  const params = useParams(); // Use params instead of searchParams
+  const params = useParams();
   const id = params?.id ? String(params.id) : "";
 
-  const [formData, setFormData] = useState<{ category_name?: string; description?: string }>({});;
+  const [formData, setFormData] = useState<{
+    category_name?: string;
+    description?: string;
+  }>({});
   const [loading, setLoading] = useState(false);
 
-  console.log("fetch by id:", formData)
+  console.log("fetch by id:", formData);
   console.log("Fetching category with ID:", id);
 
-  // Fetch Supplier by ID
   useEffect(() => {
     if (id) {
       fetchCategoryById(id);
@@ -28,13 +28,14 @@ export default function CategoryDetail() {
 
   const fetchCategoryById = async (id: string) => {
     try {
-      const token = localStorage.getItem("token")
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/category/${id}`,
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/category/${id}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -60,14 +61,14 @@ export default function CategoryDetail() {
   const handleUpdate = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("token");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/category/${id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(formData),
         }
@@ -91,15 +92,15 @@ export default function CategoryDetail() {
       return;
 
     try {
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("token");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/category/${id}`,
         {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-            },
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -113,51 +114,44 @@ export default function CategoryDetail() {
     }
   };
   return (
-    
-      <div className="p-6 mt-25">
-        <div className="flex items-center mb-4">
-                  <div className="mt-4.5 mr-4">
-                  <BackButton />
-                  </div>
-                  <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
-                    Category Detail
-                  </h1>
-                </div>
+    <div className="p-6 mt-25">
+      <div className="flex items-center mb-4">
+        <div className="mt-4.5 mr-4">
+          <BackButton />
+        </div>
+        <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">
+          Category Detail
+        </h1>
+      </div>
 
-        <div className="bg-white rounded-lg p-6 shadow-sm">
-          <div className="space-y-6">
-            {/* Category Name */}
-            <div>
-              <label className="block text-[#2D579A] mb-2">Category Name</label>
-              <input
-                type="text"
-                name="category_name"
-                value={formData.category_name}
-                onChange={handleChange}
-                className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="block text-[#2D579A] mb-2">Description</label>
-              <input
-                type="text"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-end space-x-3 mt-6">
-                <Button onClick={handleDelete} label="Delete" variant="delete" />
-                <Button onClick={handleUpdate} label="Update" variant="update" />
-              </div>
+      <div className="bg-white rounded-lg p-6 shadow-sm">
+        <div className="space-y-6">
+          <div>
+            <label className="block text-[#2D579A] mb-2">Category Name</label>
+            <input
+              type="text"
+              name="category_name"
+              value={formData.category_name}
+              onChange={handleChange}
+              className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-[#2D579A] mb-2">Description</label>
+            <input
+              type="text"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+          <div className="flex justify-end space-x-3 mt-6">
+            <Button onClick={handleDelete} label="Delete" variant="delete" />
+            <Button onClick={handleUpdate} label="Update" variant="update" />
           </div>
         </div>
       </div>
-  
-  )
+    </div>
+  );
 }

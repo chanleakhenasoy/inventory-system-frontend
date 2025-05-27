@@ -28,7 +28,6 @@ export default function LayoutWrapper({
     <>
       <Navbar />
       <div className="flex h-[965px]">
-        {/* Sidebar */}
         <div className="w-80 bg-[#2D579A] text-white text-[20px] mt-[102.4px]">
           <nav>
           <SidebarItem icon={<LayoutDashboard size={20} />} text="Dashboard" href="/dashboard" />
@@ -44,8 +43,6 @@ export default function LayoutWrapper({
 
           </nav>
         </div>
-
-        {/* Main content */}
         <main className="flex-1 bg-gray-50 p-6 overflow-auto">{children}</main>
       </div>
     </>

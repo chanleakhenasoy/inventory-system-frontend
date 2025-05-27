@@ -7,18 +7,16 @@ import { useRouter } from "next/navigation";
 
 export default function Product() {
   const router = useRouter();
-  const [allProducts, setAllProducts] = useState<any[]>([]); // Store all products for local filtering
-  const [filteredProducts, setFilteredProducts] = useState<any[]>([]); // Display filtered results
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]); 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [appliedSearchTerm, setAppliedSearchTerm] = useState(""); // Trigger API search
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState(""); 
 
   const itemsPerPage = 10;
-
-  // Fetch products on initial load and when search is applied
   useEffect(() => {
     fetchProducts(currentPage, appliedSearchTerm);
   }, [currentPage, appliedSearchTerm]);
@@ -48,8 +46,8 @@ export default function Product() {
 
       if (response.ok) {
         const newProducts = result.data || [];
-        setAllProducts((prev) => (page === 1 ? newProducts : [...prev, ...newProducts])); // Accumulate products
-        setFilteredProducts(newProducts); // Update filtered list
+        setAllProducts((prev) => (page === 1 ? newProducts : [...prev, ...newProducts]));
+        setFilteredProducts(newProducts);
         setTotalPages(Math.ceil((result.total || result.data.length) / itemsPerPage));
       } else {
         setError(result.message || "Failed to fetch products.");
@@ -66,13 +64,10 @@ export default function Product() {
       setLoading(false);
     }
   };
-
-  // Handle search input change for local filtering
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
 
-    // Filter locally based on allProducts using name_en
     const filtered = allProducts.filter((product) =>
       product.name_en.toLowerCase().includes(value.toLowerCase())
     );
@@ -80,8 +75,8 @@ export default function Product() {
   };
 
   const handleSearch = () => {
-    setCurrentPage(1); // Reset to first page on search
-    setAppliedSearchTerm(searchTerm); // Trigger API search with full term
+    setCurrentPage(1);
+    setAppliedSearchTerm(searchTerm); 
   };
 
   const handlePageChange = (page: number) => {
@@ -99,10 +94,8 @@ export default function Product() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
       <main className="flex-1 overflow-y-auto p-6">
-        {/* Search Bar */}
         <div className="mb-4 w-full sm:w-[50%]">
           <div className="flex items-center space-x-2">
-            {/* Input with icon */}
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <svg
@@ -128,8 +121,6 @@ export default function Product() {
                 onChange={handleSearchChange}
               />
             </div>
-
-            {/* Search Button */}
             <button
               onClick={handleSearch}
               className="bg-[#2D579A] text-white text-sm px-4 py-2 rounded-3xl hover:bg-[#6499EF] transition cursor-pointer"
@@ -138,8 +129,6 @@ export default function Product() {
             </button>
           </div>
         </div>
-
-        {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-[30px] font-bold text-[#2D579A] mt-4">Product</h1>
           <Button onClick={handleClickToProductCreate} label="Create" />
@@ -147,8 +136,6 @@ export default function Product() {
 
         {loading && <p className="text-center mt-10">Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
-
-        {/* Table */}
         <div className="overflow-x-auto bg-white rounded-md mt-10">
           <table className="min-w-full text-center">
             <thead className="bg-[#EEF1F7] text-[#2D579A] h-[70px]">
@@ -199,8 +186,6 @@ export default function Product() {
             </tbody>
           </table>
         </div>
-
-        {/* Pagination */}
         <div className="flex justify-end items-center mt-4 space-x-2">
           <Pagination
             totalPages={totalPages}

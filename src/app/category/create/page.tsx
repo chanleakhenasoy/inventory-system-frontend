@@ -6,7 +6,6 @@ import BackButton from "@/app/components/backButton"
 import { useState } from "react"
 import { useRouter } from "next/navigation";
 
-
 export default function CategoryDetail() {
   const [formData, setFormData] = useState({
     category_name: "",
@@ -61,7 +60,6 @@ export default function CategoryDetail() {
 
         <div className="bg-white rounded-lg p-6 shadow-sm">
           <div className="space-y-6">
-            {/* Category Name */}
             <div>
               <label className="block text-[#2D579A] mb-2">Category Name</label>
               <input
@@ -72,8 +70,6 @@ export default function CategoryDetail() {
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
-
-            {/* Description */}
             <div>
               <label className="block text-[#2D579A] mb-2">Description</label>
               <input
@@ -84,11 +80,8 @@ export default function CategoryDetail() {
                 className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
-
-            {/* Action Buttons */}
             <div className="flex justify-end space-x-3 mt-6">
             <Button onClick={handleSave} label="Create" variant="create" />
-             
             </div>
           </div>
         </div>

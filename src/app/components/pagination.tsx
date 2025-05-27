@@ -14,16 +14,9 @@ export default function Pagination({
   pageNum = 1,
 }: PaginationProps) {
   const [currentPage, setCurrentPage] = useState(initialPage);
-
-  // Inform parent when page changes
   useEffect(() => {
     onPageChange?.(currentPage);
-  }, [currentPage]); 
-
-  // Sync with parent prop changes
-  // useEffect(() => {
-  //   setCurrentPage(initialPage);
-  // }, []);
+  }, [currentPage]);
 
   const handlePageChange = (page: number) => {
     if (page < 1 || page === currentPage) return;
@@ -59,7 +52,6 @@ export default function Pagination({
       </div>
       <button
         className="p-2 text-[#2D579A] hover:text-[#6499EF] disabled:opacity-50 flex items-center justify-center cursor-pointer"
-        // disabled={currentPage === totalPages}
         onClick={() => handlePageChange(currentPage + 1)}
         aria-label="Next page"
       >
@@ -82,59 +74,3 @@ export default function Pagination({
     </div>
   );
 }
-
-
-// import { useEffect, useState } from 'react';
-
-// type Item = {
-//   id: number;
-//   name: string;
-//   // add more fields here if needed
-// };
-
-// export default function PaginatedList() {
-//   const [items, setItems] = useState<Item[]>([]);
-//   const [page, setPage] = useState<number>(1);
-
-//   useEffect(() => {
-//     const fetchItems = async () => {
-//       try {
-//         const res = await fetch(`http://localhost:5000/api/items?page=${page}&limit=10`);
-//         const data = await res.json();
-//         setItems(data.data); // must match Item[]
-//       } catch (err) {
-//         console.error('Failed to fetch items:', err);
-//       }
-//     };
-
-//     fetchItems();
-//   }, [page]);
-
-//   return (
-//     <div className="p-4">
-//       <ul>
-//         {items.map((item) => (
-//           <li key={item.id} className="border p-2 mb-2">
-//             {item.name}
-//           </li>
-//         ))}
-//       </ul>
-//       <div className="mt-4 flex items-center space-x-2">
-//         <button
-//           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-//           disabled={page === 1}
-//           className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-//         >
-//           Prev
-//         </button>
-//         <span>Page {page}</span>
-//         <button
-//           onClick={() => setPage((prev) => prev + 1)}
-//           className="px-3 py-1 bg-gray-200 rounded"
-//         >
-//           Next
-//         </button>
-//       </div>
-//     </div>
-//   );
-// }

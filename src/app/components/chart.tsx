@@ -12,22 +12,18 @@ export default function PieChart() {
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    // Set canvas dimensions
     canvas.width = 200
     canvas.height = 200
 
-    // Data for the pie chart
     const data = [
-      { value: 25, color: "#3B82F6" }, // blue
-      { value: 10, color: "#10B981" }, // green
-      { value: 25, color: "#F97316" }, // orange
-      { value: 40, color: "#06B6D4" }, // cyan
+      { value: 25, color: "#3B82F6" }, 
+      { value: 10, color: "#10B981" }, 
+      { value: 25, color: "#F97316" }, 
+      { value: 40, color: "#06B6D4" },
     ]
 
-    // Calculate total
     const total = data.reduce((sum, item) => sum + item.value, 0)
 
-    // Draw the pie chart
     let startAngle = 0
     data.forEach((item) => {
       const sliceAngle = (2 * Math.PI * item.value) / total
@@ -40,7 +36,6 @@ export default function PieChart() {
       ctx.fillStyle = item.color
       ctx.fill()
 
-      // Draw percentage text
       const middleAngle = startAngle + sliceAngle / 2
       const textX = 100 + Math.cos(middleAngle) * 50
       const textY = 100 + Math.sin(middleAngle) * 50

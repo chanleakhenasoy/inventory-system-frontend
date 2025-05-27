@@ -5,17 +5,10 @@ import type React from "react";
 import BackButton from "@/app/components/backButton";
 import { useEffect, useState } from "react";
 import { useParams, useRouter} from "next/navigation";
-
-
-
-
-
-
 interface Category {
   id: string;
   category_name: string;
 }
-
 interface ProductFormData {
   minimum_stock: string;
   beginning_quantity: string;
@@ -45,7 +38,6 @@ export default function ProductDetail() {
     
   });
 console.log(formData)
-  // Fetch categories on mount
   useEffect(() => {
     const fetchCategories = async () => {
       const token = localStorage.getItem("token");
@@ -98,11 +90,9 @@ console.log(formData)
       if (response.ok) {
         const result = await response.json();
         console.log("Fetched product data:", result);
-
-        // Optional: If your backend returns `category_id` instead of `selectedCategoryId`
         setFormData({
           ...result.data,
-          selectedCategoryId: result.data.category_id, // if needed
+          selectedCategoryId: result.data.category_id, 
         });
       } else {
         const errorData = await response.text();
@@ -223,7 +213,6 @@ console.log(formData)
                 </option>
               ))}
             </select>
-            {/* Arrow icon inside the select box */}
             <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
               <svg
                 className="w-4 h-4 text-gray-500"
@@ -240,7 +229,6 @@ console.log(formData)
               </svg>
             </div>
           </div>
-          {/* Category Name */}
           <div>
             <label className="block text-[#2D579A] mb-2">Product Code</label>
             <input
@@ -251,8 +239,6 @@ console.log(formData)
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
-
-          {/* Description */}
           <div>
             <label className="block text-[#2D579A] mb-2">Name En</label>
             <input
@@ -295,8 +281,6 @@ console.log(formData)
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
-
-          {/* Action Buttons */}
           <div className="flex justify-end space-x-3 mt-6">
             <Button onClick={handleDelete} label="Delete" variant="delete" />
             <Button onClick={handleUpdate} label="Update" variant="update" />

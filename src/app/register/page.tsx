@@ -42,8 +42,7 @@ export default function CreateUser() {
 
   const validateEmail = (): string => {
     if (!email.trim()) return "Please enter your email.";
-    if (!email.trim().includes("@"))
-      return "Email must contain '@'.";
+    if (!email.trim().includes("@")) return "Email must contain '@'.";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
       return "Please enter a valid email address.";
     // Check if email belongs to pse.ngo or institute.pse.ngo
@@ -131,13 +130,25 @@ export default function CreateUser() {
         setTimeout(() => router.push("/user"), 1500);
       } else {
         // Handle server errors and specifically check for email already registered
-        if (data.message && data.message.toLowerCase().includes("already registered")) {
+        if (
+          data.message &&
+          data.message.toLowerCase().includes("already registered")
+        ) {
           setEmailError("Email already registered.");
-        } else if (data.message && data.message.toLowerCase().includes("username")) {
+        } else if (
+          data.message &&
+          data.message.toLowerCase().includes("username")
+        ) {
           setUsernameError(data.message);
-        } else if (data.message && data.message.toLowerCase().includes("role")) {
+        } else if (
+          data.message &&
+          data.message.toLowerCase().includes("role")
+        ) {
           setRoleError(data.message);
-        } else if (data.message && data.message.toLowerCase().includes("password")) {
+        } else if (
+          data.message &&
+          data.message.toLowerCase().includes("password")
+        ) {
           setPasswordError(data.message);
         } else {
           setEmailError(data.message || "An error occurred. Please try again.");
@@ -153,7 +164,6 @@ export default function CreateUser() {
 
   return (
     <div className="p-6 mt-25">
-      {/* Header */}
       {success && (
         <div className="absolute top-0 right-0 w-[500px] max-w-full bg-green-500 text-white text-center py-3 px-6 rounded-tl-lg rounded-bl-lg shadow-lg">
           <p>{success}</p>
@@ -171,8 +181,11 @@ export default function CreateUser() {
         </button>
       </div>
 
-      <form className="flex flex-col gap-6" onSubmit={handleRegister} noValidate>
-        {/* Username Field */}
+      <form
+        className="flex flex-col gap-6"
+        onSubmit={handleRegister}
+        noValidate
+      >
         <div className="relative">
           <input
             type="text"
@@ -192,8 +205,6 @@ export default function CreateUser() {
             )}
           </div>
         </div>
-
-        {/* Email Field */}
         <div className="relative">
           <input
             type="email"
@@ -208,13 +219,9 @@ export default function CreateUser() {
             <Mail size={20} />
           </div>
           <div className="h-6 mt-1">
-            {emailError && (
-              <p className="text-sm text-red-500">{emailError}</p>
-            )}
+            {emailError && <p className="text-sm text-red-500">{emailError}</p>}
           </div>
         </div>
-
-        {/* Role Field */}
         <div className="relative">
           <select
             value={role}
@@ -240,13 +247,9 @@ export default function CreateUser() {
             <ChevronDown size={25} />
           </div>
           <div className="h-6 mt-1">
-            {roleError && (
-              <p className="text-sm text-red-500">{roleError}</p>
-            )}
+            {roleError && <p className="text-sm text-red-500">{roleError}</p>}
           </div>
         </div>
-
-        {/* Password Field */}
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
@@ -269,8 +272,6 @@ export default function CreateUser() {
             )}
           </div>
         </div>
-
-        {/* Register Button */}
         <button
           type="submit"
           className="w-full bg-[#2D579A] hover:bg-[#6499EF] text-white p-3 rounded-lg flex items-center justify-center font-medium transition-colors duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"

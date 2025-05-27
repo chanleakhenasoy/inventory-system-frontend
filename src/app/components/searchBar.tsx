@@ -1,11 +1,9 @@
-// components/SearchBar.tsx
 "use client";
 
-import { usePathname } from "next/navigation"; // Use usePathname for App Router
+import { usePathname } from "next/navigation";
 import { useState, useCallback, useImperativeHandle, forwardRef } from "react";
 import { debounce } from "lodash";
-import path from "path";
-import searchButton from "@/app/components/searchButton"
+
 
 type Props = {
   onResults: (data: any[], total: number) => void;
@@ -17,7 +15,7 @@ type Props = {
 
 const SearchBar = forwardRef(({ onResults, perPage = 10, page = 1, setLoading, setError }: Props, ref) => {
   const [keyword, setKeyword] = useState("");
-  const pathname = usePathname(); // Get current pathname
+  const pathname = usePathname(); 
 
   const handleSearch = useCallback(async () => {
     setError("");
@@ -133,7 +131,7 @@ const SearchBar = forwardRef(({ onResults, perPage = 10, page = 1, setLoading, s
           placeholder="Category Name..."
           className="bg-white border border-gray-300 text-gray-600 text-sm rounded-3xl focus:outline-none focus:ring-1 focus:ring-[#2D579A] focus:border-[#2D579A] block w-full pl-10 p-2.5 transition-colors"
           aria-label="Search categories"
-          aria-busy={false} // Controlled by parent Category page
+          aria-busy={false} 
         />
         <button
           onClick={handleSearch}

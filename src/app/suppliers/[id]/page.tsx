@@ -8,12 +8,16 @@ import { useRouter, useParams } from "next/navigation";
 
 export default function SupplierDetail() {
   const router = useRouter();
- const params = useParams(); // Use params instead of searchParams
+  const params = useParams();
   const id = params?.id ? String(params.id) : "";
-
-   const [formData, setFormData] = useState<{ supplier_name?: string; phone_number?: string ; address?: string, company_name?: string }>({});;
+  const [formData, setFormData] = useState<{
+    supplier_name?: string;
+    phone_number?: string;
+    address?: string;
+    company_name?: string;
+  }>({});
   const [loading, setLoading] = useState(false);
-  // Fetch Supplier by ID
+
   useEffect(() => {
     if (id) {
       fetchSupplierById(id);
@@ -22,13 +26,14 @@ export default function SupplierDetail() {
 
   const fetchSupplierById = async (id: string) => {
     try {
-      const token = localStorage.getItem("token")
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/${id}`,
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/${id}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -54,17 +59,16 @@ export default function SupplierDetail() {
   const handleUpdate = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("token");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/${id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(formData),
-          
         }
       );
 
@@ -86,14 +90,14 @@ export default function SupplierDetail() {
       return;
 
     try {
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("token");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/supplier/${id}`,
         {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -121,7 +125,6 @@ export default function SupplierDetail() {
 
       <div className="bg-white rounded-lg p-6 shadow-sm">
         <div className="space-y-6">
-          {/* Category Name */}
           <div>
             <label className="block text-[#2D579A] mb-2">Supplier Name</label>
             <input
@@ -132,8 +135,6 @@ export default function SupplierDetail() {
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
-
-          {/* Description */}
           <div>
             <label className="block text-[#2D579A] mb-2">Phone Number</label>
             <input
@@ -164,8 +165,6 @@ export default function SupplierDetail() {
               className="w-full p-2 text-black border-gray-300 border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
-
-          {/* Action Buttons */}
           <div className="flex justify-end space-x-3 mt-6 ">
             <Button onClick={handleDelete} label="Delete" variant="delete" />
             <Button onClick={handleUpdate} label="Update" variant="update" />
