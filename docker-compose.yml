@@ -11,3 +11,12 @@ services:
     environment:
       - NODE_ENV=production
     restart: always
+    networks:
+      - custom_network
+
+networks:
+  custom_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24  # Choose a unique one for each project
