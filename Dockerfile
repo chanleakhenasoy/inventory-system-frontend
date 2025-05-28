@@ -1,21 +1,21 @@
-# Use official Node.js image,
-FROM node:20-alpine
+# Build the Next.js app
+FROM node:18-alpine AS builder
 
-# Set working directory,
 WORKDIR /app
 
-# Copy package files and install dependencies,
-COPY package*.json ./
+COPY package.json package-lock.json ./
 RUN npm install
 
-# Copy all project files,
 COPY . .
-
-# Build the Next.js app,
 RUN npm run build
 
-# Expose port 3000,
+# Run the app in a lightweight Node.js container
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app ./
+
 EXPOSE 3000
 
-# Start the app in production mode,
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]
