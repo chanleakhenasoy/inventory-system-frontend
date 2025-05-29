@@ -222,7 +222,7 @@ export default function ProductDatabase() {
                 filteredProducts.map((product: any, index) => (
                   <tr
                     key={product.id}
-                    className="hover:bg-[#F3F3F3] h-[55px] cursor-pointer"
+                    className="hover:bg-[#F3F3F3] h-[55px]"
                   >
                     <td className="px-8 py-3 text-[16px]">
                       {(currentPage - 1) * productsPerPage + index + 1}
