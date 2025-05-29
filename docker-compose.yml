@@ -7,12 +7,11 @@
 #     ports:
 #       - "127.0.0.1:3302:3000"
 #     restart: always
-version: "3.8"
-
 services:
   web:
     build:
       context: .
+      dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
     restart: unless-stopped
