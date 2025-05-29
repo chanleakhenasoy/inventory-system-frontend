@@ -13,10 +13,10 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+        NEXT_PUBLIC_API_BASE_URL: 'https://hr-inventory-be.final25.psewmad.org'
     restart: unless-stopped
     environment:
-      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+      NEXT_PUBLIC_API_BASE_URL: 'https://hr-inventory-be.final25.psewmad.org'
     ports:
       - "127.0.0.1:3302:3000"
 
