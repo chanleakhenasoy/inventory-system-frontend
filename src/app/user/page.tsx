@@ -40,7 +40,7 @@ export default function AllUser() {
     setError("");
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
+        `https://hr-inventory-be.final25.psewmad.org/api/auth/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
         {
           method: "GET",
           headers: {
@@ -98,7 +98,7 @@ export default function AllUser() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/${userId}`,
+        `https://hr-inventory-be.final25.psewmad.org/api/auth/${userId}`,
         {
           method: "DELETE",
           headers: {

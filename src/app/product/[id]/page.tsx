@@ -45,7 +45,7 @@ console.log(formData)
       setLoading(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/category/getAll`,
+          `https://hr-inventory-be.final25.psewmad.org/api/category/getAll`,
           {
             method: "GET",
             headers: {
@@ -77,7 +77,7 @@ console.log(formData)
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/product/${id}`,
+        `https://hr-inventory-be.final25.psewmad.org/api/product/${id}`,
         {
           method: "GET",
           headers: {
@@ -114,7 +114,7 @@ console.log(formData)
     try {
       const token = localStorage.getItem("token")
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/product/${id}`,
+        `https://hr-inventory-be.final25.psewmad.org/api/product/${id}`,
         {
           method: "PUT",
           headers: {
@@ -146,7 +146,7 @@ console.log(formData)
     try {
       const token = localStorage.getItem("token")
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/product/${id}`,
+        `https://hr-inventory-be.final25.psewmad.org/api/product/${id}`,
         {
           method: "DELETE",
           headers: {

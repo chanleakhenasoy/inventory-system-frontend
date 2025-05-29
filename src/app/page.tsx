@@ -40,7 +40,7 @@ export default function SignIn() {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login`, {
+      const response = await fetch(`https://hr-inventory-be.final25.psewmad.org/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

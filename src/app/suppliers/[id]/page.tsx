@@ -28,7 +28,7 @@ export default function SupplierDetail() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/supplier/${id}`,
+        `https://hr-inventory-be.final25.psewmad.org/api/supplier/${id}`,
         {
           method: "GET",
           headers: {
@@ -61,7 +61,7 @@ export default function SupplierDetail() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/supplier/${id}`,
+        `https://hr-inventory-be.final25.psewmad.org/api/supplier/${id}`,
         {
           method: "PUT",
           headers: {
@@ -92,7 +92,7 @@ export default function SupplierDetail() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/supplier/${id}`,
+        `https://hr-inventory-be.final25.psewmad.org/api/supplier/${id}`,
         {
           method: "DELETE",
           headers: {

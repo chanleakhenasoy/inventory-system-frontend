@@ -39,7 +39,7 @@ export default function CreateProduct() {
       setLoading(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/category/getAll`,
+          `https://hr-inventory-be.final25.psewmad.org/api/category/getAll`,
           {
             method: "GET",
             headers: {
@@ -96,7 +96,7 @@ export default function CreateProduct() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/check-existence`,
+        `https://hr-inventory-be.final25.psewmad.org/product/check-existence`,
         {
           method: "POST",
           headers: {
@@ -184,7 +184,7 @@ export default function CreateProduct() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/product/create/${formData.selectedCategoryId}`,
+        `https://hr-inventory-be.final25.psewmad.org/api/product/create/${formData.selectedCategoryId}`,
         {
           method: "POST",
           headers: {

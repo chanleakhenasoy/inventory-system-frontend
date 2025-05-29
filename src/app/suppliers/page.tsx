@@ -33,7 +33,7 @@ export default function Supplier() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/supplier/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
+        `https://hr-inventory-be.final25.psewmad.org/api/supplier/getAll?page=${page}&limit=${itemsPerPage}&search=${encodeURIComponent(search)}`,
         {
           method: "GET",
           headers: {

@@ -59,7 +59,7 @@ export default function Dashboard() {
       await Promise.all(
         endpoints.map(async ({ url, setter }) => {
           const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}${url}`,
+            `https://hr-inventory-be.final25.psewmad.org${url}`,
             {
               method: "GET",
               headers: {

@@ -108,7 +108,7 @@ export default function CreateUser() {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/register`,
+        `https://hr-inventory-be.final25.psewmad.org/api/auth/register`,
         {
           method: "POST",
           headers: {
