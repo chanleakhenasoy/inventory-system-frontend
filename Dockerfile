@@ -11,7 +11,7 @@ COPY . .
 
 ARG NEXT_PUBLIC_API_BASE_URL
 
-ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_API_BASE_URL=https://hr-inventory-be.final25.psewmad.org
 
 RUN npm run build
 
