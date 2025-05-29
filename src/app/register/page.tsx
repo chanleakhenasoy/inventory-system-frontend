@@ -55,8 +55,8 @@ export default function CreateUser() {
   const validateRole = (): string => {
     if (!role.trim()) return "Please select your role.";
     const normalizedRole = role.trim().toLowerCase();
-    if (normalizedRole !== "user" && normalizedRole !== "admin")
-      return "Role must be either 'user' or 'admin'.";
+    if (normalizedRole !== "admin" && normalizedRole !== "manager" && normalizedRole !== "officer")
+      return "Role must be either 'admin' or 'manager' or 'officer'.";
     return "";
   };
 
@@ -236,10 +236,10 @@ export default function CreateUser() {
             <option value="admin" className="text-gray-500">
               Admin
             </option>
-            <option value="admin" className="text-gray-500">
+            <option value="manager" className="text-gray-500">
               Manager
             </option>
-            <option value="admin" className="text-gray-500">
+            <option value="officer" className="text-gray-500">
               Officer
             </option>
           </select>
