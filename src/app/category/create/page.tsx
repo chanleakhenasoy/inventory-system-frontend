@@ -16,13 +16,13 @@ export default function CategoryDetail() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ category_name?: string; description?: string }>(
     {}
-  ); // State for validation errors
+  ); 
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
+    
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
@@ -39,14 +39,14 @@ export default function CategoryDetail() {
       newErrors.description = "Please enter description.";
     }
 
-    // If there are initial validation errors, set them and stop submission
+    
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setLoading(false);
       return;
     }
 
-    // Step 2: Proceed with category creation
+  
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/category/create`, {
