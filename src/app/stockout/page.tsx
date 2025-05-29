@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Button from "@/app/components/button";
 import Pagination from "@/app/components/pagination";
-import { useRouter } from "next/navigation";
+import { useRouter,useParams } from "next/navigation";
 
 export default function StockOut() {
   const router = useRouter();
@@ -15,6 +15,8 @@ export default function StockOut() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
+  const params = useParams();
+  const id = params?.id ? String(params.id) : "";
 
   const itemsPerPage = 10;
   useEffect(() => {
@@ -86,6 +88,34 @@ export default function StockOut() {
   const handleClickToStockoutCreate = () => {
     router.push("/stockout/create");
   };
+  const handleDelete = async (id: any) => {
+    if (!window.confirm("Are you sure you want to delete this stockout?"))
+      return;
+    setError("");
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/stockout/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+      } else {
+        alert("Failed to delete stockout");
+      }
+    } catch (error) {
+      console.error("Error deleting stockout:", error);
+    }finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden mt-25">
@@ -151,6 +181,9 @@ export default function StockOut() {
                 <th className="px-6 py-3 font-semibold text-[18px]">
                   Stock Out Date
                 </th>
+                <th className="px-6 py-3 font-semibold text-[18px]">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody className="text-[#2B5190]">
@@ -174,6 +207,14 @@ export default function StockOut() {
                     </td>
                     <td className="px-6 py-3 text-[16px]">
                       {new Date(stockout.created_at).toLocaleString()}
+                    </td>
+                    <td className="px-6 py-3 text-[16px]">
+                    <button
+                      className="w-[70px] h-[25px] bg-red-600 rounded-md text-white text-[10px] font-bold cursor-pointer"
+                      onClick={() => handleDelete(stockout.id)}
+                    >
+                      Delete
+                    </button>
                     </td>
                   </tr>
                 ))

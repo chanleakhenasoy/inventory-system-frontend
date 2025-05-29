@@ -316,7 +316,7 @@ export default function AddNewStock() {
             />
           </div>
           <div className="relative">
-            <label className="block text-[#2D579A] mb-2">Due Date</label>
+            <label className="block text-[#2D579A] mb-2">Payment Date</label>
 
             <div className="relative">
               <input
